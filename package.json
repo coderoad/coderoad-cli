@@ -1,0 +1,27 @@
+{
+  "name": "@argemiront/coderoad-builder",
+  "version": "0.0.1",
+  "description": "A CLI to build the configuration file for Coderoad Tutorials",
+  "main": "src/main.js",
+  "bin": {
+    "@argemiront/coderoad-builder": "bin/coderoad-builder",
+    "coderoad-builder": "bin/coderoad-builder"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Argemiro Neto",
+  "license": "ISC",
+  "dependencies": {
+    "arg": "^4.1.3",
+    "esm": "^3.2.25",
+    "inquirer": "^7.1.0",
+    "js-yaml": "^3.13.1",
+    "lodash": "^4.17.15",
+    "simple-git": "^2.4.0"
+  }
+}
