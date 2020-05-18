@@ -1,9 +1,9 @@
-const simpleGit = require('simple-git/promise');
-const yamlParser = require('js-yaml');
-const path = require('path');
-const _ = require('lodash');
-const fs = require('fs');
-const validate = require('./validator');
+import simpleGit from 'simple-git/promise';
+import yamlParser from 'js-yaml';
+import path from 'path';
+import _ from 'lodash';
+import fs from 'fs';
+import validate from './validator';
 
 const workingDir = 'tmp';
 
