@@ -39,7 +39,7 @@ function parseContent(md) {
 
   // Identify each part of the content
   parts.forEach(section => {
-    const levelRegex = /^(##\s(?<levelId>L\d+)\s(?<levelTitle>.*)\n*>\s+(?<levelSummary>.*)\n+(?<levelContent>[^]*))/;
+    const levelRegex = /^(##\s(?<levelId>L\d+)\s(?<levelTitle>.*)\n*(>\s*(?<levelSummary>.*))?\n+(?<levelContent>[^]*))/;
     const stepRegex = /^(###\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)\n+(?<stepContent>[^]*))/;
 
     const levelMatch = section.match(levelRegex);
@@ -149,7 +149,6 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
     const isRepo = await gitTest.checkIsRepo();
 
     if (isRepo) {
-      // Add the new one as a submodule
       const startCleanup = cleanupFiles(workingDir);
 
       if (startCleanup) {
