@@ -104,7 +104,7 @@ function rmDir(dir, rmSelf) {
     // check if user want to delete the directory ir just the files in this directory
     fs.rmdirSync(dir);
   }
-  
+
 }
 
 async function cleanupFiles(workingDir) {
@@ -137,18 +137,38 @@ async function cleanupFiles(workingDir) {
  * @param {string} isLocal define if the repo is local or remote
  */
 async function build({ repo, codeBranch, setupBranch, isLocal }) {
-  
-  const gitModule = simpleGit(__dirname);
 
-  const startCleanup = cleanupFiles(workingDir);
+  let git;
+  let isSubModule = false;
 
-  if (startCleanup) {
-    console.log('Clenned old files from git module...');
+  if (isLocal) {
+    git = simpleGit(repo);
+  }
+  else {
+    const gitTest = simpleGit(__dirname);
+    const isRepo = await gitTest.checkIsRepo();
+
+    if (isRepo) {
+      // Add the new one as a submodule
+      const startCleanup = cleanupFiles(workingDir);
+
+      if (startCleanup) {
+        console.log('Clenned old files from git module...');
+      }
+
+      await gitTest.submoduleAdd(repo, workingDir);
+
+      git = simpleGit(path.join(__dirname, workingDir));
+
+      isSubModule = true;
+
+    }
+    else {
+      await gitTest.clone(repo);
+      git = simpleGit(__dirname);
+    }
   }
 
-  await gitModule.submoduleAdd(repo, workingDir);
-
-  const git = simpleGit(path.join(__dirname, workingDir));
   await git.fetch();
 
   // checkout the branch to load configuration and content branch
@@ -215,22 +235,22 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
           theLevel.setup.commits.push(commit.hash.substr(0, 7));
         }
       }
-
     }
-
   };
 
   // cleanup the submodules
-  const endCleanup = await cleanupFiles(workingDir);
-  
-  if (!endCleanup){
-    console.log('Error when deleting the git submodules');
+  if (!isLocal) {
+    const endCleanup = await cleanupFiles(workingDir);
+
+    if (!endCleanup) {
+      console.log('Error when deleting the git submodules');
+    }
   }
 
   const isValid = validate(config);
 
   if (!isValid) return validate.errors;
-  
+
   return config;
 
 }
