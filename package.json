@@ -1,11 +1,11 @@
 {
-  "name": "@argemiront/coderoad-builder",
+  "name": "@coderoad/cli",
   "version": "0.0.1",
   "description": "A CLI to build the configuration file for Coderoad Tutorials",
   "main": "src/main.js",
   "bin": {
-    "@argemiront/coderoad-builder": "bin/coderoad-builder",
-    "coderoad-builder": "bin/coderoad-builder"
+    "@coderoad/coderoad": "bin/coderoad",
+    "coderoad": "bin/coderoad"
   },
   "publishConfig": {
     "access": "public"
