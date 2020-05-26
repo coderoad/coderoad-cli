@@ -3,7 +3,7 @@ import yamlParser from 'js-yaml';
 import path from 'path';
 import _ from 'lodash';
 import fs from 'fs';
-import validate from './validator';
+// import validate from './validator';
 
 const workingDir = 'tmp';
 
@@ -110,7 +110,6 @@ function rmDir(dir, rmSelf) {
 async function cleanupFiles(workingDir) {
 
   try {
-
     const gitModule = simpleGit(__dirname);
 
     await gitModule.subModule(['deinit', '-f', workingDir]);
@@ -120,13 +119,9 @@ async function cleanupFiles(workingDir) {
     rmDir(workingDir);
 
     return true;
-
   } catch (error) {
-
     return false;
-
   }
-
 }
 
 /**
@@ -246,12 +241,15 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
     }
   }
 
-  const isValid = validate(config);
+  // const isValid = validate(config);
 
-  if (!isValid) return validate.errors;
+  // if (!isValid) {
+  //   console.log(JSON.stringify(validate.errors, null, 2));
+  //   return;
+  // }
 
   return config;
 
 }
 
-module.exports = build;
+export default build;
