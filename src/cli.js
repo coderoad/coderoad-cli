@@ -1,7 +1,8 @@
 import arg from 'arg';
 import inquirer from 'inquirer';
 import simpleGit from 'simple-git/promise';
-import builder from '../src/main'
+import build from './parse';
+import create from './create';
 import fs from 'fs';
 
 const localGit = 'Local directory';
@@ -28,6 +29,7 @@ function parseArgumentsIntoOptions(rawArgs) {
     }
   );
   return {
+    command: args['_'][1],
     git: args['--git'],
     dir: args['--dir'],
     codeBranch: args['--code'],
@@ -45,11 +47,11 @@ async function promptForMissingOptions(options) {
   if (!options.git && !options.dir) {
 
     // check if the current dir is a valid repo
-     const git = simpleGit(__dirname);
+    const git = simpleGit(__dirname);
     const isRepo = await git.checkIsRepo();
 
     if (!isRepo) {
-      
+
       questions.push({
         type: 'list',
         name: 'source',
@@ -127,22 +129,32 @@ async function promptForMissingOptions(options) {
 
 export async function cli(args) {
   let options = parseArgumentsIntoOptions(args);
-
+  
   // If help called just print the help text and exit
   if (options.help) {
-    console.log('help message...');
+    console.log('Docs can be found at github: https://github.com/coderoad/builder-cli/');
   }
   else {
-    // Otherwise, continue with the other options
-    options = await promptForMissingOptions(options);
-    console.log(options);
-    config = await builder(options);
+    switch (options.command) {
+      case 'build':
+        // Otherwise, continue with the other options
+        options = await promptForMissingOptions(options);
+        console.log(options);
+        config = await build(options);
 
-    if (options.output) {
-      fs.writeFileSync(options.output, config, 'utf8');
-    }
-    else {
-      console.log(JSON.stringify(config))
+        if (config) {
+          if (options.output) {
+            fs.writeFileSync(options.output, config, 'utf8');
+          }
+          else {
+            console.log(JSON.stringify(config));
+          }
+        }
+        break;
+      
+      case 'create':
+        create(__dirname);
+        break;
     }
   }
 }
