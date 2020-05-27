@@ -134,20 +134,23 @@ export async function cli(args) {
   if (options.help) {
     console.log('Docs can be found at github: https://github.com/coderoad/builder-cli/');
   }
+  else if (!options.command) {
+    console.log(`The command is missing. Chose either 'create' or 'build' and its options.`)
+  } 
   else {
     switch (options.command) {
       case 'build':
         // Otherwise, continue with the other options
         options = await promptForMissingOptions(options);
         console.log(options);
-        config = await build(options);
+        const config = await build(options);
 
         if (config) {
           if (options.output) {
             fs.writeFileSync(options.output, config, 'utf8');
           }
           else {
-            console.log(JSON.stringify(config));
+            console.log(JSON.stringify(config, null, 2));
           }
         }
         break;
