@@ -29,7 +29,7 @@ function parseArgumentsIntoOptions(rawArgs) {
     }
   );
   return {
-    command: args['_'][1],
+    command: args['_'][0],
     git: args['--git'],
     dir: args['--dir'],
     codeBranch: args['--code'],
