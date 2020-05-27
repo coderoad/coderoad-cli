@@ -110,12 +110,12 @@ function rmDir(dir, rmSelf) {
 async function cleanupFiles(workingDir) {
 
   try {
-    const gitModule = simpleGit(__dirname);
+    const gitModule = simpleGit(process.cwd());
 
     await gitModule.subModule(['deinit', '-f', workingDir]);
     await gitModule.rm(workingDir);
     await gitModule.reset(['HEAD']);
-    rmDir(path.join(__dirname, '.git', 'modules', workingDir));
+    rmDir(path.join(process.cwd(), '.git', 'modules', workingDir));
     rmDir(workingDir);
 
     return true;
@@ -135,12 +135,14 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
 
   let git;
   let isSubModule = false;
+  let localPath;
 
   if (isLocal) {
     git = simpleGit(repo);
+    localPath = repo;
   }
   else {
-    const gitTest = simpleGit(__dirname);
+    const gitTest = simpleGit(process.cwd());
     const isRepo = await gitTest.checkIsRepo();
 
     if (isRepo) {
@@ -152,14 +154,16 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
 
       await gitTest.submoduleAdd(repo, workingDir);
 
-      git = simpleGit(path.join(__dirname, workingDir));
+      git = simpleGit(path.join(process.cwd(), workingDir));
 
       isSubModule = true;
+      localPath = path.join(process.cwd(), workingDir);
 
     }
     else {
       await gitTest.clone(repo);
-      git = simpleGit(__dirname);
+      git = simpleGit(process.cwd());
+      localPath = process.cwd();
     }
   }
 
@@ -169,8 +173,8 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
   await git.checkout(setupBranch);
 
   // Load files
-  const _mdContent = fs.readFileSync(path.join(__dirname, workingDir, 'TUTORIAL.md'), 'utf8');
-  let _config = fs.readFileSync(path.join(__dirname, workingDir, 'coderoad.yaml'), 'utf8');
+  const _mdContent = fs.readFileSync(path.join(localPath, 'TUTORIAL.md'), 'utf8');
+  let _config = fs.readFileSync(path.join(localPath, 'coderoad.yaml'), 'utf8');
 
   // Add one more line to the content as per Shawn's request
   const mdContent = parseContent(_mdContent);
