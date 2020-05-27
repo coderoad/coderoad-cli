@@ -1,6 +1,6 @@
-## Insert Tutorial's Title here
+# Insert Tutorial's Title here
 
-> Short description to be shown as a tutorial's subtitle
+Short description to be shown as a tutorial's subtitle
 
 
 ## L1 Put Level's title here
