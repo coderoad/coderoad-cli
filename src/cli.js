@@ -147,7 +147,7 @@ export async function cli(args) {
 
         if (config) {
           if (options.output) {
-            fs.writeFileSync(options.output, config, 'utf8');
+            fs.writeFileSync(options.output, JSON.stringify(config), 'utf8');
           }
           else {
             console.log(JSON.stringify(config, null, 2));
