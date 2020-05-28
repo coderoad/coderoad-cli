@@ -47,7 +47,7 @@ async function promptForMissingOptions(options) {
   if (!options.git && !options.dir) {
 
     // check if the current dir is a valid repo
-    const git = simpleGit(__dirname);
+    const git = simpleGit(process.cwd());
     const isRepo = await git.checkIsRepo();
 
     if (!isRepo) {
@@ -55,7 +55,7 @@ async function promptForMissingOptions(options) {
       questions.push({
         type: 'list',
         name: 'source',
-        message: `The current directory (${__dirname}) is not a valid git repo. Would you like to provide a...`,
+        message: `The current directory (${process.cwd()}) is not a valid git repo. Would you like to provide a...`,
         choices: [localGit, remoteGit],
         default: localGit,
       });
@@ -114,7 +114,7 @@ async function promptForMissingOptions(options) {
     isLocal = answers.source === localGit;
   }
   else {
-    repo = options.dir || options.git || __dirname;
+    repo = options.dir || options.git || process.cwd();
     isLocal = options.git ? false : true;
   }
 
