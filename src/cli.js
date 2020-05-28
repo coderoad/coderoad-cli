@@ -156,7 +156,7 @@ export async function cli(args) {
         break;
       
       case 'create':
-        create(__dirname);
+        create(process.cwd());
         break;
     }
   }
