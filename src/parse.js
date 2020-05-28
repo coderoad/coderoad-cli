@@ -30,17 +30,17 @@ function parseContent(md) {
   const sections = {};
 
   // Identify and remove the header
-  const summaryMatch = parts.shift().match(/^#\s(?<tutorialTitle>.*)\n+(?<tutorialDescription>[^]*)/);
+  const summaryMatch = parts.shift().match(/^#\s(?<tutorialTitle>.*)[\n\r]+(?<tutorialDescription>[^]*)/);
 
   sections['summary'] = {
-    title: summaryMatch.groups.tutorialTitle,
-    description: summaryMatch.groups.tutorialDescription,
+    title: summaryMatch.groups.tutorialTitle.trim(),
+    description: summaryMatch.groups.tutorialDescription.trim(),
   };
 
   // Identify each part of the content
   parts.forEach(section => {
-    const levelRegex = /^(##\s(?<levelId>L\d+)\s(?<levelTitle>.*)\n*(>\s*(?<levelSummary>.*))?\n+(?<levelContent>[^]*))/;
-    const stepRegex = /^(###\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)\n+(?<stepContent>[^]*))/;
+    const levelRegex = /^(##\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s+(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
+    const stepRegex = /^(###\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
 
     const levelMatch = section.match(levelRegex);
     const stepMatch = section.match(stepRegex);
@@ -50,8 +50,8 @@ function parseContent(md) {
         [levelMatch.groups.levelId]: {
           id: levelMatch.groups.levelId,
           title: levelMatch.groups.levelTitle,
-          summary: levelMatch.groups.levelSummary,
-          content: levelMatch.groups.levelContent,
+          summary: levelMatch.groups.levelSummary.trim(),
+          content: levelMatch.groups.levelContent.trim(),
         }
       };
 
@@ -66,7 +66,7 @@ function parseContent(md) {
             [stepMatch.groups.stepId]: {
               id: stepMatch.groups.stepId,
               // title: stepMatch.groups.stepTitle, //Not using at this momemnt
-              content: stepMatch.groups.stepContent
+              content: stepMatch.groups.stepContent.trim()
             }
           }
         }
