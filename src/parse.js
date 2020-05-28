@@ -84,27 +84,29 @@ function parseContent(md) {
 
 function rmDir(dir, rmSelf) {
 
-  let files;
-  rmSelf = (rmSelf === undefined) ? true : rmSelf;
-  // dir = dir + path.sep;
+  try {
+    let files;
+    rmSelf = (rmSelf === undefined) ? true : rmSelf;
 
-  try { files = fs.readdirSync(dir); } catch (e) { console.log(`Sorry, directory '${dir}' doesn't exist.`); return; }
+    try { files = fs.readdirSync(dir); } catch (e) { console.log(`Sorry, directory '${dir}' doesn't exist.`); return; }
 
-  if (files.length > 0) {
-    files.forEach(function (x, i) {
-      if (fs.statSync(path.join(dir, x)).isDirectory()) {
-        rmDir(path.join(dir, x));
-      } else {
-        fs.unlinkSync(path.join(dir, x));
-      }
-    });
+    if (files.length > 0) {
+      files.forEach(function (x, i) {
+        if (fs.statSync(path.join(dir, x)).isDirectory()) {
+          rmDir(path.join(dir, x));
+        } else {
+          fs.unlinkSync(path.join(dir, x));
+        }
+      });
+    }
+
+    if (rmSelf) {
+      // check if user want to delete the directory ir just the files in this directory
+      fs.rmdirSync(dir);
+    }
+  } catch (error) {
+    return error;
   }
-
-  if (rmSelf) {
-    // check if user want to delete the directory ir just the files in this directory
-    fs.rmdirSync(dir);
-  }
-
 }
 
 async function cleanupFiles(workingDir) {
@@ -118,9 +120,8 @@ async function cleanupFiles(workingDir) {
     rmDir(path.join(process.cwd(), '.git', 'modules', workingDir));
     rmDir(workingDir);
 
-    return true;
   } catch (error) {
-    return false;
+    return error;
   }
 }
 
@@ -144,27 +145,18 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
   else {
     const gitTest = simpleGit(process.cwd());
     const isRepo = await gitTest.checkIsRepo();
+    localPath = path.join(process.cwd(), workingDir);
 
     if (isRepo) {
-      const startCleanup = cleanupFiles(workingDir);
-
-      if (startCleanup) {
-        console.log('Clenned old files from git module...');
-      }
-
       await gitTest.submoduleAdd(repo, workingDir);
 
-      git = simpleGit(path.join(process.cwd(), workingDir));
-
       isSubModule = true;
-      localPath = path.join(process.cwd(), workingDir);
-
     }
     else {
-      await gitTest.clone(repo);
-      git = simpleGit(process.cwd());
-      localPath = process.cwd();
+      await gitTest.clone(repo, localPath);
     }
+
+    git = simpleGit(localPath);
   }
 
   await git.fetch();
@@ -238,10 +230,17 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
 
   // cleanup the submodules
   if (!isLocal) {
-    const endCleanup = await cleanupFiles(workingDir);
+    let cleanupErr;
 
-    if (!endCleanup) {
-      console.log('Error when deleting the git submodules');
+    if (isSubModule) {
+      cleanupErr = await cleanupFiles(workingDir);
+    }
+    else {
+      cleanupErr = rmDir(path.join(process.cwd(), workingDir));
+    }
+
+    if (!cleanupErr) {
+      console.log(`Error when deleting temporary files on ${isSubModule ? 'module' : 'folder'} ${workingDir}.`);
     }
   }
 
