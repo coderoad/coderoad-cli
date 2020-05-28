@@ -239,7 +239,7 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
       cleanupErr = rmDir(path.join(process.cwd(), workingDir));
     }
 
-    if (!cleanupErr) {
+    if (cleanupErr) {
       console.log(`Error when deleting temporary files on ${isSubModule ? 'module' : 'folder'} ${workingDir}.`);
     }
   }
