@@ -39,7 +39,7 @@ function parseContent(md) {
 
   // Identify each part of the content
   parts.forEach(section => {
-    const levelRegex = /^(##\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s+(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
+    const levelRegex = /^(##\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s*(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
     const stepRegex = /^(###\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
 
     const levelMatch = section.match(levelRegex);
