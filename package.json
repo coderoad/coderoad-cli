@@ -1,6 +1,6 @@
 {
   "name": "@coderoad/cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A CLI to build the configuration file for Coderoad Tutorials",
   "main": "src/main.js",
   "bin": {
