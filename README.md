@@ -12,7 +12,7 @@ Command line interface for [CodeRoad](https://marketplace.visualstudio.com/items
 Use CodeRoad CLI to set up and build a tutorial configuration file.
 
 ```shell
-npm install -g coderoad-cli
+npm install -g @coderoad/cli
 ```
 
 ## Create
