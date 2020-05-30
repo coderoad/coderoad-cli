@@ -144,4 +144,41 @@ levels:
     };
     expect(result.levels[0].summary).toMatch(/\.\.\.$/);
   });
+
+  it("should match line breaks with double line breaks for proper spacing", () => {
+    const md = `# Title
+    
+Description.
+
+Second description line
+
+## L1 Titles
+
+First line
+
+Second line
+
+Third line
+`;
+
+    const yaml = `version: "0.1.0"
+levels:
+- id: L1
+`;
+    const result = parse(md, yaml);
+    const expected = {
+      summary: {
+        description: "Description.\n\nSecond description line",
+      },
+      levels: [
+        {
+          id: "L1",
+          summary: "Some text that becomes the summary",
+          content: "First line\n\nSecond line\n\nThird line",
+        },
+      ],
+    };
+    expect(result.summary.description).toBe(expected.summary.description);
+    expect(result.levels[0].content).toBe(expected.levels[0].content);
+  });
 });
