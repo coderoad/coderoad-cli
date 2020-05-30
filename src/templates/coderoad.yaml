@@ -2,16 +2,7 @@
 # This is a YAML-formatted file.
 ## Your personal version of the tutorial
 ##
-version: '0.1.0'
-## Data used to populate the tutorial summary page
-##
-summary:
-  ## The title of your tutorial. Required.
-  ##
-  title: ''
-  ## A description of your tutorial. Required.
-  ##
-  description: ''
+version: "0.1.0"
 ## Data used to configure and setup the tutorial
 ##
 config:
@@ -32,13 +23,15 @@ config:
     setup:
       ## A list of commits to load to setup the tutorial
       commits: []
-        # - commit1
-        # - commit2
+      # - commit1
+      # - commit2
       ## A list of commands to run to configure the tutorial
-      commands: []
+      commands:
+        []
         # - npm install
     ## App versions helps to ensure compatability with the Extension
-    appVersions: {}
+    appVersions:
+      {}
       ## Ensure compatability with a minimal VSCode CodeRoad version
       # vscode: '>=0.7.0'
   ## Repo information to load code from
@@ -46,14 +39,15 @@ config:
   repo:
     ## The uri path to the repo containing the code commits. Required.
     ##
-    uri: ''
+    uri: ""
     ## The branch on the repo uri that contains the code commits. Required.
-    branch: ''
-  
+    branch: ""
+
   ## A list of tutorial dependencies to ensure the environment is setup for the tutorial. Optional.
   ## The dependencies will be checked by running `dependency.name` --version and comparing it to the version provided.
   ##
-  dependencies: []
+  dependencies:
+    []
     ## The name of the dependency
     # - name: node
     #   ## The version requirement. See https://github.com/npm/node-semver for options.
@@ -69,16 +63,17 @@ levels:
         setup:
           ## Files to open in a text editor when the task loads. Optional.
           files: []
-            # - package.json
+          # - package.json
           ## Commits to load when the task loads. These should include failing tests. Required.
           ## The list will be filled by the parser
-          commits: []
+          commits:
+            []
             # - a commit hash
         ## Solution for the first task. Required.
         solution:
           ## Files to open when the solution loads. Optional.
           files: []
-            # - package.json
+          # - package.json
           ## Commits that complete the task. All tests should pass when the commits load. These commits will not be loaded by the tutorial user in normal tutorial activity.
           ## The list will be filled by the parser
           commits: []
@@ -117,10 +112,9 @@ levels:
             - commit8
           commands:
             ## A filter is a regex that limits the test results
-            - filter: '^Example 2'
+            - filter: "^Example 2"
             ## A feature that shows subtasks: all filtered active test names and the status of the tests (pass/fail).
             - subtasks: true
         solution:
           commits:
             - commit9
-            

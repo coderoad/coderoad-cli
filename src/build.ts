@@ -3,83 +3,13 @@ import * as path from "path";
 import * as _ from "lodash";
 import * as fs from "fs";
 import * as T from "../typings/tutorial";
+import { parse } from "./utils/parse";
 // import validate from './validator';
 
 // import not working
 const simpleGit = require("simple-git/promise");
 
 const workingDir = "tmp";
-
-type TutorialContent = {};
-
-export function parseContent(md: string): TutorialContent {
-  let start: number = -1;
-  const parts: any[] = [];
-
-  const lines = md.split("\n");
-
-  // Split the multiple parts - This way enables the creator to use 4/5 level headers inside the content.
-  lines.forEach((line, index) => {
-    if (line.match(/#{1,3}\s/) || index === lines.length - 1) {
-      if (start !== -1) {
-        parts.push(lines.slice(start, index).join("\n"));
-        start = index;
-      } else {
-        start = index;
-      }
-    }
-  });
-
-  const sections = {};
-
-  // Identify and remove the header
-  const summaryMatch = parts
-    .shift()
-    .match(/^#\s(?<tutorialTitle>.*)[\n\r]+(?<tutorialDescription>[^]*)/);
-
-  sections["summary"] = {
-    title: summaryMatch.groups.tutorialTitle.trim(),
-    description: summaryMatch.groups.tutorialDescription.trim(),
-  };
-
-  // Identify each part of the content
-  parts.forEach((section) => {
-    const levelRegex = /^(##\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s*(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
-    const stepRegex = /^(###\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
-
-    const levelMatch = section.match(levelRegex);
-    const stepMatch = section.match(stepRegex);
-
-    if (levelMatch) {
-      const level = {
-        [levelMatch.groups.levelId]: {
-          id: levelMatch.groups.levelId,
-          title: levelMatch.groups.levelTitle,
-          summary: levelMatch.groups.levelSummary.trim(),
-          content: levelMatch.groups.levelContent.trim(),
-        },
-      };
-
-      _.merge(sections, level);
-    } else if (stepMatch) {
-      const step = {
-        [stepMatch.groups.levelId]: {
-          steps: {
-            [stepMatch.groups.stepId]: {
-              id: stepMatch.groups.stepId,
-              // title: stepMatch.groups.stepTitle, //Not using at this momemnt
-              content: stepMatch.groups.stepContent.trim(),
-            },
-          },
-        },
-      };
-
-      _.merge(sections, step);
-    }
-  });
-
-  return sections;
-}
 
 function rmDir(dir: string, rmSelf = false) {
   try {
@@ -164,32 +94,10 @@ async function build({ repo, codeBranch, setupBranch, isLocal }: BuildOptions) {
   await git.checkout(setupBranch);
 
   // Load files
-  const _mdContent = fs.readFileSync(
-    path.join(localPath, "TUTORIAL.md"),
-    "utf8"
-  );
-  let _tutorial = fs.readFileSync(
-    path.join(localPath, "coderoad.yaml"),
-    "utf8"
-  );
+  const _content = fs.readFileSync(path.join(localPath, "TUTORIAL.md"), "utf8");
+  let _config = fs.readFileSync(path.join(localPath, "coderoad.yaml"), "utf8");
 
-  // Add one more line to the content as per Shawn's request
-  const mdContent: any = parseContent(_mdContent);
-
-  // Parse tutorial to JSON
-  const tutorial: T.Tutorial = yamlParser.load(_tutorial);
-
-  // Add the summary to the tutorial file
-  tutorial.summary = mdContent.summary;
-
-  // merge content and tutorial
-  tutorial.levels.forEach((level: T.Level) => {
-    const { steps, ...content } = mdContent[level.id];
-
-    level.steps.forEach((step: T.Step) => _.merge(step, steps[step.id]));
-
-    _.merge(level, content);
-  });
+  const tutorial = parse(_content, _config);
 
   // Checkout the code branches
   await git.checkout(codeBranch);
