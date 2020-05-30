@@ -4,7 +4,8 @@
     "source.organizeImports": false,
     "source.fixAll": true
   },
-  "eslint.validate": ["javascript"],
+  "eslint.validate": ["javascript", "typescript"],
   "files.exclude": {},
-  "git.alwaysSignOff": true
+  "git.alwaysSignOff": true,
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }

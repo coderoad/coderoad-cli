@@ -26,5 +26,12 @@
     "ncp": "^2.0.0",
     "npc": "0.0.1",
     "simple-git": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/inquirer": "^6.5.0",
+    "@types/js-yaml": "^3.12.4",
+    "@types/lodash": "^4.14.154",
+    "@types/ncp": "^2.0.4",
+    "typescript": "^3.9.3"
   }
 }
