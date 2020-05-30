@@ -53,12 +53,20 @@ export function parseMdContent(md: string): TutorialFrame | never {
     const stepMatch = section.match(stepRegex);
 
     if (levelMatch) {
+      const {
+        levelId,
+        levelTitle,
+        levelSummary,
+        levelContent,
+      } = levelMatch.groups;
       const level = {
-        [levelMatch.groups.levelId]: {
-          id: levelMatch.groups.levelId,
-          title: levelMatch.groups.levelTitle,
-          summary: levelMatch.groups.levelSummary.trim(),
-          content: levelMatch.groups.levelContent.trim(),
+        [levelId]: {
+          id: levelId,
+          title: levelTitle,
+          summary: levelSummary
+            ? levelSummary.trim()
+            : _.truncate(levelContent, { length: 80, omission: "..." }),
+          content: levelContent.trim(),
         },
       };
 
