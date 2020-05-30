@@ -181,4 +181,66 @@ levels:
     expect(result.summary.description).toBe(expected.summary.description);
     expect(result.levels[0].content).toBe(expected.levels[0].content);
   });
+
+  it("should parse the tutorial config", () => {
+    const md = `# Title
+    
+Description.
+`;
+    const yaml = `
+config:
+  testRunner:
+    command: ./node_modules/.bin/mocha
+    args:
+      filter: --grep
+      tap: --reporter=mocha-tap-reporter
+    directory: coderoad
+    setup:
+      commits:
+      - abcdefg1
+      commands: []
+  appVersions:
+    vscode: '>=0.7.0'
+  repo:
+    uri: https://path.to/repo
+    branch: aBranch
+  dependencies:
+    - name: node
+      version: '>=10'
+`;
+    const result = parse(md, yaml);
+    const expected = {
+      summary: {
+        description: "Description.\n\nSecond description line",
+      },
+      config: {
+        testRunner: {
+          command: "./node_modules/.bin/mocha",
+          args: {
+            filter: "--grep",
+            tap: "--reporter=mocha-tap-reporter",
+          },
+          directory: "coderoad",
+          setup: {
+            commits: ["abcdefg1"],
+            commands: [],
+          },
+        },
+        repo: {
+          uri: "https://path.to/repo",
+          branch: "aBranch",
+        },
+        dependencies: [
+          {
+            name: "node",
+            version: ">=10",
+          },
+        ],
+        appVersions: {
+          vscode: ">=0.7.0",
+        },
+      },
+    };
+    expect(result.config).toEqual(expected.config);
+  });
 });

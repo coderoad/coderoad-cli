@@ -29,11 +29,11 @@ config:
       commands:
         []
         # - npm install
-    ## App versions helps to ensure compatability with the Extension
-    appVersions:
-      {}
-      ## Ensure compatability with a minimal VSCode CodeRoad version
-      # vscode: '>=0.7.0'
+  ## App versions helps to ensure compatability with the Extension
+  appVersions:
+    {}
+    ## Ensure compatability with a minimal VSCode CodeRoad version
+    # vscode: '>=0.7.0'
   ## Repo information to load code from
   ##
   repo:
