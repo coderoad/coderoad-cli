@@ -63,7 +63,7 @@ async function promptForMissingOptions(options) {
       questions.push({
         type: 'input',
         name: 'localGit',
-        message: 'Please, provide a directory of the valid git repository: ',
+        message: 'Please, provide a local directory of the valid git repository: ',
         when: (answers) => answers.source === localGit,
       });
 
@@ -80,7 +80,7 @@ async function promptForMissingOptions(options) {
     questions.push({
       type: 'list',
       name: 'source',
-      message: 'It was provided both a local git directory and a remote address. Please, choose either one or those to parse: ',
+      message: 'A local git directory and a remote address were both provided. Please, choose either one or those to parse: ',
       choices: [localGit, remoteGit],
       default: localGit,
     });
@@ -89,7 +89,7 @@ async function promptForMissingOptions(options) {
   // if the branch containing the code is not provided
   if (!options.codeBranch) {
     questions.push({
-      type: 'imput',
+      type: 'input',
       name: 'codeBranch',
       message: 'Please, provide the branch with the code commits: ',
     });
@@ -98,7 +98,7 @@ async function promptForMissingOptions(options) {
   // if the branch containing the setup files is not provided
   if (!options.setupBranch) {
     questions.push({
-      type: 'imput',
+      type: 'input',
       name: 'setupBranch',
       message: 'Please, provide the branch with the setup files (coderoad.yaml and tutorial.md): ',
     });
@@ -132,10 +132,10 @@ export async function cli(args) {
   
   // If help called just print the help text and exit
   if (options.help) {
-    console.log('Docs can be found at github: https://github.com/coderoad/builder-cli/');
+    console.log('Docs can be found at github: https://github.com/coderoad/coderoad-cli/');
   }
   else if (!options.command) {
-    console.log(`The command is missing. Chose either 'create' or 'build' and its options.`)
+    console.log(`The command is missing. Choose either 'create' or 'build' and its options.`)
   } 
   else {
     switch (options.command) {
