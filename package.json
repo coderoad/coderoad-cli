@@ -11,7 +11,9 @@
     "access": "public"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "del-cli --force ./build && npm run compile",
+    "compile": "tsc",
+    "test": "jest"
   },
   "keywords": [],
   "author": "Argemiro Neto",
@@ -28,10 +30,19 @@
     "simple-git": "^2.5.0"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "^7.10.1",
     "@types/inquirer": "^6.5.0",
+    "@types/jest": "^25.2.3",
     "@types/js-yaml": "^3.12.4",
     "@types/lodash": "^4.14.154",
     "@types/ncp": "^2.0.4",
+    "del-cli": "^3.0.1",
+    "jest": "^26.0.1",
+    "ts-jest": "^26.0.0",
     "typescript": "^3.9.3"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   }
 }

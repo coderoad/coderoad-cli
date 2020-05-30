@@ -1,11 +1,11 @@
-import ncp from "ncp";
-import path from "path";
+import * as ncp from "ncp";
+import * as path from "path";
 import { promisify } from "util";
 import * as os from "os";
 
 const copy = promisify(ncp);
 
-const copyFiles = async (filePath) => {
+const copyFiles = async (filePath: string) => {
   try {
     let filePath = new URL(import.meta.url).pathname;
 
@@ -27,4 +27,6 @@ const copyFiles = async (filePath) => {
   }
 };
 
-export default copyFiles;
+const create = copyFiles;
+
+export default create;

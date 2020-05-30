@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "esnext",
     "target": "es2018",
     "outDir": "build",
     "lib": ["es2018", "dom"],
@@ -19,7 +19,8 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "allowJs": true,
-    "removeComments": true
+    "removeComments": true,
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", ".vscode", "bin", "build", "test"]
 }

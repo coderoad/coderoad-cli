@@ -1,14 +1,35 @@
 import arg from "arg";
-import inquirer from "inquirer";
+import * as inquirer from "inquirer";
 import simpleGit from "simple-git/promise";
-import build from "./parse";
+import * as fs from "fs";
+import * as T from "../typings/tutorial";
+import build, { BuildOptions } from "./build";
 import create from "./create";
-import fs from "fs";
+
+type Q = inquirer.Question<any> & { choices?: string[] };
+
+type ParsedArgs = {
+  command: string;
+  git?: string;
+  dir?: string;
+  codeBranch: string;
+  setupBranch: string;
+  output?: string;
+  help: string;
+};
+
+type Options = {
+  repo: string;
+  setupBranch: string;
+  codeBranch: string;
+  output: string;
+  isLocal: boolean;
+};
 
 const localGit = "Local directory";
 const remoteGit = "Git remote address";
 
-function parseArgumentsIntoOptions(rawArgs) {
+function parseArgumentsIntoOptions(rawArgs: string[]): ParsedArgs {
   const args = arg(
     {
       "--git": String,
@@ -39,8 +60,8 @@ function parseArgumentsIntoOptions(rawArgs) {
   };
 }
 
-async function promptForMissingOptions(options) {
-  const questions = [];
+async function promptForMissingOptions(options: ParsedArgs): Promise<Options> {
+  const questions: Q[] = [];
 
   // if no git remote addres is provided, assume current folder
   if (!options.git && !options.dir) {
@@ -62,14 +83,14 @@ async function promptForMissingOptions(options) {
         name: "localGit",
         message:
           "Please, provide a local directory of the valid git repository: ",
-        when: (answers) => answers.source === localGit,
+        when: (input: any) => input.source === localGit,
       });
 
       questions.push({
         type: "input",
         name: "remoteGit",
         message: "Please, provide the address of a remote git repository: ",
-        when: (answers) => answers.source === remoteGit,
+        when: (input: any) => input.source === remoteGit,
       });
     }
   }
@@ -104,13 +125,13 @@ async function promptForMissingOptions(options) {
     });
   }
 
-  const answers = await inquirer.prompt(questions);
+  const answers: any = await inquirer.prompt(questions);
 
-  let repo;
-  let isLocal;
+  let repo: string;
+  let isLocal: boolean;
 
   if (answers.source) {
-    repo = answers.source === localGit ? options.dir : options.git;
+    repo = (answers.source === localGit ? options.dir : options.git) || "";
     isLocal = answers.source === localGit;
   } else {
     repo = options.dir || options.git || process.cwd();
@@ -121,43 +142,43 @@ async function promptForMissingOptions(options) {
     repo,
     setupBranch: options.setupBranch || answers.setupBranch,
     codeBranch: options.codeBranch || answers.codeBranch,
-    output: options.output,
+    output: options.output || ".",
     isLocal,
   };
 }
 
-export async function cli(args) {
-  let options = parseArgumentsIntoOptions(args);
+export async function cli(args: string[]) {
+  let parsedArgs: ParsedArgs = parseArgumentsIntoOptions(args);
 
   // If help called just print the help text and exit
-  if (options.help) {
+  if (parsedArgs.help) {
     console.log(
       "Docs can be found at github: https://github.com/coderoad/coderoad-cli/"
     );
-  } else if (!options.command) {
+  } else if (!parsedArgs.command) {
     console.log(
       `The command is missing. Choose either 'create' or 'build' and its options.`
     );
   } else {
-    switch (options.command) {
+    switch (parsedArgs.command) {
       case "build":
         // Otherwise, continue with the other options
-        options = await promptForMissingOptions(options);
+        const options: BuildOptions = await promptForMissingOptions(parsedArgs);
         console.log(options);
-        const config = await build(options);
+        const tutorial: T.Tutorial = await build(options);
 
-        if (config) {
+        if (tutorial) {
           if (options.output) {
-            fs.writeFileSync(options.output, JSON.stringify(config), "utf8");
+            fs.writeFileSync(options.output, JSON.stringify(tutorial), "utf8");
           } else {
-            console.log(JSON.stringify(config, null, 2));
+            console.log(JSON.stringify(tutorial, null, 2));
           }
         }
-        break;
+        return;
 
       case "create":
         create(process.cwd());
-        break;
+        return;
     }
   }
 }

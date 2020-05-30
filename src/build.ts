@@ -1,15 +1,18 @@
 import simpleGit from "simple-git/promise";
-import yamlParser from "js-yaml";
-import path from "path";
-import _ from "lodash";
-import fs from "fs";
+import * as yamlParser from "js-yaml";
+import * as path from "path";
+import * as _ from "lodash";
+import * as fs from "fs";
+import * as T from "../typings/tutorial";
 // import validate from './validator';
 
 const workingDir = "tmp";
 
-function parseContent(md) {
-  let start = -1;
-  const parts = [];
+type TutorialContent = {};
+
+function parseContent(md: string): TutorialContent {
+  let start: number = -1;
+  const parts: any[] = [];
 
   const lines = md.split("\n");
 
@@ -76,7 +79,7 @@ function parseContent(md) {
   return sections;
 }
 
-function rmDir(dir, rmSelf) {
+function rmDir(dir: string, rmSelf = false) {
   try {
     let files;
     rmSelf = rmSelf === undefined ? true : rmSelf;
@@ -89,11 +92,11 @@ function rmDir(dir, rmSelf) {
     }
 
     if (files.length > 0) {
-      files.forEach(function (x, i) {
-        if (fs.statSync(path.join(dir, x)).isDirectory()) {
-          rmDir(path.join(dir, x));
+      files.forEach(function (filePath: string) {
+        if (fs.statSync(path.join(dir, filePath)).isDirectory()) {
+          rmDir(path.join(dir, filePath));
         } else {
-          fs.unlinkSync(path.join(dir, x));
+          fs.unlinkSync(path.join(dir, filePath));
         }
       });
     }
@@ -107,7 +110,7 @@ function rmDir(dir, rmSelf) {
   }
 }
 
-async function cleanupFiles(workingDir) {
+async function cleanupFiles(workingDir: string) {
   try {
     const gitModule = simpleGit(process.cwd());
 
@@ -121,17 +124,18 @@ async function cleanupFiles(workingDir) {
   }
 }
 
-/**
- *
- * @param {string} repo Git url to the repo. It should finish with .git
- * @param {string} codeBranch The branch containing the tutorial code
- * @param {string} setupBranch The branch containing the configuration files
- * @param {string} isLocal define if the repo is local or remote
- */
-async function build({ repo, codeBranch, setupBranch, isLocal }) {
-  let git;
+export type BuildOptions = {
+  repo: string; // Git url to the repo. It should finish with .git
+  codeBranch: string; // The branch containing the tutorial code
+  setupBranch: string; // The branch containing the tutorialuration files
+  isLocal: boolean; // define if the repo is local or remote
+  output: string;
+};
+
+async function build({ repo, codeBranch, setupBranch, isLocal }: BuildOptions) {
+  let git: any;
   let isSubModule = false;
-  let localPath;
+  let localPath: string;
 
   if (isLocal) {
     git = simpleGit(repo);
@@ -154,7 +158,7 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
 
   await git.fetch();
 
-  // checkout the branch to load configuration and content branch
+  // checkout the branch to load tutorialuration and content branch
   await git.checkout(setupBranch);
 
   // Load files
@@ -162,22 +166,27 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
     path.join(localPath, "TUTORIAL.md"),
     "utf8"
   );
-  let _config = fs.readFileSync(path.join(localPath, "coderoad.yaml"), "utf8");
+  let _tutorial = fs.readFileSync(
+    path.join(localPath, "coderoad.yaml"),
+    "utf8"
+  );
 
   // Add one more line to the content as per Shawn's request
-  const mdContent = parseContent(_mdContent);
+  const mdContent: any = parseContent(_mdContent);
 
-  // Parse config to JSON
-  const config = yamlParser.load(_config);
+  console.log(mdContent);
 
-  // Add the summary to the config file
-  config["summary"] = mdContent.summary;
+  // Parse tutorial to JSON
+  const tutorial: T.Tutorial = yamlParser.load(_tutorial);
 
-  // merge content and config
-  config.levels.forEach((level) => {
+  // Add the summary to the tutorial file
+  tutorial.summary = mdContent.summary;
+
+  // merge content and tutorial
+  tutorial.levels.forEach((level: T.Level) => {
     const { steps, ...content } = mdContent[level.id];
 
-    level.steps.forEach((step) => _.merge(step, steps[step.id]));
+    level.steps.forEach((step: T.Step) => _.merge(step, steps[step.id]));
 
     _.merge(level, content);
   });
@@ -200,29 +209,50 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
       // Uses a set to make sure only the latest commit is proccessed
       parts.add(matches[0]);
 
-      // Add the content and git hash to the config
+      // Add the content and git hash to the tutorial
       if (matches.groups.stepId) {
         // If it's a step: add the content and the setup/solution hashes depending on the type
-        const theStep = config.levels
-          .find((level) => level.id === matches.groups.levelId)
-          .steps.find((step) => step.id === matches.groups.stepId);
+        const level: T.Level | null =
+          tutorial.levels.find(
+            (level: T.Level) => level.id === matches.groups.levelId
+          ) || null;
+        if (!level) {
+          console.log(`Level ${matches.groups.levelId} not found`);
+        } else {
+          const theStep: T.Step | null =
+            level.steps.find(
+              (step: T.Step) => step.id === matches.groups.stepId
+            ) || null;
 
-        if (matches.groups.stepType === "Q") {
-          theStep.setup.commits.push(commit.hash.substr(0, 7));
-        } else if (
-          matches.groups.stepType === "A" &&
-          theStep.solution.commits
-        ) {
-          theStep.solution.commits.push(commit.hash.substr(0, 7));
+          if (!theStep) {
+            console.log(`Step ${matches.groups.stepId} not found`);
+          } else {
+            if (matches.groups.stepType === "Q") {
+              theStep.setup.commits.push(commit.hash.substr(0, 7));
+            } else if (
+              matches.groups.stepType === "A" &&
+              theStep.solution &&
+              theStep.solution.commits
+            ) {
+              theStep.solution.commits.push(commit.hash.substr(0, 7));
+            }
+          }
         }
       } else {
-        // If it's level: add the commit hash (if the level has the commit key) and the content to the config
-        const theLevel = config.levels.find(
-          (level) => level.id === matches.groups.levelId
-        );
+        // If it's level: add the commit hash (if the level has the commit key) and the content to the tutorial
+        const theLevel: T.Level | null =
+          tutorial.levels.find(
+            (level: T.Level) => level.id === matches.groups.levelId
+          ) || null;
 
-        if (_.has(theLevel, "config.commits")) {
-          theLevel.setup.commits.push(commit.hash.substr(0, 7));
+        if (!theLevel) {
+          console.log(`Level ${matches.groups.levelId} not found`);
+        } else {
+          if (_.has(theLevel, "tutorial.commits")) {
+            if (theLevel.setup) {
+              theLevel.setup.commits.push(commit.hash.substr(0, 7));
+            }
+          }
         }
       }
     }
@@ -247,14 +277,14 @@ async function build({ repo, codeBranch, setupBranch, isLocal }) {
     }
   }
 
-  // const isValid = validate(config);
+  // const isValid = validate(tutorial);
 
   // if (!isValid) {
   //   console.log(JSON.stringify(validate.errors, null, 2));
   //   return;
   // }
 
-  return config;
+  return tutorial;
 }
 
 export default build;
