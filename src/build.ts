@@ -1,10 +1,12 @@
-import simpleGit from "simple-git/promise";
 import * as yamlParser from "js-yaml";
 import * as path from "path";
 import * as _ from "lodash";
 import * as fs from "fs";
 import * as T from "../typings/tutorial";
 // import validate from './validator';
+
+// import not working
+const simpleGit = require("simple-git/promise");
 
 const workingDir = "tmp";
 
@@ -173,8 +175,6 @@ async function build({ repo, codeBranch, setupBranch, isLocal }: BuildOptions) {
 
   // Add one more line to the content as per Shawn's request
   const mdContent: any = parseContent(_mdContent);
-
-  console.log(mdContent);
 
   // Parse tutorial to JSON
   const tutorial: T.Tutorial = yamlParser.load(_tutorial);

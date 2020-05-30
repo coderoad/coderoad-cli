@@ -1,5 +1,4 @@
 import * as inquirer from "inquirer";
-import simpleGit from "simple-git/promise";
 import * as fs from "fs";
 import * as T from "../typings/tutorial";
 import build, { BuildOptions } from "./build";
@@ -7,6 +6,7 @@ import create from "./create";
 
 // import not working
 const arg = require("arg");
+const simpleGit = require("simple-git/promise");
 
 type Q = inquirer.Question<any> & { choices?: string[] };
 
@@ -51,7 +51,6 @@ function parseArgumentsIntoOptions(rawArgs: string[]): ParsedArgs {
       argv: rawArgs.slice(2),
     }
   );
-  console.log(args);
   return {
     command: args["_"][0],
     git: args["--git"],
@@ -169,7 +168,6 @@ export async function cli(args: string[]): Promise<void> {
       case "build":
         // Otherwise, continue with the other options
         const options: BuildOptions = await promptForMissingOptions(parsedArgs);
-        console.log(options);
         const tutorial: T.Tutorial = await build(options);
 
         if (tutorial) {
@@ -182,7 +180,6 @@ export async function cli(args: string[]): Promise<void> {
         break;
 
       case "create":
-        console.log("here");
         create(process.cwd());
         break;
     }
