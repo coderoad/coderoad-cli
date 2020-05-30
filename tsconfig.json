@@ -22,5 +22,5 @@
     "removeComments": true,
     "skipLibCheck": true
   },
-  "exclude": [".vscode", "bin", "build", "test"]
+  "exclude": ["node_modules", ".vscode", "bin", "build", "tests"]
 }

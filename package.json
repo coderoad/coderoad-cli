@@ -43,6 +43,13 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node"
+    "verbose": true,
+    "testPathIgnorePatterns": [
+      "build"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "ts"
+    ]
   }
 }
