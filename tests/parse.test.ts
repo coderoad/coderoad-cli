@@ -19,7 +19,7 @@ describe("parse", () => {
     expect(result.summary).toEqual(expected.summary);
   });
 
-  it("should parse a level with a summary", () => {
+  it("should parse a level with no steps", () => {
     const md = `# Title
     
 Description.
@@ -44,6 +44,45 @@ levels:
           summary:
             "Level's summary: a short description of the level's content in one line.",
           content: "Some text",
+        },
+      ],
+    };
+    expect(result.levels).toEqual(expected.levels);
+  });
+
+  it("should parse a level with a step", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Put Level's title here
+
+> Level's summary: a short description of the level's content in one line.
+
+Some text
+`;
+
+    const yaml = `version: "0.1.0"
+levels:
+- id: L1
+  setup:
+    files: []
+    commits: []
+  solution:
+    files: []
+    commits: []
+`;
+    const result = parse(md, yaml);
+    const expected = {
+      levels: [
+        {
+          id: "L1",
+          title: "Put Level's title here",
+          summary:
+            "Level's summary: a short description of the level's content in one line.",
+          content: "Some text",
+          setup: { files: [], commits: [] },
+          solution: { files: [], commits: [] },
         },
       ],
     };
