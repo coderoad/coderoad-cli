@@ -12,7 +12,7 @@ const workingDir = "tmp";
 
 type TutorialContent = {};
 
-function parseContent(md: string): TutorialContent {
+export function parseContent(md: string): TutorialContent {
   let start: number = -1;
   const parts: any[] = [];
 
