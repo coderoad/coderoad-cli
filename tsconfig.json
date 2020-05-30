@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es2018",
     "outDir": "build",
     "lib": ["es2018", "dom"],
@@ -22,5 +22,5 @@
     "removeComments": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", ".vscode", "bin", "build", "test"]
+  "exclude": [".vscode", "bin", "build", "test"]
 }

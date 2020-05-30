@@ -1,10 +1,12 @@
-import arg from "arg";
 import * as inquirer from "inquirer";
 import simpleGit from "simple-git/promise";
 import * as fs from "fs";
 import * as T from "../typings/tutorial";
 import build, { BuildOptions } from "./build";
 import create from "./create";
+
+// import not working
+const arg = require("arg");
 
 type Q = inquirer.Question<any> & { choices?: string[] };
 
@@ -49,18 +51,21 @@ function parseArgumentsIntoOptions(rawArgs: string[]): ParsedArgs {
       argv: rawArgs.slice(2),
     }
   );
+  console.log(args);
   return {
     command: args["_"][0],
     git: args["--git"],
     dir: args["--dir"],
     codeBranch: args["--code"],
     setupBranch: args["--setup"],
-    output: args["--output"],
+    output: args["--output"] || "./config.json",
     help: args["--help"] || false,
   };
 }
 
-async function promptForMissingOptions(options: ParsedArgs): Promise<Options> {
+export async function promptForMissingOptions(
+  options: ParsedArgs
+): Promise<Options> {
   const questions: Q[] = [];
 
   // if no git remote addres is provided, assume current folder
@@ -147,7 +152,7 @@ async function promptForMissingOptions(options: ParsedArgs): Promise<Options> {
   };
 }
 
-export async function cli(args: string[]) {
+export async function cli(args: string[]): Promise<void> {
   let parsedArgs: ParsedArgs = parseArgumentsIntoOptions(args);
 
   // If help called just print the help text and exit
@@ -174,11 +179,12 @@ export async function cli(args: string[]) {
             console.log(JSON.stringify(tutorial, null, 2));
           }
         }
-        return;
+        break;
 
       case "create":
+        console.log("here");
         create(process.cwd());
-        return;
+        break;
     }
   }
 }

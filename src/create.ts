@@ -1,21 +1,13 @@
 import * as ncp from "ncp";
 import * as path from "path";
 import { promisify } from "util";
-import * as os from "os";
 
 const copy = promisify(ncp);
 
-const copyFiles = async (filePath: string) => {
+const copyFiles = async (filePath: string): Promise<void> => {
   try {
-    let filePath = new URL(import.meta.url).pathname;
-
-    if (os.platform() === "win32") {
-      // removes the leading drive letter from the path
-      filePath = filePath.substr(3);
-    }
-
-    const templateDirectory = path.resolve(filePath, "..", "templates");
-
+    const pathToSrc = path.join(__dirname, "..", "src");
+    const templateDirectory = path.resolve(pathToSrc, "templates");
     const targetDirectory = process.cwd();
 
     await copy(templateDirectory, targetDirectory, {
