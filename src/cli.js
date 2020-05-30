@@ -1,76 +1,74 @@
-import arg from 'arg';
-import inquirer from 'inquirer';
-import simpleGit from 'simple-git/promise';
-import build from './parse';
-import create from './create';
-import fs from 'fs';
+import arg from "arg";
+import inquirer from "inquirer";
+import simpleGit from "simple-git/promise";
+import build from "./parse";
+import create from "./create";
+import fs from "fs";
 
-const localGit = 'Local directory';
-const remoteGit = 'Git remote address';
+const localGit = "Local directory";
+const remoteGit = "Git remote address";
 
 function parseArgumentsIntoOptions(rawArgs) {
   const args = arg(
     {
-      '--git': String,
-      '--dir': String,
-      '--code': String,
-      '--setup': String,
-      '--output': String,
-      '--help': Boolean,
-      '-g': '--git',
-      '-d': '--dir',
-      '-c': '--code',
-      '-s': '--setup',
-      '-o': '--output',
-      '-h': '--help',
+      "--git": String,
+      "--dir": String,
+      "--code": String,
+      "--setup": String,
+      "--output": String,
+      "--help": Boolean,
+      "-g": "--git",
+      "-d": "--dir",
+      "-c": "--code",
+      "-s": "--setup",
+      "-o": "--output",
+      "-h": "--help",
     },
     {
       argv: rawArgs.slice(2),
     }
   );
   return {
-    command: args['_'][0],
-    git: args['--git'],
-    dir: args['--dir'],
-    codeBranch: args['--code'],
-    setupBranch: args['--setup'],
-    output: args['--output'],
-    help: args['--help'] || false,
+    command: args["_"][0],
+    git: args["--git"],
+    dir: args["--dir"],
+    codeBranch: args["--code"],
+    setupBranch: args["--setup"],
+    output: args["--output"],
+    help: args["--help"] || false,
   };
 }
 
 async function promptForMissingOptions(options) {
-
   const questions = [];
 
   // if no git remote addres is provided, assume current folder
   if (!options.git && !options.dir) {
-
     // check if the current dir is a valid repo
     const git = simpleGit(process.cwd());
     const isRepo = await git.checkIsRepo();
 
     if (!isRepo) {
-
       questions.push({
-        type: 'list',
-        name: 'source',
+        type: "list",
+        name: "source",
         message: `The current directory (${process.cwd()}) is not a valid git repo. Would you like to provide a...`,
         choices: [localGit, remoteGit],
         default: localGit,
       });
 
       questions.push({
-        type: 'input',
-        name: 'localGit',
-        message: 'Please, provide a local directory of the valid git repository: ',
+        type: "input",
+        name: "localGit",
+        message:
+          "Please, provide a local directory of the valid git repository: ",
         when: (answers) => answers.source === localGit,
       });
 
       questions.push({
-        type: 'input',
-        name: 'remoteGit',
-        message: 'Please, provide the address of a remote git repository: ',
+        type: "input",
+        name: "remoteGit",
+        message: "Please, provide the address of a remote git repository: ",
         when: (answers) => answers.source === remoteGit,
       });
     }
@@ -78,9 +76,10 @@ async function promptForMissingOptions(options) {
   // if both local dir and remote repos are provided
   else if (options.git && options.dir) {
     questions.push({
-      type: 'list',
-      name: 'source',
-      message: 'A local git directory and a remote address were both provided. Please, choose either one or those to parse: ',
+      type: "list",
+      name: "source",
+      message:
+        "A local git directory and a remote address were both provided. Please, choose either one or those to parse: ",
       choices: [localGit, remoteGit],
       default: localGit,
     });
@@ -89,18 +88,19 @@ async function promptForMissingOptions(options) {
   // if the branch containing the code is not provided
   if (!options.codeBranch) {
     questions.push({
-      type: 'input',
-      name: 'codeBranch',
-      message: 'Please, provide the branch with the code commits: ',
+      type: "input",
+      name: "codeBranch",
+      message: "Please, provide the branch with the code commits: ",
     });
   }
 
   // if the branch containing the setup files is not provided
   if (!options.setupBranch) {
     questions.push({
-      type: 'input',
-      name: 'setupBranch',
-      message: 'Please, provide the branch with the setup files (coderoad.yaml and tutorial.md): ',
+      type: "input",
+      name: "setupBranch",
+      message:
+        "Please, provide the branch with the setup files (coderoad.yaml and tutorial.md): ",
     });
   }
 
@@ -112,8 +112,7 @@ async function promptForMissingOptions(options) {
   if (answers.source) {
     repo = answers.source === localGit ? options.dir : options.git;
     isLocal = answers.source === localGit;
-  }
-  else {
+  } else {
     repo = options.dir || options.git || process.cwd();
     isLocal = options.git ? false : true;
   }
@@ -129,17 +128,19 @@ async function promptForMissingOptions(options) {
 
 export async function cli(args) {
   let options = parseArgumentsIntoOptions(args);
-  
+
   // If help called just print the help text and exit
   if (options.help) {
-    console.log('Docs can be found at github: https://github.com/coderoad/coderoad-cli/');
-  }
-  else if (!options.command) {
-    console.log(`The command is missing. Choose either 'create' or 'build' and its options.`)
-  } 
-  else {
+    console.log(
+      "Docs can be found at github: https://github.com/coderoad/coderoad-cli/"
+    );
+  } else if (!options.command) {
+    console.log(
+      `The command is missing. Choose either 'create' or 'build' and its options.`
+    );
+  } else {
     switch (options.command) {
-      case 'build':
+      case "build":
         // Otherwise, continue with the other options
         options = await promptForMissingOptions(options);
         console.log(options);
@@ -147,15 +148,14 @@ export async function cli(args) {
 
         if (config) {
           if (options.output) {
-            fs.writeFileSync(options.output, JSON.stringify(config), 'utf8');
-          }
-          else {
+            fs.writeFileSync(options.output, JSON.stringify(config), "utf8");
+          } else {
             console.log(JSON.stringify(config, null, 2));
           }
         }
         break;
-      
-      case 'create':
+
+      case "create":
         create(process.cwd());
         break;
     }

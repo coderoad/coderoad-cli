@@ -18,15 +18,14 @@ npm install -g @coderoad/cli
 ## Create
 
 ```shell
-$ coderoad create
+coderoad create
 ```
 
 Create templates files in the current folder for the content and setup files.
 
-
 ## Build
 
-```
+```text
 $ coderoad build [options]
 
 options:
@@ -35,21 +34,21 @@ options:
   -d, --dir     Tutorial's local directory. Either --git or --dir should be provided.
   -c, --code    Branch that contains the code.
   -s, --setup   Branch that contains the TUTORIAL.md and coderoad.yaml files.
-  -o, --output  (Optional) Save the configuration in the output file. 
+  -o, --output  (Optional) Save the configuration in the output file.
                 Log into the console  if not set
   -h, --help    (Optional) Show the help message
-``` 
+```
 
 Build the configuration file to be used by the extension to run the tutorial. The configuration file is created by matching the `level` and `step` ids between the `TUTORIAL.md` and `coderoad.yaml` files against git commit messages with the same ids. For example:
 
-
 **TUTORIAL.md**
+
 ```markdown
 ...
+
 ## L10 This is a level with id = 10
 
 This level has two steps...
-
 
 ### L10S1 First step
 
@@ -61,8 +60,9 @@ The second step...
 ```
 
 **coderoad.yaml**
+
 ```yaml
-...
+---
 levels:
   - id: L10
     config: {}
@@ -98,7 +98,7 @@ levels:
 
 ... and the commit messages
 
-```
+```text
 commit 8e0e3a42ae565050181fdb68298114df21467a74 (HEAD -> v2, origin/v2)
 Author: creator <author@email.com>
 Date:   Sun May 3 16:16:01 2020 -0700
