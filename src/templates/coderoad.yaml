@@ -31,9 +31,8 @@ config:
         # - npm install
   ## App versions helps to ensure compatability with the Extension
   appVersions:
-    {}
     ## Ensure compatability with a minimal VSCode CodeRoad version
-    # vscode: '>=0.7.0'
+    vscode: ">=0.7.0"
   ## Repo information to load code from
   ##
   repo:
@@ -62,25 +61,16 @@ levels:
         ## Setup for the first task. Required.
         setup:
           ## Files to open in a text editor when the task loads. Optional.
-          files: []
-          # - package.json
-          ## Commits to load when the task loads. These should include failing tests. Required.
-          ## The list will be filled by the parser
-          commits:
-            []
-            # - a commit hash
+          files:
+            - package.json
         ## Solution for the first task. Required.
         solution:
           ## Files to open when the solution loads. Optional.
-          files: []
-          # - package.json
-          ## Commits that complete the task. All tests should pass when the commits load. These commits will not be loaded by the tutorial user in normal tutorial activity.
-          ## The list will be filled by the parser
-          commits: []
+          files:
+            - package.json
       ## Example Two: Running commands
       - id: L1S2
         setup:
-          commits: []
           ## CLI commands that are run when the task loads. Optional.
           commands:
             - npm install
@@ -94,8 +84,6 @@ levels:
         setup:
           files:
             - package.json
-          commits:
-            - commit7
           ## Listeners that run tests when a file or directory changes.
           watchers:
             - package.json
@@ -103,18 +91,11 @@ levels:
         solution:
           files:
             - package.json
-          commits:
-            - commit8
       ## Example Four: Subtasks
       - id: L1S4
         setup:
-          commits:
-            - commit8
           commands:
             ## A filter is a regex that limits the test results
             - filter: "^Example 2"
             ## A feature that shows subtasks: all filtered active test names and the status of the tests (pass/fail).
             - subtasks: true
-        solution:
-          commits:
-            - commit9

@@ -359,6 +359,74 @@ The first step
     expect(result.levels[0].setup).toEqual(expected.levels[0].setup);
   });
 
+  it("should load the full config for a step", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title
+
+First line
+
+### L1S1 Step
+
+The first step
+`;
+    const config = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+              setup: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        L1S1Q: ["abcdefg1", "123456789"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          summary: "First line",
+          content: "First line",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdefg1", "123456789"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels[0].steps[0]).toEqual(expected.levels[0].steps[0]);
+  });
+
   // config
   it("should parse the tutorial config", () => {
     const md = `# Title
