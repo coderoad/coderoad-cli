@@ -94,11 +94,11 @@ export function parseMdContent(md: string): TutorialFrame | never {
 
 type ParseParams = {
   text: string;
-  config: T.Tutorial;
+  config: Partial<T.Tutorial | any>;
   commits: CommitLogObject;
 };
 
-export function parse(params: ParseParams): T.Tutorial {
+export function parse(params: ParseParams): any {
   const parsed = { ...params.config };
 
   const mdContent: TutorialFrame = parseMdContent(params.text);
@@ -110,71 +110,53 @@ export function parse(params: ParseParams): T.Tutorial {
   if (parsed.levels) {
     parsed.levels.forEach((level: T.Level, levelIndex: number) => {
       const levelContent = mdContent[level.id];
+      console.log(levelContent);
       if (!levelContent) {
         console.log(`Markdown content not found for ${level.id}`);
         return;
       }
-      const { steps, ...content } = levelContent;
 
-      if (steps) {
-        steps.forEach((step: T.Step, stepIndex: number) => {
-          return _.merge(step, steps[step.id]);
+      // add level setup commits
+      const levelSetupKey = `L${levelIndex + 1}S`;
+      if (params.commits[levelSetupKey]) {
+        if (!level.setup) {
+          level.setup = {
+            commits: [],
+          };
+        }
+        level.setup.commits = params.commits[levelSetupKey];
+      }
+
+      // add level step commits
+      if (levelContent.steps) {
+        levelContent.steps.forEach((step: T.Step, stepIndex: number) => {
+          const stepSetupKey = `${levelSetupKey}S${stepIndex + `1`}Q`;
+          if (params.commits[stepSetupKey]) {
+            if (!step.setup) {
+              step.setup = {
+                commits: [],
+              };
+            }
+            step.setup.commits = params.commits[stepSetupKey];
+          }
+
+          const stepSolutionKey = `${levelSetupKey}S${stepIndex + `1`}A`;
+          if (params.commits[stepSolutionKey]) {
+            if (!step.solution) {
+              step.solution = {
+                commits: [],
+              };
+            }
+            step.solution.commits = params.commits[stepSolutionKey];
+          }
+
+          return _.merge(step, levelContent.steps[step.id]);
         });
       }
 
-      _.merge(level, content);
+      _.merge(level);
     });
   }
 
   return parsed;
 }
-
-/*
-// Add the content and git hash to the tutorial
-      if (matches.groups.stepId) {
-        // If it's a step: add the content and the setup/solution hashes depending on the type
-        const level: T.Level | null =
-          tutorial.levels.find(
-            (level: T.Level) => level.id === matches.groups.levelId
-          ) || null;
-        if (!level) {
-          console.log(`Level ${matches.groups.levelId} not found`);
-        } else {
-          const theStep: T.Step | null =
-            level.steps.find(
-              (step: T.Step) => step.id === matches.groups.stepId
-            ) || null;
-
-          if (!theStep) {
-            console.log(`Step ${matches.groups.stepId} not found`);
-          } else {
-            if (matches.groups.stepType === "Q") {
-              theStep.setup.commits.push(commit.hash.substr(0, 7));
-            } else if (
-              matches.groups.stepType === "A" &&
-              theStep.solution &&
-              theStep.solution.commits
-            ) {
-              theStep.solution.commits.push(commit.hash.substr(0, 7));
-            }
-          }
-        }
-      } else {
-        // If it's level: add the commit hash (if the level has the commit key) and the content to the tutorial
-        const theLevel: T.Level | null =
-          tutorial.levels.find(
-            (level: T.Level) => level.id === matches.groups.levelId
-          ) || null;
-
-        if (!theLevel) {
-          console.log(`Level ${matches.groups.levelId} not found`);
-        } else {
-          if (_.has(theLevel, "tutorial.commits")) {
-            if (theLevel.setup) {
-              theLevel.setup.commits.push(commit.hash.substr(0, 7));
-            }
-          }
-        }
-      }
-    }
-*/
