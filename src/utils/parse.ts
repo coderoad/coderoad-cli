@@ -59,6 +59,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
         levelSummary,
         levelContent,
       } = levelMatch.groups;
+
       const level = {
         [levelId]: {
           id: levelId,
@@ -110,14 +111,14 @@ export function parse(params: ParseParams): any {
   if (parsed.levels) {
     parsed.levels.forEach((level: T.Level, levelIndex: number) => {
       const levelContent = mdContent[level.id];
-      console.log(levelContent);
+
       if (!levelContent) {
         console.log(`Markdown content not found for ${level.id}`);
         return;
       }
 
       // add level setup commits
-      const levelSetupKey = `L${levelIndex + 1}S`;
+      const levelSetupKey = `L${levelIndex + 1}`;
       if (params.commits[levelSetupKey]) {
         if (!level.setup) {
           level.setup = {
@@ -127,9 +128,11 @@ export function parse(params: ParseParams): any {
         level.setup.commits = params.commits[levelSetupKey];
       }
 
+      const { steps, ...content } = levelContent;
+
       // add level step commits
-      if (levelContent.steps) {
-        levelContent.steps.forEach((step: T.Step, stepIndex: number) => {
+      if (steps) {
+        steps.forEach((step: T.Step, stepIndex: number) => {
           const stepSetupKey = `${levelSetupKey}S${stepIndex + `1`}Q`;
           if (params.commits[stepSetupKey]) {
             if (!step.setup) {
@@ -150,11 +153,11 @@ export function parse(params: ParseParams): any {
             step.solution.commits = params.commits[stepSolutionKey];
           }
 
-          return _.merge(step, levelContent.steps[step.id]);
+          return _.merge(step, steps[step.id]);
         });
       }
 
-      _.merge(level);
+      _.merge(level, content);
     });
   }
 

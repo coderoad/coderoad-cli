@@ -110,7 +110,7 @@ Description.
 Some text that becomes the summary
 `;
 
-    const config = { levels: [{ id: 1 }] };
+    const config = { levels: [{ id: "L1" }] };
     const result = parse({
       text: md,
       config,
