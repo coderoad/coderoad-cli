@@ -386,6 +386,10 @@ The first step
                 filter: "someFilter",
                 subtasks: true,
               },
+              solution: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+              },
             },
           ],
         },
@@ -396,6 +400,7 @@ The first step
       config,
       commits: {
         L1S1Q: ["abcdefg1", "123456789"],
+        L1S1A: ["1gfedcba", "987654321"],
       },
     });
     const expected = {
@@ -418,6 +423,11 @@ The first step
                 watchers: ["someFile.js"],
                 filter: "someFilter",
                 subtasks: true,
+              },
+              solution: {
+                commits: ["1gfedcba", "987654321"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
               },
             },
           ],
