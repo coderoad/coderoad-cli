@@ -69,7 +69,6 @@ export default {
               examples: ["coderoad"],
             },
             setup: {
-              type: "object",
               $ref: "#/definitions/setup_action",
               description:
                 "Setup commits or commands used for setting up the test runner on tutorial launch",
@@ -97,39 +96,40 @@ export default {
           additionalProperties: false,
           required: ["uri", "branch"],
         },
-      },
-      dependencies: {
-        type: "array",
-        description: "A list of tutorial dependencies",
-        items: {
-          type: "object",
-          properties: {
-            name: {
-              type: "string",
-              description:
-                "The command line process name of the dependency. It will be checked by running `name --version`",
-              examples: ["node", "python"],
+
+        dependencies: {
+          type: "array",
+          description: "A list of tutorial dependencies",
+          items: {
+            type: "object",
+            properties: {
+              name: {
+                type: "string",
+                description:
+                  "The command line process name of the dependency. It will be checked by running `name --version`",
+                examples: ["node", "python"],
+              },
+              version: {
+                type: "string",
+                description:
+                  "The version requirement. See https://github.com/npm/node-semver for options",
+                examples: [">=10"],
+              },
             },
-            version: {
-              type: "string",
-              description:
-                "The version requirement. See https://github.com/npm/node-semver for options",
-              examples: [">=10"],
-            },
+            required: ["name", "version"],
           },
-          required: ["name", "version"],
         },
-      },
-      appVersions: {
-        type: "object",
-        description:
-          "A list of compatable coderoad versions. Currently only a VSCode extension.",
-        properties: {
-          vscode: {
-            type: "string",
-            description:
-              "The version range for coderoad-vscode that this tutorial is compatable with",
-            examples: [">=0.7.0"],
+        appVersions: {
+          type: "object",
+          description:
+            "A list of compatable coderoad versions. Currently only a VSCode extension.",
+          properties: {
+            vscode: {
+              type: "string",
+              description:
+                "The version range for coderoad-vscode that this tutorial is compatable with",
+              examples: [">=0.7.0"],
+            },
           },
         },
       },
@@ -202,7 +202,7 @@ export default {
             },
           },
         },
-        required: ["title", "description", "content"],
+        required: ["title", "summary", "content"],
       },
       minItems: 1,
     },

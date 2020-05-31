@@ -6,6 +6,7 @@ import * as util from "util";
 import { parse } from "./utils/parse";
 import { getArg } from "./utils/args";
 import { getCommits, CommitLogObject } from "./utils/commits";
+import { validateSchema } from "./utils/validate";
 import * as T from "../typings/tutorial";
 
 const write = util.promisify(fs.writeFile);
@@ -58,7 +59,7 @@ async function build(args: string[]) {
   // path to run build from
   const localPath = path.join(process.cwd(), options.dir);
 
-  // load files
+  // load markdown and files
   let _markdown: string;
   let _yaml: string;
   try {
@@ -72,6 +73,7 @@ async function build(args: string[]) {
     return;
   }
 
+  // parse yaml config
   let config;
   try {
     config = yamlParser.load(_yaml);
@@ -80,6 +82,7 @@ async function build(args: string[]) {
     console.error(e.message);
   }
 
+  // load git commits to use in parse step
   let commits: CommitLogObject;
   try {
     commits = await getCommits({
@@ -92,7 +95,7 @@ async function build(args: string[]) {
     return;
   }
 
-  // Otherwise, continue with the other options
+  // parse tutorial from markdown and yaml
   let tutorial: T.Tutorial;
   try {
     tutorial = await parse({
@@ -106,11 +109,25 @@ async function build(args: string[]) {
     return;
   }
 
+  // validate tutorial based on json schema
+  try {
+    const valid = validateSchema(tutorial);
+    if (!valid) {
+      console.error("Tutorial validation failed. See above to see what to fix");
+      return;
+    }
+  } catch (e) {
+    console.error("Error validating tutorial schema:");
+    console.error(e.message);
+  }
+
+  // write tutorial
   if (tutorial) {
     try {
       await write(options.output, JSON.stringify(tutorial), "utf8");
+      console.info(`Success! See output at ${options.output}`);
     } catch (e) {
-      console.error("Error writing tutorial json:");
+      console.error("Error writing tutorial json file:");
       console.error(e.message);
     }
   }
