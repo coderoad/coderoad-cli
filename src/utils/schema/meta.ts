@@ -1,9 +1,9 @@
 export default {
   $schema: "http://json-schema.org/draft-07/schema#",
-  $id: "http://coderoad.io/tutorial_version.schema.json",
-  title: "Tutorial Version",
+  $id: "https://coderoad.io/tutorial-schema.json",
+  title: "Tutorial Schema",
   description:
-    "A CodeRoad tutorial version. This JSON data is converted into a tutorial with the CodeRoad editor extension",
+    "A CodeRoad tutorial schema data. This JSON data is converted into a tutorial with the CodeRoad editor extension",
   definitions: {
     semantic_version: {
       type: "string",
@@ -39,7 +39,7 @@ export default {
         "An array of files which will be opened by the editor when entering the level or step",
       items: {
         $ref: "#/definitions/file_path",
-        uniqueItems: true,
+        // uniqueItems: true,
       },
     },
     command_array: {
@@ -57,7 +57,7 @@ export default {
         "An array of git commits which will be loaded when the level/step or solution is loaded",
       items: {
         $ref: "#/definitions/sha1_hash",
-        uniqueItems: true,
+        // uniqueItems: true,
       },
       minItems: 1,
     },
@@ -79,7 +79,7 @@ export default {
           type: "array",
           items: {
             $ref: "#/definitions/file_path",
-            uniqueItems: true,
+            // uniqueItems: true,
           },
           description:
             "An array file paths that, when updated, will trigger the test runner to run",
