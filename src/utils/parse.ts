@@ -1,4 +1,3 @@
-import * as yamlParser from "js-yaml";
 import * as _ from "lodash";
 import * as T from "../../typings/tutorial";
 

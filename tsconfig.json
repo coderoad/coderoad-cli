@@ -20,7 +20,8 @@
     "emitDecoratorMetadata": true,
     "allowJs": true,
     "removeComments": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", ".vscode", "bin", "build", "tests"]
 }
