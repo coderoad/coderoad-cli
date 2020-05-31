@@ -7,12 +7,12 @@ const _info = console.info;
 
 console.error = function () {
   // @ts-ignore
-  _error(red.bold.apply(console, arguments));
+  _error(red.apply(console, arguments));
 };
 
 console.warn = function () {
   // @ts-ignore
-  _warn(yellow.bold.apply(console, arguments));
+  _warn(yellow.apply(console, arguments));
 };
 
 console.info = function () {
