@@ -1,3 +1,4 @@
+import "./utils/logs";
 import build from "./build";
 import create from "./create";
 
