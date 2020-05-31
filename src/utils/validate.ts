@@ -15,6 +15,7 @@ export function validateSchema(json: any): boolean | PromiseLike<boolean> {
 
   if (!valid) {
     // log errors
+    /* istanbul ignore next */
     if (process.env.NODE_ENV !== "test") {
       jsonSchema.errors?.forEach((error: JsonSchema.ErrorObject) => {
         console.warn(

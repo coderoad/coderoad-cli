@@ -609,6 +609,64 @@ The third step
     expect(result.levels).toEqual(expected.levels);
   });
 
+  it("should handle steps with no solution", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title 1
+
+First level content.
+
+### L1S1
+
+The first step
+
+`;
+    const config = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        L1S1Q: ["abcdefg1", "123456789"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          title: "Title 1",
+          summary: "First level content.",
+          content: "First level content.",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdefg1", "123456789"],
+              },
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels).toEqual(expected.levels);
+  });
+
   // config
   it("should parse the tutorial config", () => {
     const md = `# Title

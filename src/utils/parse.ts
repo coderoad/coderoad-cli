@@ -106,13 +106,12 @@ export function parse(params: ParseParams): any {
 
   // merge content and tutorial
   if (params.config.levels && params.config.levels.length) {
-    parsed.levels = params.config.levels.map(
-      (level: T.Level, levelIndex: number) => {
+    parsed.levels = params.config.levels
+      .map((level: T.Level, levelIndex: number) => {
         const levelContent = mdContent.levels[level.id];
 
         if (!levelContent) {
-          console.log(`Markdown content not found for ${level.id}`);
-          return;
+          return null;
         }
 
         level = { ...level, ...levelContent };
@@ -164,8 +163,8 @@ export function parse(params: ParseParams): any {
         );
 
         return level;
-      }
-    );
+      })
+      .filter((l: T.Level | null) => !!l);
   }
 
   return parsed;
