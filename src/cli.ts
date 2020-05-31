@@ -18,6 +18,7 @@ type ParsedArgs = {
   setupBranch: string;
   output?: string;
   help: string;
+  version?: string;
 };
 
 type Options = {
@@ -30,37 +31,6 @@ type Options = {
 
 const localGit = "Local directory";
 const remoteGit = "Git remote address";
-
-function parseArgumentsIntoOptions(rawArgs: string[]): ParsedArgs {
-  const args = arg(
-    {
-      "--git": String,
-      "--dir": String,
-      "--code": String,
-      "--setup": String,
-      "--output": String,
-      "--help": Boolean,
-      "-g": "--git",
-      "-d": "--dir",
-      "-c": "--code",
-      "-s": "--setup",
-      "-o": "--output",
-      "-h": "--help",
-    },
-    {
-      argv: rawArgs.slice(2),
-    }
-  );
-  return {
-    command: args["_"][0],
-    git: args["--git"],
-    dir: args["--dir"],
-    codeBranch: args["--code"],
-    setupBranch: args["--setup"],
-    output: args["--output"] || "./config.json",
-    help: args["--help"] || false,
-  };
-}
 
 export async function promptForMissingOptions(
   options: ParsedArgs
@@ -152,36 +122,36 @@ export async function promptForMissingOptions(
 }
 
 export async function cli(args: string[]): Promise<void> {
-  let parsedArgs: ParsedArgs = parseArgumentsIntoOptions(args);
+  const command: string = args[2];
 
-  // If help called just print the help text and exit
-  if (parsedArgs.help) {
-    console.log(
-      "Docs can be found at github: https://github.com/coderoad/coderoad-cli/"
-    );
-  } else if (!parsedArgs.command) {
-    console.log(
-      `The command is missing. Choose either 'create' or 'build' and its options.`
-    );
-  } else {
-    switch (parsedArgs.command) {
-      case "build":
-        // Otherwise, continue with the other options
-        const options: BuildOptions = await promptForMissingOptions(parsedArgs);
-        const tutorial: T.Tutorial = await build(options);
+  switch (command) {
+    case "--version":
+    case "-v":
+      const version = require("../package.json").version;
+      console.log(`v${version}`);
+      return;
+    case "build":
+      // Otherwise, continue with the other options
+      // const options: BuildOptions = await promptForMissingOptions(parsedArgs);
+      // const tutorial: T.Tutorial = await build(options);
 
-        if (tutorial) {
-          if (options.output) {
-            fs.writeFileSync(options.output, JSON.stringify(tutorial), "utf8");
-          } else {
-            console.log(JSON.stringify(tutorial, null, 2));
-          }
-        }
-        break;
+      // if (tutorial) {
+      //   if (options.output) {
+      //     fs.writeFileSync(options.output, JSON.stringify(tutorial), "utf8");
+      //   } else {
+      //     console.log(JSON.stringify(tutorial, null, 2));
+      //   }
+      // }
+      break;
 
-      case "create":
-        create(process.cwd());
-        break;
-    }
+    case "create":
+      create(process.cwd());
+      break;
+    case "--help":
+    case "-h":
+    default:
+      console.log(
+        "Docs can be found at github: https://github.com/coderoad/coderoad-cli/"
+      );
   }
 }
