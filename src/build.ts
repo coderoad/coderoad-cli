@@ -1,3 +1,4 @@
+import * as yamlParser from "js-yaml";
 import * as path from "path";
 import * as _ from "lodash";
 import * as fs from "fs";

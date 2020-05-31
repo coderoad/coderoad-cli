@@ -1,4 +1,4 @@
-import * as ncp from "ncp";
+import ncp from "ncp";
 import * as path from "path";
 import { promisify } from "util";
 
