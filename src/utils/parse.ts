@@ -132,29 +132,36 @@ export function parse(params: ParseParams): any {
 
       // add level step commits
       if (steps) {
-        steps.forEach((step: T.Step, stepIndex: number) => {
-          const stepSetupKey = `${levelSetupKey}S${stepIndex + `1`}Q`;
-          if (params.commits[stepSetupKey]) {
-            if (!step.setup) {
-              step.setup = {
-                commits: [],
-              };
+        level.steps = Object.keys(steps).map(
+          (stepId: string, stepIndex: number) => {
+            const step: T.Step = steps[stepId];
+            const stepKey = `${levelSetupKey}S${stepIndex + 1}`;
+            const stepSetupKey = `${stepKey}Q`;
+            if (params.commits[stepSetupKey]) {
+              if (!step.setup) {
+                step.setup = {
+                  commits: [],
+                };
+              }
+              step.setup.commits = params.commits[stepSetupKey];
             }
-            step.setup.commits = params.commits[stepSetupKey];
-          }
 
-          const stepSolutionKey = `${levelSetupKey}S${stepIndex + `1`}A`;
-          if (params.commits[stepSolutionKey]) {
-            if (!step.solution) {
-              step.solution = {
-                commits: [],
-              };
+            const stepSolutionKey = `${stepKey}A`;
+            if (params.commits[stepSolutionKey]) {
+              if (!step.solution) {
+                step.solution = {
+                  commits: [],
+                };
+              }
+              step.solution.commits = params.commits[stepSolutionKey];
             }
-            step.solution.commits = params.commits[stepSolutionKey];
-          }
 
-          return _.merge(step, steps[step.id]);
-        });
+            step.id = `${stepKey}`;
+            return step;
+          }
+        );
+      } else {
+        level.steps = [];
       }
 
       _.merge(level, content);
