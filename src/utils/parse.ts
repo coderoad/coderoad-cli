@@ -67,10 +67,10 @@ export function parseMdContent(md: string): TutorialFrame | never {
       // @ts-ignore
       mdContent.levels[levelId] = {
         id: levelId,
-        title: levelTitle,
+        title: levelTitle.trim(),
         summary: levelSummary
           ? levelSummary.trim()
-          : _.truncate(levelContent, { length: 80, omission: "..." }),
+          : _.truncate(levelContent.trim(), { length: 80, omission: "..." }),
         content: levelContent.trim(),
       };
     } else {

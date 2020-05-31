@@ -437,6 +437,178 @@ The first step
     expect(result.levels[0].steps[0]).toEqual(expected.levels[0].steps[0]);
   });
 
+  it("should load the full config for a step", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title 1
+
+First level content.
+
+### L1S1
+
+The first step
+
+### L1S2
+
+The second step
+
+## L2 Title 2
+
+Second level content.
+
+### L2S1
+
+The third step
+`;
+    const config = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+              setup: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+              solution: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+              },
+            },
+            {
+              id: "L1S2",
+              setup: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+              solution: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+              },
+            },
+          ],
+        },
+        {
+          id: "L2",
+          summary: "Second level content.",
+          content: "First level content.",
+          steps: [
+            {
+              id: "L2S1",
+              setup: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+              solution: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+              },
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        L1S1Q: ["abcdefg1", "123456789"],
+        L1S1A: ["1gfedcba", "987654321"],
+        L1S2Q: ["2abcdefg"],
+        L1S2A: ["3abcdefg"],
+        L2S1Q: ["4abcdefg"],
+        L2S1A: ["5abcdefg"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          title: "Title 1",
+          summary: "First level content.",
+          content: "First level content.",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdefg1", "123456789"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+              solution: {
+                commits: ["1gfedcba", "987654321"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
+              },
+            },
+            {
+              id: "L1S2",
+              content: "The second step",
+              setup: {
+                commits: ["2abcdefg"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+              solution: {
+                commits: ["3abcdefg"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
+              },
+            },
+          ],
+        },
+        {
+          id: "L2",
+          title: "Title 2",
+          summary: "Second level content.",
+          content: "Second level content.",
+          steps: [
+            {
+              id: "L2S1",
+              content: "The third step",
+              setup: {
+                commits: ["4abcdefg"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+              solution: {
+                commits: ["5abcdefg"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
+              },
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels).toEqual(expected.levels);
+  });
+
   // config
   it("should parse the tutorial config", () => {
     const md = `# Title
