@@ -77,12 +77,12 @@ export default {
         },
         watchers: {
           type: "array",
-          description:
-            "An array file paths that, when updated, will trigger the test runner to run",
           items: {
             $ref: "#/definitions/file_path",
             uniqueItems: true,
           },
+          description:
+            "An array file paths that, when updated, will trigger the test runner to run",
         },
         filter: {
           type: "string",
