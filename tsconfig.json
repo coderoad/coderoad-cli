@@ -23,5 +23,5 @@
     "skipLibCheck": true,
     "esModuleInterop": true
   },
-  "exclude": ["node_modules", ".vscode", "bin", "build", "tests"]
+  "exclude": ["node_modules", ".vscode", "bin", "build", "tests", "coverage"]
 }
