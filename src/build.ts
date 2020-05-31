@@ -124,7 +124,7 @@ async function build(args: string[]) {
   // write tutorial
   if (tutorial) {
     try {
-      await write(options.output, JSON.stringify(tutorial), "utf8");
+      await write(options.output, JSON.stringify(tutorial, null, 2), "utf8");
       console.info(`Success! See output at ${options.output}`);
     } catch (e) {
       console.error("Error writing tutorial json file:");

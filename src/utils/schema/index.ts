@@ -193,7 +193,7 @@ export default {
                         "The solution commits that can be loaded if the user gets stuck. It can also run commands and/or open files",
                     },
                     {
-                      required: ["commits"],
+                      required: [],
                     },
                   ],
                 },
