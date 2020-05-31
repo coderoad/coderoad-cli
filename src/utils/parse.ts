@@ -1,5 +1,5 @@
-import * as yamlParser from "js-yaml";
 import * as _ from "lodash";
+import { CommitLogObject } from "./commits";
 import * as T from "../../typings/tutorial";
 
 type TutorialFrame = {
@@ -59,6 +59,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
         levelSummary,
         levelContent,
       } = levelMatch.groups;
+
       const level = {
         [levelId]: {
           id: levelId,
@@ -92,31 +93,73 @@ export function parseMdContent(md: string): TutorialFrame | never {
   return sections;
 }
 
-export function parse(_content: string, _config: string): T.Tutorial {
-  const mdContent: TutorialFrame = parseMdContent(_content);
-  // Parse tutorial to JSON
-  const tutorial: T.Tutorial = yamlParser.load(_config);
+type ParseParams = {
+  text: string;
+  config: Partial<T.Tutorial | any>;
+  commits: CommitLogObject;
+};
+
+export function parse(params: ParseParams): any {
+  const parsed = { ...params.config };
+
+  const mdContent: TutorialFrame = parseMdContent(params.text);
 
   // Add the summary to the tutorial file
-  tutorial["summary"] = mdContent.summary;
+  parsed["summary"] = mdContent.summary;
 
   // merge content and tutorial
-  if (tutorial.levels) {
-    tutorial.levels.forEach((level: T.Level) => {
+  if (parsed.levels) {
+    parsed.levels.forEach((level: T.Level, levelIndex: number) => {
       const levelContent = mdContent[level.id];
+
       if (!levelContent) {
         console.log(`Markdown content not found for ${level.id}`);
         return;
       }
+
+      // add level setup commits
+      const levelSetupKey = `L${levelIndex + 1}`;
+      if (params.commits[levelSetupKey]) {
+        if (!level.setup) {
+          level.setup = {
+            commits: [],
+          };
+        }
+        level.setup.commits = params.commits[levelSetupKey];
+      }
+
       const { steps, ...content } = levelContent;
 
+      // add level step commits
       if (steps) {
-        steps.forEach((step: T.Step) => _.merge(step, steps[step.id]));
+        steps.forEach((step: T.Step, stepIndex: number) => {
+          const stepSetupKey = `${levelSetupKey}S${stepIndex + `1`}Q`;
+          if (params.commits[stepSetupKey]) {
+            if (!step.setup) {
+              step.setup = {
+                commits: [],
+              };
+            }
+            step.setup.commits = params.commits[stepSetupKey];
+          }
+
+          const stepSolutionKey = `${levelSetupKey}S${stepIndex + `1`}A`;
+          if (params.commits[stepSolutionKey]) {
+            if (!step.solution) {
+              step.solution = {
+                commits: [],
+              };
+            }
+            step.solution.commits = params.commits[stepSolutionKey];
+          }
+
+          return _.merge(step, steps[step.id]);
+        });
       }
 
       _.merge(level, content);
     });
   }
 
-  return tutorial;
+  return parsed;
 }

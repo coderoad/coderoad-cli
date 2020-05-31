@@ -8,8 +8,12 @@ describe("parse", () => {
 
     `;
 
-    const yaml = `version: "0.1.0"`;
-    const result = parse(md, yaml);
+    const config = { version: "0.1.0" };
+    const result = parse({
+      text: md,
+      config,
+      commits: {},
+    });
     const expected = {
       summary: {
         description: "Short description to be shown as a tutorial's subtitle.",
@@ -31,11 +35,15 @@ Description.
 Some text
 `;
 
-    const yaml = `version: "0.1.0"
-levels:
-- id: L1
-`;
-    const result = parse(md, yaml);
+    const config = {
+      levels: [{ id: "L1" }],
+    };
+
+    const result = parse({
+      text: md,
+      config,
+      commits: {},
+    });
     const expected = {
       levels: [
         {
@@ -62,17 +70,20 @@ Description.
 Some text
 `;
 
-    const yaml = `version: "0.1.0"
-levels:
-- id: L1
-  setup:
-    files: []
-    commits: []
-  solution:
-    files: []
-    commits: []
-`;
-    const result = parse(md, yaml);
+    const config = {
+      levels: [
+        {
+          id: "L1",
+          setup: { files: [], commits: [] },
+          solution: { files: [], commits: [] },
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {},
+    });
     const expected = {
       levels: [
         {
@@ -99,11 +110,12 @@ Description.
 Some text that becomes the summary
 `;
 
-    const yaml = `version: "0.1.0"
-levels:
-- id: L1
-`;
-    const result = parse(md, yaml);
+    const config = { levels: [{ id: "L1" }] };
+    const result = parse({
+      text: md,
+      config,
+      commits: {},
+    });
     const expected = {
       levels: [
         {
@@ -127,11 +139,12 @@ Description.
 Some text that becomes the summary and goes beyond the maximum length of 80 so that it gets truncated at the end
 `;
 
-    const yaml = `version: "0.1.0"
-levels:
-- id: L1
-`;
-    const result = parse(md, yaml);
+    const config = { levels: [{ id: "L1" }] };
+    const result = parse({
+      text: md,
+      config,
+      commits: {},
+    });
     const expected = {
       levels: [
         {
@@ -161,11 +174,12 @@ Second line
 Third line
 `;
 
-    const yaml = `version: "0.1.0"
-levels:
-- id: L1
-`;
-    const result = parse(md, yaml);
+    const config = { levels: [{ id: "L1" }] };
+    const result = parse({
+      text: md,
+      config,
+      commits: {},
+    });
     const expected = {
       summary: {
         description: "Description.\n\nSecond description line",
@@ -208,7 +222,41 @@ config:
     - name: node
       version: '>=10'
 `;
-    const result = parse(md, yaml);
+
+    const config = {
+      config: {
+        testRunner: {
+          command: "./node_modules/.bin/mocha",
+          args: {
+            filter: "--grep",
+            tap: "--reporter=mocha-tap-reporter",
+          },
+          directory: "coderoad",
+          setup: {
+            commits: ["abcdefg1"],
+            commands: [],
+          },
+        },
+        appVersions: {
+          vscode: ">=0.7.0",
+        },
+        repo: {
+          uri: "https://path.to/repo",
+          branch: "aBranch",
+        },
+        dependencies: [
+          {
+            name: "node",
+            version: ">=10",
+          },
+        ],
+      },
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {},
+    });
     const expected = {
       summary: {
         description: "Description.\n\nSecond description line",

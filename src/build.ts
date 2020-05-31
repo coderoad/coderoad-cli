@@ -2,197 +2,80 @@ import * as yamlParser from "js-yaml";
 import * as path from "path";
 import * as _ from "lodash";
 import * as fs from "fs";
-import * as T from "../typings/tutorial";
+import * as util from "util";
 import { parse } from "./utils/parse";
-// import validate from './validator';
+import { getArg } from "./utils/args";
+import { getCommits, CommitLogObject } from "./utils/commits";
+import * as T from "../typings/tutorial";
 
-// import not working
-const simpleGit = require("simple-git/promise");
+const write = util.promisify(fs.writeFile);
+const read = util.promisify(fs.readFile);
 
-const workingDir = "tmp";
+export type BuildConfigOptions = {
+  text: string; // text document from markdown
+  config: T.Tutorial; // yaml config file converted to json
+  commits: CommitLogObject; // an object of tutorial positions with a list of commit hashes
+};
 
-function rmDir(dir: string, rmSelf = false) {
-  try {
-    let files;
-    rmSelf = rmSelf === undefined ? true : rmSelf;
-
-    try {
-      files = fs.readdirSync(dir);
-    } catch (e) {
-      console.log(`Sorry, directory '${dir}' doesn't exist.`);
-      return;
-    }
-
-    if (files.length > 0) {
-      files.forEach(function (filePath: string) {
-        if (fs.statSync(path.join(dir, filePath)).isDirectory()) {
-          rmDir(path.join(dir, filePath));
-        } else {
-          fs.unlinkSync(path.join(dir, filePath));
-        }
-      });
-    }
-
-    if (rmSelf) {
-      // check if user want to delete the directory ir just the files in this directory
-      fs.rmdirSync(dir);
-    }
-  } catch (error) {
-    return error;
-  }
-}
-
-async function cleanupFiles(workingDir: string) {
-  try {
-    const gitModule = simpleGit(process.cwd());
-
-    await gitModule.subModule(["deinit", "-f", workingDir]);
-    await gitModule.rm(workingDir);
-    await gitModule.reset(["HEAD"]);
-    rmDir(path.join(process.cwd(), ".git", "modules", workingDir));
-    rmDir(workingDir);
-  } catch (error) {
-    return error;
-  }
-}
-
-export type BuildOptions = {
-  repo: string; // Git url to the repo. It should finish with .git
-  codeBranch: string; // The branch containing the tutorial code
-  setupBranch: string; // The branch containing the tutorialuration files
-  isLocal: boolean; // define if the repo is local or remote
+type BuildArgs = {
+  dir: string;
+  markdown: string;
+  yaml: string;
   output: string;
 };
 
-async function build({ repo, codeBranch, setupBranch, isLocal }: BuildOptions) {
-  let git: any;
-  let isSubModule = false;
-  let localPath: string;
+const parseArgs = (args: string[]): BuildArgs => {
+  // default .
+  const dir = args[0] || ".";
+  // -o --output - default coderoad.json
+  const output =
+    getArg(args, { name: "output", alias: "o" }) || "coderoad.json";
+  // -m --markdown - default TUTORIAL.md
+  const markdown =
+    getArg(args, { name: "markdown", alias: "m" }) || "TUTORIAL.md";
+  // -y --yaml - default coderoad-config.yml
+  const yaml =
+    getArg(args, { name: "coderoad-config.yml", alias: "y" }) ||
+    "coderoad-config.yml";
 
-  if (isLocal) {
-    git = simpleGit(repo);
-    localPath = repo;
-  } else {
-    const gitTest = simpleGit(process.cwd());
-    const isRepo = await gitTest.checkIsRepo();
-    localPath = path.join(process.cwd(), workingDir);
+  return {
+    dir,
+    output,
+    markdown,
+    yaml,
+  };
+};
 
-    if (isRepo) {
-      await gitTest.submoduleAdd(repo, workingDir);
+async function build(args: string[]) {
+  const options = parseArgs(args);
 
-      isSubModule = true;
+  // path to run build from
+  const localPath = path.join(process.cwd(), options.dir);
+
+  // load files
+  const [_markdown, _yaml] = await Promise.all([
+    read(path.join(localPath, options.markdown), "utf8"),
+    read(path.join(localPath, options.yaml), "utf8"),
+  ]);
+
+  const config = yamlParser.load(_yaml);
+
+  const commits: CommitLogObject = await getCommits(config.config.repo.branch);
+
+  // Otherwise, continue with the other options
+  const tutorial: T.Tutorial = await parse({
+    text: _markdown,
+    config,
+    commits,
+  });
+
+  if (tutorial) {
+    if (options.output) {
+      await write(options.output, JSON.stringify(tutorial), "utf8");
     } else {
-      await gitTest.clone(repo, localPath);
-    }
-
-    git = simpleGit(localPath);
-  }
-
-  await git.fetch();
-
-  // checkout the branch to load tutorialuration and content branch
-  await git.checkout(setupBranch);
-
-  // Load files
-  const _content = fs.readFileSync(path.join(localPath, "TUTORIAL.md"), "utf8");
-  let _config = fs.readFileSync(path.join(localPath, "coderoad.yaml"), "utf8");
-
-  const tutorial = parse(_content, _config);
-
-  // Checkout the code branches
-  await git.checkout(codeBranch);
-
-  // Load all logs
-  const logs = await git.log();
-
-  // Filter relevant logs
-  const parts = new Set();
-
-  for (const commit of logs.all) {
-    const matches = commit.message.match(
-      /^(?<stepId>(?<levelId>L\d+)S\d+)(?<stepType>[QA])?/
-    );
-
-    if (matches && !parts.has(matches[0])) {
-      // Uses a set to make sure only the latest commit is proccessed
-      parts.add(matches[0]);
-
-      // Add the content and git hash to the tutorial
-      if (matches.groups.stepId) {
-        // If it's a step: add the content and the setup/solution hashes depending on the type
-        const level: T.Level | null =
-          tutorial.levels.find(
-            (level: T.Level) => level.id === matches.groups.levelId
-          ) || null;
-        if (!level) {
-          console.log(`Level ${matches.groups.levelId} not found`);
-        } else {
-          const theStep: T.Step | null =
-            level.steps.find(
-              (step: T.Step) => step.id === matches.groups.stepId
-            ) || null;
-
-          if (!theStep) {
-            console.log(`Step ${matches.groups.stepId} not found`);
-          } else {
-            if (matches.groups.stepType === "Q") {
-              theStep.setup.commits.push(commit.hash.substr(0, 7));
-            } else if (
-              matches.groups.stepType === "A" &&
-              theStep.solution &&
-              theStep.solution.commits
-            ) {
-              theStep.solution.commits.push(commit.hash.substr(0, 7));
-            }
-          }
-        }
-      } else {
-        // If it's level: add the commit hash (if the level has the commit key) and the content to the tutorial
-        const theLevel: T.Level | null =
-          tutorial.levels.find(
-            (level: T.Level) => level.id === matches.groups.levelId
-          ) || null;
-
-        if (!theLevel) {
-          console.log(`Level ${matches.groups.levelId} not found`);
-        } else {
-          if (_.has(theLevel, "tutorial.commits")) {
-            if (theLevel.setup) {
-              theLevel.setup.commits.push(commit.hash.substr(0, 7));
-            }
-          }
-        }
-      }
+      console.log(JSON.stringify(tutorial, null, 2));
     }
   }
-
-  // cleanup the submodules
-  if (!isLocal) {
-    let cleanupErr;
-
-    if (isSubModule) {
-      cleanupErr = await cleanupFiles(workingDir);
-    } else {
-      cleanupErr = rmDir(path.join(process.cwd(), workingDir));
-    }
-
-    if (cleanupErr) {
-      console.log(
-        `Error when deleting temporary files on ${
-          isSubModule ? "module" : "folder"
-        } ${workingDir}.`
-      );
-    }
-  }
-
-  // const isValid = validate(tutorial);
-
-  // if (!isValid) {
-  //   console.log(JSON.stringify(validate.errors, null, 2));
-  //   return;
-  // }
-
-  return tutorial;
 }
 
 export default build;
