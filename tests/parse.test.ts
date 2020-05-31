@@ -1,6 +1,7 @@
 import { parse } from "../src/utils/parse";
 
 describe("parse", () => {
+  // summary
   it("should parse summary", () => {
     const md = `# Insert Tutorial's Title here
 
@@ -23,6 +24,7 @@ describe("parse", () => {
     expect(result.summary).toEqual(expected.summary);
   });
 
+  // levels
   it("should parse a level with no steps", () => {
     const md = `# Title
     
@@ -52,6 +54,7 @@ Some text
           summary:
             "Level's summary: a short description of the level's content in one line.",
           content: "Some text",
+          steps: [],
         },
       ],
     };
@@ -76,6 +79,7 @@ Some text
           id: "L1",
           setup: { files: [], commits: [] },
           solution: { files: [], commits: [] },
+          steps: [],
         },
       ],
     };
@@ -94,6 +98,7 @@ Some text
           content: "Some text",
           setup: { files: [], commits: [] },
           solution: { files: [], commits: [] },
+          steps: [],
         },
       ],
     };
@@ -123,6 +128,7 @@ Some text that becomes the summary
           title: "Put Level's title here",
           summary: "Some text that becomes the summary",
           content: "Some text that becomes the summary",
+          steps: [],
         },
       ],
     };
@@ -196,31 +202,236 @@ Third line
     expect(result.levels[0].content).toBe(expected.levels[0].content);
   });
 
-  it("should parse the tutorial config", () => {
+  it("should load a single commit for a step", () => {
     const md = `# Title
     
 Description.
+
+## L1 Title
+
+First line
+
+### L1S1 Step
+
+The first step
 `;
-    const yaml = `
-config:
-  testRunner:
-    command: ./node_modules/.bin/mocha
-    args:
-      filter: --grep
-      tap: --reporter=mocha-tap-reporter
-    directory: coderoad
-    setup:
-      commits:
-      - abcdefg1
-      commands: []
-  appVersions:
-    vscode: '>=0.7.0'
-  repo:
-    uri: https://path.to/repo
-    branch: aBranch
-  dependencies:
-    - name: node
-      version: '>=10'
+    const config = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        L1S1Q: ["abcdefg1"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          summary: "First line",
+          content: "First line",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdefg1"],
+              },
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels[0].steps[0]).toEqual(expected.levels[0].steps[0]);
+  });
+
+  it("should load multiple commits for a step", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title
+
+First line
+
+### L1S1 Step
+
+The first step
+`;
+    const config = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        L1S1Q: ["abcdefg1", "123456789"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          summary: "First line",
+          content: "First line",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdefg1", "123456789"],
+              },
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels[0].steps[0]).toEqual(expected.levels[0].steps[0]);
+  });
+
+  it("should load a single commit for a level", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title
+
+First line
+
+### L1S1
+
+The first step
+`;
+    const config = {
+      levels: [
+        {
+          id: "L1",
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        L1: ["abcdefg1"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          summary: "First line",
+          content: "First line",
+          setup: {
+            commits: ["abcdefg1"],
+          },
+        },
+      ],
+    };
+    expect(result.levels[0].setup).toEqual(expected.levels[0].setup);
+  });
+
+  it("should load the full config for a step", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title
+
+First line
+
+### L1S1 Step
+
+The first step
+`;
+    const config = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+              setup: {
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        L1S1Q: ["abcdefg1", "123456789"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          summary: "First line",
+          content: "First line",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdefg1", "123456789"],
+                commands: ["npm install"],
+                files: ["someFile.js"],
+                watchers: ["someFile.js"],
+                filter: "someFilter",
+                subtasks: true,
+              },
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels[0].steps[0]).toEqual(expected.levels[0].steps[0]);
+  });
+
+  // config
+  it("should parse the tutorial config", () => {
+    const md = `# Title
+  
+Description.
 `;
 
     const config = {
