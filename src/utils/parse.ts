@@ -41,15 +41,13 @@ export function parseMdContent(md: string): TutorialFrame | never {
   const summaryMatch = parts
     .shift()
     .match(/^#\s(?<tutorialTitle>.*)[\n\r]+(?<tutorialDescription>[^]*)/);
-  if (!summaryMatch.groups.tutorialTitle) {
-    throw new Error("Missing tutorial title");
+  if (summaryMatch.groups.tutorialTitle) {
+    mdContent.summary.title = summaryMatch.groups.tutorialTitle.trim();
   }
-  mdContent.summary.title = summaryMatch.groups.tutorialTitle.trim();
 
-  if (!summaryMatch.groups.tutorialDescription) {
-    throw new Error("Missing tutorial summary description");
+  if (summaryMatch.groups.tutorialDescription) {
+    mdContent.summary.description = summaryMatch.groups.tutorialDescription.trim();
   }
-  mdContent.summary.description = summaryMatch.groups.tutorialDescription.trim();
 
   // Identify each part of the content
   parts.forEach((section: string) => {
@@ -67,10 +65,10 @@ export function parseMdContent(md: string): TutorialFrame | never {
       // @ts-ignore
       mdContent.levels[levelId] = {
         id: levelId,
-        title: levelTitle,
+        title: levelTitle.trim(),
         summary: levelSummary
           ? levelSummary.trim()
-          : _.truncate(levelContent, { length: 80, omission: "..." }),
+          : _.truncate(levelContent.trim(), { length: 80, omission: "..." }),
         content: levelContent.trim(),
       };
     } else {
