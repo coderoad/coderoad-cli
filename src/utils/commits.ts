@@ -1,116 +1,69 @@
+import * as fs from "fs";
+import util from "util";
 import * as path from "path";
-import gitP, { SimpleGit, StatusResult } from "simple-git/promise";
+import gitP, { SimpleGit } from "simple-git/promise";
+import * as T from "../../typings/tutorial";
 
-export async function getCommits() {
-  const git: SimpleGit = gitP(process.cwd());
+const mkdir = util.promisify(fs.mkdir);
+const exists = util.promisify(fs.exists);
+const rmdir = util.promisify(fs.rmdir);
+
+type GetCommitOptions = {
+  localDir: string;
+  codeBranch: string;
+};
+
+export type CommitLogObject = { [position: string]: string[] };
+
+export async function getCommits({
+  localDir,
+  codeBranch,
+}: GetCommitOptions): Promise<CommitLogObject> {
+  const git: SimpleGit = gitP(localDir);
 
   const isRepo = await git.checkIsRepo();
-
-  const tmpDirectory = "tmp";
-  const localPath = path.join(process.cwd(), tmpDirectory);
 
   if (!isRepo) {
     throw new Error("No git repo provided");
   }
 
-  //   if (isRepo) {
-  //     await gitTest.submoduleAdd(repo, workingDir);
+  const tmpDir = path.join(localDir, ".tmp");
 
-  //     isSubModule = true;
-  //   } else {
-  //     await gitTest.clone(repo, localPath);
-  //   }
+  const tmpDirExists = await exists(tmpDir);
+  if (tmpDirExists) {
+    await rmdir(tmpDir, { recursive: true });
+  }
+  await mkdir(tmpDir);
+  const tempGit = gitP(tmpDir);
+  await tempGit.clone(localDir, tmpDir);
 
-  //   await git.fetch();
+  // Checkout the code branches
+  await git.checkout(codeBranch);
 
-  //   // checkout the branch to load tutorialuration and content branch
-  //   await git.checkout(setupBranch);
+  // Load all logs
+  const logs = await git.log();
 
-  //   // Checkout the code branches
-  //   await git.checkout(codeBranch);
+  // Filter relevant logs
+  const commits: CommitLogObject = {};
 
-  //   // Load all logs
-  //   const logs = await git.log();
+  for (const commit of logs.all) {
+    const matches = commit.message.match(
+      /^(?<stepId>(?<levelId>L\d+)(S\d+))(?<stepType>[QA])?/
+    );
 
-  //   // Filter relevant logs
-  //   const parts = new Set();
-
-  //   for (const commit of logs.all) {
-  //     const matches = commit.message.match(
-  //       /^(?<stepId>(?<levelId>L\d+)S\d+)(?<stepType>[QA])?/
-  //     );
-
-  //     if (matches && !parts.has(matches[0])) {
-  //       // Uses a set to make sure only the latest commit is proccessed
-  //       parts.add(matches[0]);
-
-  //       // Add the content and git hash to the tutorial
-  //       if (matches.groups.stepId) {
-  //         // If it's a step: add the content and the setup/solution hashes depending on the type
-  //         const level: T.Level | null =
-  //           tutorial.levels.find(
-  //             (level: T.Level) => level.id === matches.groups.levelId
-  //           ) || null;
-  //         if (!level) {
-  //           console.log(`Level ${matches.groups.levelId} not found`);
-  //         } else {
-  //           const theStep: T.Step | null =
-  //             level.steps.find(
-  //               (step: T.Step) => step.id === matches.groups.stepId
-  //             ) || null;
-
-  //           if (!theStep) {
-  //             console.log(`Step ${matches.groups.stepId} not found`);
-  //           } else {
-  //             if (matches.groups.stepType === "Q") {
-  //               theStep.setup.commits.push(commit.hash.substr(0, 7));
-  //             } else if (
-  //               matches.groups.stepType === "A" &&
-  //               theStep.solution &&
-  //               theStep.solution.commits
-  //             ) {
-  //               theStep.solution.commits.push(commit.hash.substr(0, 7));
-  //             }
-  //           }
-  //         }
-  //       } else {
-  //         // If it's level: add the commit hash (if the level has the commit key) and the content to the tutorial
-  //         const theLevel: T.Level | null =
-  //           tutorial.levels.find(
-  //             (level: T.Level) => level.id === matches.groups.levelId
-  //           ) || null;
-
-  //         if (!theLevel) {
-  //           console.log(`Level ${matches.groups.levelId} not found`);
-  //         } else {
-  //           if (_.has(theLevel, "tutorial.commits")) {
-  //             if (theLevel.setup) {
-  //               theLevel.setup.commits.push(commit.hash.substr(0, 7));
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   // cleanup the submodules
-  //   if (!isLocal) {
-  //     let cleanupErr;
-
-  //     if (isSubModule) {
-  //       cleanupErr = await cleanupFiles(workingDir);
-  //     } else {
-  //       cleanupErr = rmDir(path.join(process.cwd(), workingDir));
-  //     }
-
-  //     if (cleanupErr) {
-  //       console.log(
-  //         `Error when deleting temporary files on ${
-  //           isSubModule ? "module" : "folder"
-  //         } ${workingDir}.`
-  //       );
-  //     }
-  //   }
+    if (matches && matches.length) {
+      // Use an object of commit arrays to collect all commits
+      const position = matches[0];
+      if (!commits[position]) {
+        // does not exist, create the list
+        commits[position] = [commit.hash];
+      } else {
+        // add to the list
+        commits[position].push(commit.hash);
+      }
+    }
+  }
+  // cleanup the tmp directory
+  await rmdir(tmpDir, { recursive: true });
+  return commits;
 }
-
-getCommits();
