@@ -46,33 +46,72 @@ const parseArgs = (args: string[]): BuildArgs => {
 };
 
 async function build(args: string[]) {
-  const options = parseArgs(args);
+  let options: BuildArgs;
+  try {
+    options = parseArgs(args);
+  } catch (e) {
+    console.error("Error parsing build logs");
+    console.error(e.message);
+    return;
+  }
 
   // path to run build from
   const localPath = path.join(process.cwd(), options.dir);
 
   // load files
-  const [_markdown, _yaml] = await Promise.all([
-    read(path.join(localPath, options.markdown), "utf8"),
-    read(path.join(localPath, options.yaml), "utf8"),
-  ]);
+  let _markdown: string;
+  let _yaml: string;
+  try {
+    [_markdown, _yaml] = await Promise.all([
+      read(path.join(localPath, options.markdown), "utf8"),
+      read(path.join(localPath, options.yaml), "utf8"),
+    ]);
+  } catch (e) {
+    console.error("Error reading file:");
+    console.error(e.message);
+    return;
+  }
 
-  const config = yamlParser.load(_yaml);
+  let config;
+  try {
+    config = yamlParser.load(_yaml);
+  } catch (e) {
+    console.error("Error parsing yaml");
+    console.error(e.message);
+  }
 
-  const commits: CommitLogObject = await getCommits(config.config.repo.branch);
+  let commits: CommitLogObject;
+  try {
+    commits = await getCommits({
+      localDir: localPath,
+      codeBranch: config.config.repo.branch,
+    });
+  } catch (e) {
+    console.error("Error loading commits:");
+    console.error(e.message);
+    return;
+  }
 
   // Otherwise, continue with the other options
-  const tutorial: T.Tutorial = await parse({
-    text: _markdown,
-    config,
-    commits,
-  });
+  let tutorial: T.Tutorial;
+  try {
+    tutorial = await parse({
+      text: _markdown,
+      config,
+      commits,
+    });
+  } catch (e) {
+    console.error("Error parsing tutorial:");
+    console.error(e.message);
+    return;
+  }
 
   if (tutorial) {
-    if (options.output) {
+    try {
       await write(options.output, JSON.stringify(tutorial), "utf8");
-    } else {
-      console.log(JSON.stringify(tutorial, null, 2));
+    } catch (e) {
+      console.error("Error writing tutorial json:");
+      console.error(e.message);
     }
   }
 }
