@@ -5,9 +5,9 @@ describe("parse", () => {
   it("should parse summary", () => {
     const md = `# Insert Tutorial's Title here
 
-    Short description to be shown as a tutorial's subtitle.
+Short description to be shown as a tutorial's subtitle.
 
-    `;
+`;
 
     const config = { version: "0.1.0" };
     const result = parse({

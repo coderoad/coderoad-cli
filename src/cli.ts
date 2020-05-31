@@ -1,5 +1,7 @@
+import "./utils/logs";
 import build from "./build";
 import create from "./create";
+import help from "./help";
 
 export async function cli(rawArgs: string[]): Promise<void> {
   const command: string = rawArgs[2];
@@ -23,8 +25,6 @@ export async function cli(rawArgs: string[]): Promise<void> {
     case "--help":
     case "-h":
     default:
-      console.log(
-        "Docs can be found at github: https://github.com/coderoad/coderoad-cli/"
-      );
+      help();
   }
 }

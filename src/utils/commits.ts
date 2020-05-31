@@ -37,11 +37,25 @@ export async function getCommits({
   const tempGit = gitP(tmpDir);
   await tempGit.clone(localDir, tmpDir);
 
+  const branches = await git.branch();
+
+  if (!branches.all.length) {
+    throw new Error("No branches found");
+  } else if (!branches.all.includes(codeBranch)) {
+    throw new Error(`Code branch "${codeBranch}" not found`);
+  }
+
+  console.log("branches", branches);
+
   // Checkout the code branches
   await git.checkout(codeBranch);
 
+  console.log("checked out");
+
   // Load all logs
   const logs = await git.log();
+
+  console.log("logs", logs);
 
   // Filter relevant logs
   const commits: CommitLogObject = {};
@@ -63,6 +77,8 @@ export async function getCommits({
       }
     }
   }
+
+  console.log("remove");
   // cleanup the tmp directory
   await rmdir(tmpDir, { recursive: true });
   return commits;
