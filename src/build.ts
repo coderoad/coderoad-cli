@@ -27,16 +27,15 @@ type BuildArgs = {
 const parseArgs = (args: string[]): BuildArgs => {
   // default .
   const dir = args[0] || ".";
-  // -o --output - default coderoad.json
-  const output =
-    getArg(args, { name: "output", alias: "o" }) || "coderoad.json";
+
   // -m --markdown - default TUTORIAL.md
   const markdown =
     getArg(args, { name: "markdown", alias: "m" }) || "TUTORIAL.md";
   // -y --yaml - default coderoad-config.yml
-  const yaml =
-    getArg(args, { name: "coderoad-config.yml", alias: "y" }) ||
-    "coderoad-config.yml";
+  const yaml = getArg(args, { name: "yaml", alias: "y" }) || "coderoad.yaml";
+  // -o --output - default coderoad.json
+  const output =
+    getArg(args, { name: "output", alias: "o" }) || "tutorial.json";
 
   return {
     dir,

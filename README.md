@@ -17,44 +17,46 @@ npm install -g @coderoad/cli
 
 ## Create
 
+Create templates files for building a new tutorial.
+
 ```shell
 coderoad create
 ```
 
-Create templates files in the current folder for the content and setup files.
+Templates for specific coding languages to come.
 
 ## Build
 
-```text
-$ coderoad build [options]
+Build the configuration file to be used by the extension to run the tutorial.
 
-options:
-
-  -g, --git     Tutorial's remote git address. Either --git or --dir should be provided.
-  -d, --dir     Tutorial's local directory. Either --git or --dir should be provided.
-  -c, --code    Branch that contains the code.
-  -s, --setup   Branch that contains the TUTORIAL.md and coderoad.yaml files.
-  -o, --output  (Optional) Save the configuration in the output file.
-                Log into the console  if not set
-  -h, --help    (Optional) Show the help message
+```shell
+coderoad build
 ```
 
-Build the configuration file to be used by the extension to run the tutorial. The configuration file is created by matching the `level` and `step` ids between the `TUTORIAL.md` and `coderoad.yaml` files against git commit messages with the same ids. For example:
+Defaults assume:
+
+- a `TUTORIAL.md` markdown file (change with `--markdown OTHER.md`)
+- a `coderoad.yaml` file (change with `--yaml other.yaml`)
+- an output file of `tutorial.json` (change with `--output other.json`)
+
+The configuration file is created by matching the `level` and `step` ids between the `TUTORIAL.md` and `coderoad.yaml` files against git commit messages with the same ids. For example:
 
 **TUTORIAL.md**
 
 ```markdown
-...
+# Tutorial Title
 
-## L10 This is a level with id = 10
+Tutorial description.
+
+## L1 This is a level with id = 1
 
 This level has two steps...
 
-### L10S1 First step
+### L1S1 First step
 
-The first step with id L10S1. The Step id should start with the level id.
+The first step with id L1S1. The Step id should start with the level id.
 
-### L10S2 The second step
+### L1S2 The second step
 
 The second step...
 ```
@@ -64,14 +66,13 @@ The second step...
 ```yaml
 ---
 levels:
-  - id: L10
+  - id: L1
     config: {}
     steps:
-      - id: L10S1
+      - id: L1S1
         setup:
           files:
             - package.json
-          commits: []
           watchers:
             - package.json
             - node_modules/express
@@ -80,20 +81,17 @@ levels:
         solution:
           files:
             - package.json
-          commits: []
           commands:
             - npm install
-      - id: L10S2
+      - id: L1S2
         setup:
           files:
             - src/server.js
-          commits: []
           commands:
             - npm install
         solution:
           files:
             - src/server.js
-          commits: []
 ```
 
 ... and the commit messages
@@ -103,25 +101,23 @@ commit 8e0e3a42ae565050181fdb68298114df21467a74 (HEAD -> v2, origin/v2)
 Author: creator <author@email.com>
 Date:   Sun May 3 16:16:01 2020 -0700
 
-    L10S1Q setup step 1 for level 2
+    L1S1Q setup step 1 for level 1
 
 commit 9499611fc9b311040dcabaf2d98439fc0c356cc9
 Author: creator <author@email.com>
 Date:   Sun May 3 16:13:37 2020 -0700
 
-    L10S2A checkout solution for Level 1, step 2
+    L1S2A checkout solution for level 1, step 2
 
 commit c5c62041282579b495d3589b2eb1fdda2bcd7155
 Author: creator <author@email.com>
 Date:   Sun May 3 16:11:42 2020 -0700
 
-    L10S2Q setup level 1, step 2
+    L1S2Q setup level 1, step 2
 ```
 
-Note that the step `L10S2` has two commits, one with the suffix `Q` and another one with `A`. The suffixes mean `Question` and `Answer`, respectively.
+Note that the step `L1S2` has two commits, one with the suffix `Q` and another one with `A`. The suffixes mean `Question` and `Answer`, respectively, and refer to the unit tests and the commit that makes them pass.
 
-Steps defined as questions are **required** as they are meant to set the task to be executed by the student. The answer is optional and should be used when a commit must be loaded to verify the student's solution. If there is no need to load commits for `A` steps, the `commits` key should be removed from the `coderoad.yaml` file for that step.
+Steps defined as questions are **required** as they are meant to set the task to be executed by the student. The answer is optional and should be used when a commit must be loaded to verify the student's solution.
 
-**IMPORTANT**
-
-Only the most recent commit is evaluated for each level/step id.
+If there are multiple commits for a level or step, they are captured in order.
