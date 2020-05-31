@@ -98,6 +98,7 @@ export function parse(params: ParseParams): any {
   const mdContent: TutorialFrame = parseMdContent(params.text);
 
   const parsed: Partial<T.Tutorial> = {
+    version: params.config.version,
     summary: mdContent.summary,
     config: params.config.config,
     levels: [],
