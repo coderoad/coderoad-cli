@@ -45,41 +45,45 @@ export async function getCommits({
     throw new Error(`Code branch "${codeBranch}" not found`);
   }
 
-  console.log("branches", branches);
-
-  // Checkout the code branches
-  await git.checkout(codeBranch);
-
-  console.log("checked out");
-
-  // Load all logs
-  const logs = await git.log();
-
-  console.log("logs", logs);
+  // track the original branch in case of failure
+  const originalBranch = branches.current;
 
   // Filter relevant logs
   const commits: CommitLogObject = {};
 
-  for (const commit of logs.all) {
-    const matches = commit.message.match(
-      /^(?<stepId>(?<levelId>L\d+)(S\d+))(?<stepType>[QA])?/
-    );
+  try {
+    // Checkout the code branches
+    await git.checkout(codeBranch);
 
-    if (matches && matches.length) {
-      // Use an object of commit arrays to collect all commits
-      const position = matches[0];
-      if (!commits[position]) {
-        // does not exist, create the list
-        commits[position] = [commit.hash];
-      } else {
-        // add to the list
-        commits[position].push(commit.hash);
+    // Load all logs
+    const logs = await git.log();
+
+    for (const commit of logs.all) {
+      const matches = commit.message.match(
+        /^(?<stepId>(?<levelId>L\d+)(S\d+))(?<stepType>[QA])?/
+      );
+
+      if (matches && matches.length) {
+        // Use an object of commit arrays to collect all commits
+        const position = matches[0];
+        if (!commits[position]) {
+          // does not exist, create the list
+          commits[position] = [commit.hash];
+        } else {
+          // add to the list
+          commits[position].push(commit.hash);
+        }
       }
     }
+  } catch (e) {
+    console.error("Error with checkout or commit matching");
+    throw new Error(e.message);
+  } finally {
+    // revert back to the original branch on failure
+    await git.checkout(originalBranch);
+    // cleanup the tmp directory
+    await rmdir(tmpDir, { recursive: true });
   }
 
-  console.log("remove");
-  // cleanup the tmp directory
-  await rmdir(tmpDir, { recursive: true });
   return commits;
 }
