@@ -2,6 +2,7 @@ import ncp from "ncp";
 import * as path from "path";
 import { promisify } from "util";
 import { getArg } from "./utils/args";
+import { create as help } from "./help";
 
 const copy = promisify(ncp);
 
@@ -13,6 +14,11 @@ type CreateArgs = {
 
 async function create(args: string[]): Promise<void> {
   let options: CreateArgs;
+
+  if (args.length && ["--help", "-h"].includes(args[0])) {
+    help();
+    return;
+  }
 
   // default .
   const dir = !args.length || args[0].match(/^-/) ? "." : args[0];
