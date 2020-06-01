@@ -73,6 +73,17 @@ export async function getCommits({
           // add to the list
           commits[position].push(commit.hash);
         }
+      } else {
+        const initMatches = commit.message.match(/^INIT/);
+        if (initMatches && initMatches.length) {
+          if (!commits.INIT) {
+            // does not exist, create the list
+            commits.INIT = [commit.hash];
+          } else {
+            // add to the list
+            commits.INIT.push(commit.hash);
+          }
+        }
       }
     }
   } catch (e) {

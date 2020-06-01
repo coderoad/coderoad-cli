@@ -437,7 +437,7 @@ The first step
     expect(result.levels[0].steps[0]).toEqual(expected.levels[0].steps[0]);
   });
 
-  it("should load the full config for a step", () => {
+  it("should load the full config for multiple levels & steps", () => {
     const md = `# Title
     
 Description.
@@ -524,12 +524,12 @@ The third step
       text: md,
       config,
       commits: {
-        L1S1Q: ["abcdefg1", "123456789"],
-        L1S1A: ["1gfedcba", "987654321"],
-        L1S2Q: ["2abcdefg"],
-        L1S2A: ["3abcdefg"],
-        L2S1Q: ["4abcdefg"],
-        L2S1A: ["5abcdefg"],
+        L1S1Q: ["abcdef1", "123456789"],
+        L1S1A: ["1fedcba", "987654321"],
+        L1S2Q: ["2abcdef"],
+        L1S2A: ["3abcdef"],
+        L2S1Q: ["4abcdef"],
+        L2S1A: ["5abcdef"],
       },
     });
     const expected = {
@@ -547,7 +547,7 @@ The third step
               id: "L1S1",
               content: "The first step",
               setup: {
-                commits: ["abcdefg1", "123456789"],
+                commits: ["abcdef1", "123456789"],
                 commands: ["npm install"],
                 files: ["someFile.js"],
                 watchers: ["someFile.js"],
@@ -555,7 +555,7 @@ The third step
                 subtasks: true,
               },
               solution: {
-                commits: ["1gfedcba", "987654321"],
+                commits: ["1fedcba", "987654321"],
                 commands: ["npm install"],
                 files: ["someFile.js"],
               },
@@ -564,7 +564,7 @@ The third step
               id: "L1S2",
               content: "The second step",
               setup: {
-                commits: ["2abcdefg"],
+                commits: ["2abcdef"],
                 commands: ["npm install"],
                 files: ["someFile.js"],
                 watchers: ["someFile.js"],
@@ -572,7 +572,7 @@ The third step
                 subtasks: true,
               },
               solution: {
-                commits: ["3abcdefg"],
+                commits: ["3abcdef"],
                 commands: ["npm install"],
                 files: ["someFile.js"],
               },
@@ -589,7 +589,7 @@ The third step
               id: "L2S1",
               content: "The third step",
               setup: {
-                commits: ["4abcdefg"],
+                commits: ["4abcdef"],
                 commands: ["npm install"],
                 files: ["someFile.js"],
                 watchers: ["someFile.js"],
@@ -597,7 +597,7 @@ The third step
                 subtasks: true,
               },
               solution: {
-                commits: ["5abcdefg"],
+                commits: ["5abcdef"],
                 commands: ["npm install"],
                 files: ["someFile.js"],
               },
@@ -639,7 +639,7 @@ The first step
       text: md,
       config,
       commits: {
-        L1S1Q: ["abcdefg1", "123456789"],
+        L1S1Q: ["abcdef1", "123456789"],
       },
     });
     const expected = {
@@ -657,7 +657,7 @@ The first step
               id: "L1S1",
               content: "The first step",
               setup: {
-                commits: ["abcdefg1", "123456789"],
+                commits: ["abcdef1", "123456789"],
               },
             },
           ],
@@ -684,7 +684,6 @@ Description.
           },
           directory: "coderoad",
           setup: {
-            commits: ["abcdefg1"],
             commands: [],
           },
         },
@@ -721,8 +720,79 @@ Description.
           },
           directory: "coderoad",
           setup: {
-            commits: ["abcdefg1"],
             commands: [],
+          },
+        },
+        repo: {
+          uri: "https://path.to/repo",
+          branch: "aBranch",
+        },
+        dependencies: [
+          {
+            name: "node",
+            version: ">=10",
+          },
+        ],
+        appVersions: {
+          vscode: ">=0.7.0",
+        },
+      },
+    };
+    expect(result.config).toEqual(expected.config);
+  });
+
+  it("should parse the tutorial config with INIT commits", () => {
+    const md = `# Title
+  
+Description.
+`;
+
+    const config = {
+      config: {
+        testRunner: {
+          command: "./node_modules/.bin/mocha",
+          args: {
+            filter: "--grep",
+            tap: "--reporter=mocha-tap-reporter",
+          },
+          directory: "coderoad",
+        },
+        appVersions: {
+          vscode: ">=0.7.0",
+        },
+        repo: {
+          uri: "https://path.to/repo",
+          branch: "aBranch",
+        },
+        dependencies: [
+          {
+            name: "node",
+            version: ">=10",
+          },
+        ],
+      },
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        INIT: ["abcdef1", "123456789"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.\n\nSecond description line",
+      },
+      config: {
+        testRunner: {
+          command: "./node_modules/.bin/mocha",
+          args: {
+            filter: "--grep",
+            tap: "--reporter=mocha-tap-reporter",
+          },
+          directory: "coderoad",
+          setup: {
+            commits: ["abcdef1", "123456789"],
           },
         },
         repo: {
