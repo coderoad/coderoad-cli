@@ -524,7 +524,6 @@ The third step
       text: md,
       config,
       commits: {
-        INIT: [""],
         L1S1Q: ["abcdef1", "123456789"],
         L1S1A: ["1fedcba", "987654321"],
         L1S2Q: ["2abcdef"],
@@ -685,7 +684,6 @@ Description.
           },
           directory: "coderoad",
           setup: {
-            commits: ["abcdef1"],
             commands: [],
           },
         },
@@ -722,8 +720,79 @@ Description.
           },
           directory: "coderoad",
           setup: {
-            commits: ["abcdef1"],
             commands: [],
+          },
+        },
+        repo: {
+          uri: "https://path.to/repo",
+          branch: "aBranch",
+        },
+        dependencies: [
+          {
+            name: "node",
+            version: ">=10",
+          },
+        ],
+        appVersions: {
+          vscode: ">=0.7.0",
+        },
+      },
+    };
+    expect(result.config).toEqual(expected.config);
+  });
+
+  it("should parse the tutorial config with INIT commits", () => {
+    const md = `# Title
+  
+Description.
+`;
+
+    const config = {
+      config: {
+        testRunner: {
+          command: "./node_modules/.bin/mocha",
+          args: {
+            filter: "--grep",
+            tap: "--reporter=mocha-tap-reporter",
+          },
+          directory: "coderoad",
+        },
+        appVersions: {
+          vscode: ">=0.7.0",
+        },
+        repo: {
+          uri: "https://path.to/repo",
+          branch: "aBranch",
+        },
+        dependencies: [
+          {
+            name: "node",
+            version: ">=10",
+          },
+        ],
+      },
+    };
+    const result = parse({
+      text: md,
+      config,
+      commits: {
+        INIT: ["abcdef1", "123456789"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.\n\nSecond description line",
+      },
+      config: {
+        testRunner: {
+          command: "./node_modules/.bin/mocha",
+          args: {
+            filter: "--grep",
+            tap: "--reporter=mocha-tap-reporter",
+          },
+          directory: "coderoad",
+          setup: {
+            commits: ["abcdef1", "123456789"],
           },
         },
         repo: {

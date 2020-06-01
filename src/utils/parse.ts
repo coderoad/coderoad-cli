@@ -100,9 +100,19 @@ export function parse(params: ParseParams): any {
   const parsed: Partial<T.Tutorial> = {
     version: params.config.version,
     summary: mdContent.summary,
-    config: params.config.config,
+    config: params.config.config || {},
     levels: [],
   };
+
+  // add init commits
+  if (params.commits.INIT && params.commits.INIT.length) {
+    console.log(JSON.stringify(parsed.config?.testRunner));
+    // @ts-ignore
+    parsed.config.testRunner.setup = {
+      ...(parsed.config?.testRunner?.setup || {}),
+      commits: params.commits.INIT,
+    };
+  }
 
   // merge content and tutorial
   if (params.config.levels && params.config.levels.length) {
@@ -119,12 +129,10 @@ export function parse(params: ParseParams): any {
         // add level setup commits
         const levelSetupKey = level.id;
         if (params.commits[levelSetupKey]) {
-          if (!level.setup) {
-            level.setup = {
-              commits: [],
-            };
-          }
-          level.setup.commits = params.commits[levelSetupKey];
+          level.setup = {
+            ...(level.setup || {}),
+            commits: params.commits[levelSetupKey],
+          };
         }
 
         // add level step commits
