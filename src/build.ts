@@ -25,31 +25,28 @@ type BuildArgs = {
   output: string;
 };
 
-const parseArgs = (args: string[]): BuildArgs => {
-  // default .
-  const dir = args[0] || ".";
-
-  // -m --markdown - default TUTORIAL.md
-  const markdown =
-    getArg(args, { name: "markdown", alias: "m" }) || "TUTORIAL.md";
-  // -y --yaml - default coderoad-config.yml
-  const yaml = getArg(args, { name: "yaml", alias: "y" }) || "coderoad.yaml";
-  // -o --output - default coderoad.json
-  const output =
-    getArg(args, { name: "output", alias: "o" }) || "tutorial.json";
-
-  return {
-    dir,
-    output,
-    markdown,
-    yaml,
-  };
-};
-
 async function build(args: string[]) {
   let options: BuildArgs;
   try {
-    options = parseArgs(args);
+    // default .
+    const dir = args[0].match(/^-/) ? "." : args[0];
+    // -m --markdown - default TUTORIAL.md
+    const markdown =
+      getArg(args, { name: "markdown", alias: "m" }) || "TUTORIAL.md";
+    // -y --yaml - default coderoad-config.yml
+    const yaml = getArg(args, { name: "yaml", alias: "y" }) || "coderoad.yaml";
+    // -o --output - default coderoad.json
+    const output =
+      getArg(args, { name: "output", alias: "o" }) || "tutorial.json";
+
+    console.log(`Building CodeRoad ${output}...`);
+
+    options = {
+      dir,
+      output,
+      markdown,
+      yaml,
+    };
   } catch (e) {
     console.error("Error parsing build logs");
     console.error(e.message);

@@ -21,8 +21,6 @@ config:
     ## Commits to load to setup the test runner. Optional.
     ##
     setup:
-      ## A list of commits to load to setup the tutorial
-      commits: []
       # - commit1
       # - commit2
       ## A list of commands to run to configure the tutorial

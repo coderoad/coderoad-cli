@@ -1,4 +1,4 @@
-import schema from "./schema";
+import schema from "../schema";
 
 // https://www.npmjs.com/package/ajv
 // @ts-ignore ajv typings not working

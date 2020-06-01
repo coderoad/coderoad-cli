@@ -19,7 +19,7 @@ export async function cli(rawArgs: string[]): Promise<void> {
       break;
 
     case "create":
-      create(process.cwd());
+      create(args);
       break;
 
     case "--help":
