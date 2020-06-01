@@ -7,6 +7,7 @@ import { parse } from "./utils/parse";
 import { getArg } from "./utils/args";
 import { getCommits, CommitLogObject } from "./utils/commits";
 import { validateSchema } from "./utils/validate";
+import { build as help } from "./help";
 import * as T from "../typings/tutorial";
 
 const write = util.promisify(fs.writeFile);
@@ -27,6 +28,12 @@ type BuildArgs = {
 
 async function build(args: string[]) {
   let options: BuildArgs;
+
+  if (args.length && ["--help", "-h"].includes(args[0])) {
+    help();
+    return;
+  }
+
   try {
     // default .
     const dir = args[0].match(/^-/) ? "." : args[0];
