@@ -1,4 +1,4 @@
-export default function help() {
+export function help() {
   console.log(`
 Usage: coderoad [options]
 

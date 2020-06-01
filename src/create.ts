@@ -15,14 +15,11 @@ type CreateArgs = {
 async function create(args: string[]): Promise<void> {
   let options: CreateArgs;
 
-  if (args.length && ["--help", "-h"].includes(args[0])) {
-    help();
-    return;
-  }
-
-  // default .
+  // dir - default .
   const dir = !args.length || args[0].match(/^-/) ? "." : args[0];
+  // lang - default js
   const lang = getArg(args, { name: "lang", alias: "l" }) || "js";
+  // testRunner - default mocha
   const testRunner =
     getArg(args, { name: "testRunner", alias: "t" }) || "mocha";
 

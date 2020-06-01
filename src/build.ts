@@ -29,13 +29,8 @@ type BuildArgs = {
 async function build(args: string[]) {
   let options: BuildArgs;
 
-  if (args.length && ["--help", "-h"].includes(args[0])) {
-    help();
-    return;
-  }
-
   try {
-    // default .
+    // dir - default .
     const dir = args[0].match(/^-/) ? "." : args[0];
     // -m --markdown - default TUTORIAL.md
     const markdown =
