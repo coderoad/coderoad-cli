@@ -7,7 +7,6 @@ import { parse } from "./utils/parse";
 import { getArg } from "./utils/args";
 import { getCommits, CommitLogObject } from "./utils/commits";
 import { validateSchema } from "./utils/validate";
-import { build as help } from "./help";
 import * as T from "../typings/tutorial";
 
 const write = util.promisify(fs.writeFile);
