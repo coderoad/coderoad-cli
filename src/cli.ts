@@ -1,7 +1,8 @@
 import "./utils/logs";
 import build from "./build";
 import create from "./create";
-import { help, create as createHelp, build as buildHelp } from "./help";
+import validate from "./validate";
+import * as help from "./help";
 
 export async function cli(rawArgs: string[]): Promise<void> {
   const command: string = rawArgs[2];
@@ -16,7 +17,7 @@ export async function cli(rawArgs: string[]): Promise<void> {
 
     case "build":
       if (args.length && ["--help", "-h"].includes(args[0])) {
-        buildHelp();
+        help.build();
         return;
       }
       build(args);
@@ -24,15 +25,23 @@ export async function cli(rawArgs: string[]): Promise<void> {
 
     case "create":
       if (args.length && ["--help", "-h"].includes(args[0])) {
-        createHelp();
+        help.create();
         return;
       }
       create(args);
       break;
 
+    case "validate":
+      if (args.length && ["--help", "-h"].includes(args[0])) {
+        help.validate();
+        return;
+      }
+      validate(args);
+      break;
+
     case "--help":
     case "-h":
     default:
-      help();
+      help.main();
   }
 }
