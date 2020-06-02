@@ -2,7 +2,6 @@ import ncp from "ncp";
 import * as path from "path";
 import { promisify } from "util";
 import { getArg } from "./utils/args";
-import { create as help } from "./help";
 
 const copy = promisify(ncp);
 
@@ -62,9 +61,8 @@ async function create(args: string[]): Promise<void> {
 
   // TODO: copy master yaml
   const pathToYaml = path.join(templateDirectory, `${lang}-${testRunner}`);
-  const targetYamlPath = path.join(localPath, "coderoad.yaml");
   try {
-    await copy(pathToYaml, targetYamlPath, {
+    await copy(pathToYaml, localPath, {
       clobber: false,
     });
   } catch (e) {
