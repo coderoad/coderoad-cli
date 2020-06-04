@@ -2,7 +2,7 @@ import * as fs from "fs";
 import util from "util";
 import * as path from "path";
 import gitP, { SimpleGit } from "simple-git/promise";
-import * as T from "../../typings/tutorial";
+import { addToCommitOrder, validateCommitOrder } from "./commitOrder";
 
 const mkdir = util.promisify(fs.mkdir);
 const exists = util.promisify(fs.exists);
@@ -21,19 +21,20 @@ export async function getCommits({
 }: GetCommitOptions): Promise<CommitLogObject> {
   const git: SimpleGit = gitP(localDir);
 
+  // check that a repo is created
   const isRepo = await git.checkIsRepo();
-
   if (!isRepo) {
     throw new Error("No git repo provided");
   }
 
+  // setup .tmp directory
   const tmpDir = path.join(localDir, ".tmp");
-
   const tmpDirExists = await exists(tmpDir);
   if (tmpDirExists) {
     await rmdir(tmpDir, { recursive: true });
   }
   await mkdir(tmpDir);
+
   const tempGit = gitP(tmpDir);
   await tempGit.clone(localDir, tmpDir);
 
@@ -57,6 +58,7 @@ export async function getCommits({
 
     // Load all logs
     const logs = await git.log();
+    const positions: string[] = [];
 
     for (const commit of logs.all) {
       const matches = commit.message.match(
@@ -73,6 +75,7 @@ export async function getCommits({
           // add to the list
           commits[position].push(commit.hash);
         }
+        positions.push(position);
       } else {
         const initMatches = commit.message.match(/^INIT/);
         if (initMatches && initMatches.length) {
@@ -83,9 +86,11 @@ export async function getCommits({
             // add to the list
             commits.INIT.push(commit.hash);
           }
+          positions.push("INIT");
         }
       }
     }
+    validateCommitOrder(positions);
   } catch (e) {
     console.error("Error with checkout or commit matching");
     throw new Error(e.message);

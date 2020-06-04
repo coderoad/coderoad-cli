@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import { truncate } from "lodash";
 import { CommitLogObject } from "./commits";
 import * as T from "../../typings/tutorial";
 
@@ -68,7 +68,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
         title: levelTitle.trim(),
         summary: levelSummary
           ? levelSummary.trim()
-          : _.truncate(levelContent.trim(), { length: 80, omission: "..." }),
+          : truncate(levelContent.trim(), { length: 80, omission: "..." }),
         content: levelContent.trim(),
       };
     } else {
