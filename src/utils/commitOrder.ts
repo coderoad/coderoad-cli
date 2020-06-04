@@ -46,6 +46,15 @@ export function validateCommitOrder(positions: string[]): boolean {
     previous = current;
   });
 
-  // TODO: log errors based on index
+  if (errors.length) {
+    console.warn("Found commit positions out of order");
+    positions.forEach((position, index) => {
+      if (errors.includes(index)) {
+        console.warn(`${position} <-`);
+      } else {
+        console.log(position);
+      }
+    });
+  }
   return !errors.length;
 }
