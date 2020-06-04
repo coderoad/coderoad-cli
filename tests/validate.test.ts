@@ -1,5 +1,5 @@
 import * as T from "../typings/tutorial";
-import { validateSchema } from "../src/utils/validate";
+import { validateSchema } from "../src/utils/validateSchema";
 
 describe("validate", () => {
   it("should reject an empty tutorial", () => {

@@ -1,12 +1,22 @@
+import * as path from "path";
+import * as fs from "fs";
+import util from "util";
+import gitP, { SimpleGit } from "simple-git/promise";
+import { getCommits, CommitLogObject } from "./utils/commits";
+
+const mkdir = util.promisify(fs.mkdir);
+const exists = util.promisify(fs.exists);
+const rmdir = util.promisify(fs.rmdir);
+
 async function validate(args: string[]) {
   // dir - default .
   const dir = !args.length || args[0].match(/^-/) ? "." : args[0];
   console.warn("Not yet implemented. Coming soon");
-  return;
 
-  // setup .tmp directory
-  // git clone branch
+  const localDir = path.join(process.cwd(), dir);
+  const codeBranch = "";
 
+  const commits = getCommits({ localDir, codeBranch });
   // VALIDATE SKELETON WITH COMMITS
   // parse tutorial skeleton for order and commands
 
@@ -37,7 +47,6 @@ async function validate(args: string[]) {
   // on error, show level/step & error message
 
   // CLEANUP
-  // finally: remove .tmp directory
 }
 
 export default validate;
