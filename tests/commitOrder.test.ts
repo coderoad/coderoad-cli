@@ -1,4 +1,4 @@
-import { validateCommitOrder } from "../src/utils/commitOrder";
+import { validateCommitOrder } from "../src/utils/validateCommits";
 
 describe("commitOrder", () => {
   it("should return true if order is valid", () => {

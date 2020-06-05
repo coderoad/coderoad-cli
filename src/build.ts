@@ -74,6 +74,10 @@ async function build(args: string[]) {
   let config;
   try {
     config = yamlParser.load(_yaml);
+    // TODO: validate yaml
+    if (!config || !config.length) {
+      throw new Error("Invalid yaml file contents");
+    }
   } catch (e) {
     console.error("Error parsing yaml");
     console.error(e.message);

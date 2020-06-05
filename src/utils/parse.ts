@@ -106,7 +106,6 @@ export function parse(params: ParseParams): any {
 
   // add init commits
   if (params.commits.INIT && params.commits.INIT.length) {
-    console.log(JSON.stringify(parsed.config?.testRunner));
     // @ts-ignore
     parsed.config.testRunner.setup = {
       ...(parsed.config?.testRunner?.setup || {}),
