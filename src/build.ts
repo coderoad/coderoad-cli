@@ -29,7 +29,7 @@ async function build(args: string[]) {
 
   try {
     // dir - default .
-    const dir = args[0].match(/^-/) ? "." : args[0];
+    const dir = !args.length || args[0].match(/^-/) ? "." : args[0];
     // -m --markdown - default TUTORIAL.md
     const markdown =
       getArg(args, { name: "markdown", alias: "m" }) || "TUTORIAL.md";
