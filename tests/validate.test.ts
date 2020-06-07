@@ -1,7 +1,7 @@
 import * as T from "../typings/tutorial";
 import { validateSchema } from "../src/utils/validateSchema";
 
-describe("validate", () => {
+describe("validate tutorial", () => {
   it("should reject an empty tutorial", () => {
     const json = { version: "here" };
 
