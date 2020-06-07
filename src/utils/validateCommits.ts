@@ -13,8 +13,8 @@ export function validateCommitOrder(positions: string[]): boolean {
       current = { level: 0, step: 0 };
       return;
     } else {
-      const levelMatch = position.match(/^L([0-9])+$/);
-      const stepMatch = position.match(/^L([0-9])+S([0-9])+$/);
+      const levelMatch = position.match(/^L([0-9]+)Q?$/);
+      const stepMatch = position.match(/^L([0-9]+)S([0-9]+)[Q|A]?$/);
       if (levelMatch) {
         // allows next level or step
         const [_, levelString] = levelMatch;
@@ -28,7 +28,7 @@ export function validateCommitOrder(positions: string[]): boolean {
         current = { level, step };
       } else {
         // error
-        console.error(`Invalid commit position: ${position}`);
+        console.warn(`Invalid commit position: ${position}`);
         return;
       }
       if (
