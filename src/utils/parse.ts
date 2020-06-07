@@ -49,10 +49,11 @@ export function parseMdContent(md: string): TutorialFrame | never {
     mdContent.summary.description = summaryMatch.groups.tutorialDescription.trim();
   }
 
+  let current = { level: "0", step: "0" };
   // Identify each part of the content
   parts.forEach((section: string) => {
     // match level
-    const levelRegex = /^(##\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s*(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
+    const levelRegex = /^(#{2}\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s*(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
     const levelMatch: RegExpMatchArray | null = section.match(levelRegex);
     if (levelMatch && levelMatch.groups) {
       const {
@@ -71,16 +72,33 @@ export function parseMdContent(md: string): TutorialFrame | never {
           : truncate(levelContent.trim(), { length: 80, omission: "..." }),
         content: levelContent.trim(),
       };
+      current = { level: levelId, step: "0" };
     } else {
       // match step
-      const stepRegex = /^(###\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
+      const stepRegex = /^(#{3}\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
       const stepMatch: RegExpMatchArray | null = section.match(stepRegex);
       if (stepMatch && stepMatch.groups) {
         const { stepId, stepContent } = stepMatch.groups;
+
         mdContent.steps[stepId] = {
           id: stepId,
           content: stepContent.trim(),
         };
+        current = { ...current, step: stepId };
+      } else {
+        // parse hints from stepContent
+        const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+(\*\s(?<hintContent>[^]*))[\n\r]+)+/;
+        const hintMatch = section.match(hintDetectRegex);
+        if (!!hintMatch) {
+          const hintItemRegex = /[\n\r]+\*\s/;
+          const hints = section
+            .split(hintItemRegex)
+            .slice(1) // remove #### HINTS
+            .map((h) => h.trim());
+          if (hints.length) {
+            mdContent.steps[current.step].hints = hints;
+          }
+        }
       }
     }
   });
@@ -135,39 +153,45 @@ export function parse(params: ParseParams): any {
         }
 
         // add level step commits
-        level.steps = (level.steps || []).map(
-          (step: T.Step, stepIndex: number) => {
-            const stepKey = `${levelSetupKey}S${stepIndex + 1}`;
-            const stepSetupKey = `${stepKey}Q`;
-            if (params.commits[stepSetupKey]) {
-              if (!step.setup) {
-                step.setup = {
-                  commits: [],
-                };
+        try {
+          level.steps = (level.steps || []).map(
+            (step: T.Step, stepIndex: number) => {
+              const stepKey = `${levelSetupKey}S${stepIndex + 1}`;
+              const stepSetupKey = `${stepKey}Q`;
+              if (params.commits[stepSetupKey]) {
+                if (!step.setup) {
+                  step.setup = {
+                    commits: [],
+                  };
+                }
+                step.setup.commits = params.commits[stepSetupKey];
               }
-              step.setup.commits = params.commits[stepSetupKey];
-            }
 
-            const stepSolutionKey = `${stepKey}A`;
-            if (params.commits[stepSolutionKey]) {
-              if (!step.solution) {
-                step.solution = {
-                  commits: [],
-                };
+              const stepSolutionKey = `${stepKey}A`;
+              if (params.commits[stepSolutionKey]) {
+                if (!step.solution) {
+                  step.solution = {
+                    commits: [],
+                  };
+                }
+                step.solution.commits = params.commits[stepSolutionKey];
               }
-              step.solution.commits = params.commits[stepSolutionKey];
-            }
 
-            // add markdown
-            const stepMarkdown: Partial<T.Step> = mdContent.steps[step.id];
-            if (stepMarkdown) {
-              step = { ...step, ...stepMarkdown };
-            }
+              // add markdown
+              const stepMarkdown: Partial<T.Step> = mdContent.steps[step.id];
+              if (stepMarkdown) {
+                step = { ...step, ...stepMarkdown };
+              }
 
-            step.id = `${stepKey}`;
-            return step;
-          }
-        );
+              step.id = `${stepKey}`;
+              return step;
+            }
+          );
+        } catch (error) {
+          console.log(JSON.stringify(level.steps));
+          console.error("Error parsing level steps");
+          console.error(error.message);
+        }
 
         return level;
       })

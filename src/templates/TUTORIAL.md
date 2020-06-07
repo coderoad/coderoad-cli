@@ -36,3 +36,9 @@ Short description of the step's purpose. Should be short and fit in one line
 ### L1S2 Another step
 
 Step's short description.
+
+#### Hints
+
+- If a hint exists, the user can request a hint
+- Hints will show up in the order they are written
+- When all hints are added, the hint option will become disabled
