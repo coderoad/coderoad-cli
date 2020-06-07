@@ -84,19 +84,187 @@ describe("validate skeleton", () => {
     const valid = validateSkeleton(json);
     expect(valid).toBe(true);
   });
-  it.todo("should fail if version is invalid");
-  it.todo("should fail if version is missing");
-  it.todo("should fail if config is missing");
-  it.todo("should fail if config testRunner is missing");
-  it.todo("should fail if config testRunner command is missing");
-  it.todo("should fail if config testRunner args tap is missing");
-  it.todo("should fail if repo is missing");
-  it.todo("should fail if repo uri is missing");
-  it.todo("should fail if repo uri is invalid");
-  it.todo("should fail if repo branch is missing");
-  it.todo("should fial if level is missing id");
-  it.todo("should fail if level setup is invalid");
-  it.todo("should fail if step is missing id");
-  it.todo("should fail if step setup is invalid");
-  it.todo("should fail if solution setup is invalid");
+  it("should fail if version is invalid", () => {
+    const json = { ...validJson, version: "NOT A VERSION" };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if version is missing", () => {
+    const json = { ...validJson, version: undefined };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if config is missing", () => {
+    const json = { ...validJson, config: undefined };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if config testRunner is missing", () => {
+    const json = {
+      ...validJson,
+      config: { ...validJson.config, testRunner: undefined },
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if config testRunner command is missing", () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        testRunner: { ...validJson.config.testRunner, command: undefined },
+      },
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if config testRunner args tap is missing", () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        testRunner: {
+          ...validJson.config.testRunner,
+          args: { ...validJson.config.testRunner.args, tap: undefined },
+        },
+      },
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if repo is missing", () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        repo: undefined,
+      },
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if repo uri is missing", () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        repo: { ...validJson.config.repo, uri: undefined },
+      },
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if repo uri is invalid", () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        repo: { ...validJson.config.repo, uri: "NOT A VALID URI" },
+      },
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if repo branch is missing", () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        repo: { ...validJson.config.repo, branch: undefined },
+      },
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fial if level is missing id", () => {
+    const level1 = { ...validJson.levels[0], id: undefined };
+    const json = {
+      ...validJson,
+      levels: [level1],
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if level setup is invalid", () => {
+    const level1 = { ...validJson.levels[0], setup: { invalidThing: [] } };
+    const json = {
+      ...validJson,
+      levels: [level1],
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if step is missing id", () => {
+    const step1 = { ...validJson.levels[0].steps[0], id: undefined };
+    const level1 = { ...validJson.levels[0], steps: [step1] };
+    const json = {
+      ...validJson,
+      levels: [level1],
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if step setup is missing", () => {
+    const step1 = { ...validJson.levels[0].steps[0], setup: undefined };
+    const level1 = { ...validJson.levels[0], steps: [step1] };
+    const json = {
+      ...validJson,
+      levels: [level1],
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should fail if step setup is invalid", () => {
+    const step1 = {
+      ...validJson.levels[0].steps[0],
+      setup: { invalidThing: [] },
+    };
+    const level1 = { ...validJson.levels[0], steps: [step1] };
+    const json = {
+      ...validJson,
+      levels: [level1],
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
+  it("should not fail if step solution is missing", () => {
+    const step1 = { ...validJson.levels[0].steps[0], solution: undefined };
+    const level1 = { ...validJson.levels[0], steps: [step1] };
+    const json = {
+      ...validJson,
+      levels: [level1],
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(true);
+  });
+  it("should fail if step solution is invalid", () => {
+    const step1 = {
+      ...validJson.levels[0].steps[0],
+      solution: { invalidThing: [] },
+    };
+    const level1 = { ...validJson.levels[0], steps: [step1] };
+    const json = {
+      ...validJson,
+      levels: [level1],
+    };
+
+    const valid = validateSkeleton(json);
+    expect(valid).toBe(false);
+  });
 });
