@@ -869,7 +869,7 @@ Description.
     });
   });
 
-  xdescribe("hints", () => {
+  describe("hints", () => {
     it("should parse hints for a step", () => {
       const md = `# Title
     
@@ -947,7 +947,7 @@ First level content.
 
 The first step
 
-#### Hints
+#### HINTS
 
 * First Hint with \`markdown\`. See **bold**
 * Second Hint has a codeblock
@@ -1019,7 +1019,7 @@ First level content.
 
 The first step
 
-#### Hints
+#### HINTS
 
 * First Hint with \`markdown\`. See **bold**
 * Second Hint has a codeblock
@@ -1030,7 +1030,7 @@ var a = 1;
 
 And spans multiple lines.
 
-### L1S2A
+### L1S2
 
 The second uninterrupted step
 `;
@@ -1073,7 +1073,7 @@ The second uninterrupted step
                 id: "L1S1",
                 content: "The first step",
                 setup: {
-                  commits: ["abcdef1", "123456789"],
+                  commits: ["abcdef1"],
                 },
                 solution: {
                   commits: ["123456789"],
@@ -1095,7 +1095,7 @@ The second uninterrupted step
           {},
         ],
       };
-      expect(result.levels).toEqual(expected.levels);
+      expect(result.levels[0]).toEqual(expected.levels[0]);
     });
   });
 });

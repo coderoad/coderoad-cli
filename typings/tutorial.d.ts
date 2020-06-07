@@ -28,6 +28,7 @@ export type Step = {
   setup: StepActions;
   solution: Maybe<StepActions>;
   subtasks?: { [testName: string]: boolean };
+  hints?: string[];
 };
 
 /** A tutorial for use in VSCode CodeRoad */

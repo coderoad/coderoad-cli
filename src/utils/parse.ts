@@ -49,6 +49,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
     mdContent.summary.description = summaryMatch.groups.tutorialDescription.trim();
   }
 
+  let current = { level: "0", step: "0" };
   // Identify each part of the content
   parts.forEach((section: string) => {
     // match level
@@ -71,6 +72,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
           : truncate(levelContent.trim(), { length: 80, omission: "..." }),
         content: levelContent.trim(),
       };
+      current = { level: levelId, step: "0" };
     } else {
       // match step
       const stepRegex = /^(#{3}\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
@@ -78,17 +80,25 @@ export function parseMdContent(md: string): TutorialFrame | never {
       if (stepMatch && stepMatch.groups) {
         const { stepId, stepContent } = stepMatch.groups;
 
-        // parse hints from stepContent
-        // const hintRegex = /^(#{4}\sHINTS[\n\r]+(?<hintContent>[^]*))/g;
-
-        // if (!!stepContent.match(hintRegex)) {
-        //   console.log("HAS HINT");
-        // }
-
         mdContent.steps[stepId] = {
           id: stepId,
           content: stepContent.trim(),
         };
+        current = { ...current, step: stepId };
+      } else {
+        // parse hints from stepContent
+        const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+(\*\s(?<hintContent>[^]*))[\n\r]+)+/;
+        const hintMatch = section.match(hintDetectRegex);
+        if (!!hintMatch) {
+          const hintItemRegex = /[\n\r]+\*\s/;
+          const hints = section
+            .split(hintItemRegex)
+            .slice(1) // remove #### HINTS
+            .map((h) => h.trim());
+          if (hints.length) {
+            mdContent.steps[current.step].hints = hints;
+          }
+        }
       }
     }
   });
