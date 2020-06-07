@@ -812,4 +812,229 @@ Description.
     };
     expect(result.config).toEqual(expected.config);
   });
+
+  // hints
+  it("should parse hints for a step", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title 1
+
+First level content.
+
+### L1S1
+
+The first step
+
+#### Hints
+
+* First Hint
+* Second Hint
+
+`;
+    const skeleton = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      skeleton,
+      commits: {
+        L1S1Q: ["abcdef1", "123456789"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          title: "Title 1",
+          summary: "First level content.",
+          content: "First level content.",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdef1", "123456789"],
+              },
+              hints: ["First Hint", "Second Hint"],
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels).toEqual(expected.levels);
+  });
+
+  it("should parse hints for a step", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title 1
+
+First level content.
+
+### L1S1
+
+The first step
+
+#### Hints
+
+* First Hint with \`markdown\`. See **bold**
+* Second Hint has a codeblock
+
+\`\`\`js
+var a = 1;
+\`\`\`
+
+And spans multiple lines.
+`;
+    const skeleton = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      skeleton,
+      commits: {
+        L1S1Q: ["abcdef1", "123456789"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          title: "Title 1",
+          summary: "First level content.",
+          content: "First level content.",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdef1", "123456789"],
+              },
+              hints: [
+                "First Hint with `markdown`. See **bold**",
+                "Second Hint has a codeblock\n\n```js\nvar a = 1;\n```\n\nAnd spans multiple lines.",
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels).toEqual(expected.levels);
+  });
+
+  it("should parse hints and not interrupt next step", () => {
+    const md = `# Title
+    
+Description.
+
+## L1 Title 1
+
+First level content.
+
+### L1S1
+
+The first step
+
+#### Hints
+
+* First Hint with \`markdown\`. See **bold**
+* Second Hint has a codeblock
+
+\`\`\`js
+var a = 1;
+\`\`\`
+
+And spans multiple lines.
+
+### L1S2A
+
+The second uninterrupted step
+`;
+    const skeleton = {
+      levels: [
+        {
+          id: "L1",
+          steps: [
+            {
+              id: "L1S1",
+            },
+            {
+              id: "L1S2",
+            },
+          ],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      skeleton,
+      commits: {
+        L1S1Q: ["abcdef1", "123456789"],
+        L1S2Q: ["fedcba1"],
+      },
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "L1",
+          title: "Title 1",
+          summary: "First level content.",
+          content: "First level content.",
+          steps: [
+            {
+              id: "L1S1",
+              content: "The first step",
+              setup: {
+                commits: ["abcdef1", "123456789"],
+              },
+              hints: [
+                "First Hint with `markdown`. See **bold**",
+                "Second Hint has a codeblock\n\n```js\nvar a = 1;\n```\n\nAnd spans multiple lines.",
+              ],
+            },
+            {
+              id: "L1S2",
+              content: "The second uninterrupted step",
+              setup: {
+                commits: ["fedcba1"],
+              },
+            },
+          ],
+        },
+        {},
+      ],
+    };
+    expect(result.levels).toEqual(expected.levels);
+  });
 });
