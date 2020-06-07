@@ -166,6 +166,37 @@ Some text that becomes the summary and goes beyond the maximum length of 80 so t
       expect(result.levels[0].summary).toMatch(/\.\.\.$/);
     });
 
+    it("should only truncate the first line of a level description", () => {
+      const md = `# Title
+    
+Description.
+
+## L1 Put Level's title here
+
+Some text.
+
+But not including this line.
+`;
+
+      const skeleton = { levels: [{ id: "L1" }] };
+      const result = parse({
+        text: md,
+        skeleton,
+        commits: {},
+      });
+      const expected = {
+        levels: [
+          {
+            id: "L1",
+            title: "Put Level's title here",
+            summary: "Some text.",
+            content: "Some text.\n\nBut not including this line.",
+          },
+        ],
+      };
+      expect(result.levels[0].summary).toEqual("Some text.");
+    });
+
     it("should match line breaks with double line breaks for proper spacing", () => {
       const md = `# Title
     
