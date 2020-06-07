@@ -69,7 +69,10 @@ export function parseMdContent(md: string): TutorialFrame | never {
         title: levelTitle.trim(),
         summary: levelSummary
           ? levelSummary.trim()
-          : truncate(levelContent.trim(), { length: 80, omission: "..." }),
+          : truncate(levelContent.split(/[\n\r]+/)[0].trim(), {
+              length: 80,
+              omission: "...",
+            }),
         content: levelContent.trim(),
       };
       current = { level: levelId, step: "0" };
