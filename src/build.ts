@@ -5,6 +5,7 @@ import * as util from "util";
 import { parse } from "./utils/parse";
 import { getArg } from "./utils/args";
 import { getCommits, CommitLogObject } from "./utils/commits";
+import tutorialSchema from "./schema/tutorial";
 import { validateSchema } from "./utils/validateSchema";
 import * as T from "../typings/tutorial";
 
@@ -112,7 +113,7 @@ async function build(args: string[]) {
 
   // validate tutorial based on json schema
   try {
-    const valid = validateSchema(tutorial);
+    const valid = validateSchema(tutorialSchema, tutorial);
     if (!valid) {
       console.error("Tutorial validation failed. See above to see what to fix");
       return;

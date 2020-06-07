@@ -1,11 +1,14 @@
 import * as T from "../typings/tutorial";
+import tutorialSchema from "../src/schema/tutorial";
 import { validateSchema } from "../src/utils/validateSchema";
+
+const validateTutorial = (json: any) => validateSchema(tutorialSchema, json);
 
 describe("validate tutorial", () => {
   it("should reject an empty tutorial", () => {
     const json = { version: "here" };
 
-    const valid = validateSchema(json);
+    const valid = validateTutorial(json);
     expect(valid).toBe(false);
   });
   it("should return true for a valid tutorial", () => {
@@ -45,7 +48,7 @@ describe("validate tutorial", () => {
       ],
     };
 
-    const valid = validateSchema(json);
+    const valid = validateTutorial(json);
     expect(valid).toBe(true);
   });
 });

@@ -1,10 +1,11 @@
-import schema from "../schema/tutorial";
-
 // https://www.npmjs.com/package/ajv
 // @ts-ignore ajv typings not working
 import JsonSchema from "ajv";
 
-export function validateSchema(json: any): boolean | PromiseLike<boolean> {
+export function validateSchema(
+  schema: any,
+  json: any
+): boolean | PromiseLike<boolean> {
   // validate using https://json-schema.org/
   const jsonSchema = new JsonSchema({
     allErrors: true,

@@ -1,4 +1,7 @@
-import { validateSkeleton } from "../src/utils/validateSkeleton";
+import { validateSchema } from "../src/utils/validateSchema";
+import skeletonSchema from "../src/schema/skeleton";
+
+const validateSkeleton = (json: any) => validateSchema(skeletonSchema, json);
 
 const validJson = {
   version: "0.1.0",
