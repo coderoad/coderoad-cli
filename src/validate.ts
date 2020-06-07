@@ -18,18 +18,18 @@ async function validate(args: string[]) {
 
   // -y --yaml - default coderoad-config.yml
   const options = {
-    yaml: getArg(args, { name: "yaml", alias: "y" }) || "coderoad.yaml";
-  }
+    yaml: getArg(args, { name: "yaml", alias: "y" }) || "coderoad.yaml",
+  };
 
   const _yaml = await read(path.join(localDir, options.yaml), "utf8");
 
   // parse yaml config
   let config;
   try {
-    config = yamlParser.load(_yaml)
+    config = yamlParser.load(_yaml);
     // TODO: validate yaml
     if (!config || !config.length) {
-      throw new Error('Invalid yaml file contents')
+      throw new Error("Invalid yaml file contents");
     }
   } catch (e) {
     console.error("Error parsing yaml");
