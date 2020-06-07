@@ -56,6 +56,12 @@ This level has two steps...
 
 The first step with id L1S1. The Step id should start with the level id.
 
+#### HINTS
+
+- The first hint available when a user requests a hint
+- The second hint that will show
+- The third and final hint, as it is last in order
+
 ### L1S2 The second step
 
 The second step...
