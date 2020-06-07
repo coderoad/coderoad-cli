@@ -73,9 +73,6 @@ levels:
         setup:
           files:
             - package.json
-          watchers:
-            - package.json
-            - node_modules/express
           commands:
             - npm install
         solution:
