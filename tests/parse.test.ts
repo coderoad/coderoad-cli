@@ -9,10 +9,10 @@ Short description to be shown as a tutorial's subtitle.
 
 `;
 
-    const config = { version: "0.1.0" };
+    const skeleton = { version: "0.1.0" };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {},
     });
     const expected = {
@@ -37,13 +37,13 @@ Description.
 Some text
 `;
 
-    const config = {
+    const skeleton = {
       levels: [{ id: "L1" }],
     };
 
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {},
     });
     const expected = {
@@ -73,7 +73,7 @@ Description.
 Some text
 `;
 
-    const config = {
+    const skeleton = {
       levels: [
         {
           id: "L1",
@@ -85,7 +85,7 @@ Some text
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {},
     });
     const expected = {
@@ -115,10 +115,10 @@ Description.
 Some text that becomes the summary
 `;
 
-    const config = { levels: [{ id: "L1" }] };
+    const skeleton = { levels: [{ id: "L1" }] };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {},
     });
     const expected = {
@@ -145,10 +145,10 @@ Description.
 Some text that becomes the summary and goes beyond the maximum length of 80 so that it gets truncated at the end
 `;
 
-    const config = { levels: [{ id: "L1" }] };
+    const skeleton = { levels: [{ id: "L1" }] };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {},
     });
     const expected = {
@@ -180,10 +180,10 @@ Second line
 Third line
 `;
 
-    const config = { levels: [{ id: "L1" }] };
+    const skeleton = { levels: [{ id: "L1" }] };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {},
     });
     const expected = {
@@ -215,7 +215,7 @@ First line
 
 The first step
 `;
-    const config = {
+    const skeleton = {
       levels: [
         {
           id: "L1",
@@ -229,7 +229,7 @@ The first step
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {
         L1S1Q: ["abcdefg1"],
       },
@@ -271,7 +271,7 @@ First line
 
 The first step
 `;
-    const config = {
+    const skeleton = {
       levels: [
         {
           id: "L1",
@@ -285,7 +285,7 @@ The first step
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {
         L1S1Q: ["abcdefg1", "123456789"],
       },
@@ -327,7 +327,7 @@ First line
 
 The first step
 `;
-    const config = {
+    const skeleton = {
       levels: [
         {
           id: "L1",
@@ -336,7 +336,7 @@ The first step
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {
         L1: ["abcdefg1"],
       },
@@ -372,7 +372,7 @@ First line
 
 The first step
 `;
-    const config = {
+    const skeleton = {
       levels: [
         {
           id: "L1",
@@ -397,7 +397,7 @@ The first step
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {
         L1S1Q: ["abcdefg1", "123456789"],
         L1S1A: ["1gfedcba", "987654321"],
@@ -462,7 +462,7 @@ Second level content.
 
 The third step
 `;
-    const config = {
+    const skeleton = {
       levels: [
         {
           id: "L1",
@@ -522,7 +522,7 @@ The third step
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {
         L1S1Q: ["abcdef1", "123456789"],
         L1S1A: ["1fedcba", "987654321"],
@@ -623,7 +623,7 @@ First level content.
 The first step
 
 `;
-    const config = {
+    const skeleton = {
       levels: [
         {
           id: "L1",
@@ -637,7 +637,7 @@ The first step
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {
         L1S1Q: ["abcdef1", "123456789"],
       },
@@ -674,7 +674,7 @@ The first step
 Description.
 `;
 
-    const config = {
+    const skeleton = {
       config: {
         testRunner: {
           command: "./node_modules/.bin/mocha",
@@ -704,7 +704,7 @@ Description.
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {},
     });
     const expected = {
@@ -747,7 +747,7 @@ Description.
 Description.
 `;
 
-    const config = {
+    const skeleton = {
       config: {
         testRunner: {
           command: "./node_modules/.bin/mocha",
@@ -774,7 +774,7 @@ Description.
     };
     const result = parse({
       text: md,
-      config,
+      skeleton,
       commits: {
         INIT: ["abcdef1", "123456789"],
       },

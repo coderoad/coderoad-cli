@@ -1,9 +1,5 @@
 // should flag commits that are out of order based on the previous commit
 // position is a string like 'INIT', 'L1', 'L1S1'
-export function addToCommitOrder(position: string) {
-  // add position to list
-}
-
 export function validateCommitOrder(positions: string[]): boolean {
   // loop over positions
   const errors: number[] = [];
@@ -12,7 +8,6 @@ export function validateCommitOrder(positions: string[]): boolean {
   positions.forEach((position: string, index: number) => {
     if (position === "INIT") {
       if (previous.level !== 0 && previous.step !== 0) {
-        console.log("ERROR HERE");
         errors.push(index);
       }
       current = { level: 0, step: 0 };
@@ -46,7 +41,7 @@ export function validateCommitOrder(positions: string[]): boolean {
     previous = current;
   });
 
-  if (errors.length) {
+  if (errors.length && process.env.NODE_ENV !== "test") {
     console.warn("Found commit positions out of order");
     positions.forEach((position, index) => {
       if (errors.includes(index)) {

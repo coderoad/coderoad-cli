@@ -1,9 +1,6 @@
 export default {
   $schema: "http://json-schema.org/draft-07/schema#",
   $id: "https://coderoad.io/tutorial-schema.json",
-  title: "Tutorial Schema",
-  description:
-    "A CodeRoad tutorial schema data. This JSON data is converted into a tutorial with the CodeRoad editor extension",
   definitions: {
     semantic_version: {
       type: "string",
@@ -48,7 +45,6 @@ export default {
         "An array of command line commands that will be called when the user enters the level or step. Currently commands are limited for security purposes",
       items: {
         type: "string",
-        enum: ["npm install"],
       },
     },
     commit_array: {

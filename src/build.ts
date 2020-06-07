@@ -5,6 +5,8 @@ import * as util from "util";
 import { parse } from "./utils/parse";
 import { getArg } from "./utils/args";
 import { getCommits, CommitLogObject } from "./utils/commits";
+import skeletonSchema from "./schema/skeleton";
+import tutorialSchema from "./schema/tutorial";
 import { validateSchema } from "./utils/validateSchema";
 import * as T from "../typings/tutorial";
 
@@ -70,12 +72,28 @@ async function build(args: string[]) {
     return;
   }
 
-  // parse yaml config
-  let config;
+  // parse yaml skeleton config
+  let skeleton;
   try {
-    config = yamlParser.load(_yaml);
+    skeleton = yamlParser.load(_yaml);
+    if (!skeleton || !Object.keys(skeleton).length) {
+      throw new Error(`Skeleton at "${options.yaml}" is invalid`);
+    }
   } catch (e) {
     console.error("Error parsing yaml");
+    console.error(e.message);
+    return;
+  }
+
+  // validate skeleton based on skeleton json schema
+  try {
+    const valid = validateSchema(skeletonSchema, skeleton);
+    if (!valid) {
+      console.error("Tutorial validation failed. See above to see what to fix");
+      return;
+    }
+  } catch (e) {
+    console.error("Error validating tutorial schema:");
     console.error(e.message);
   }
 
@@ -84,7 +102,7 @@ async function build(args: string[]) {
   try {
     commits = await getCommits({
       localDir: localPath,
-      codeBranch: config.config.repo.branch,
+      codeBranch: skeleton.config.repo.branch,
     });
   } catch (e) {
     console.error("Error loading commits:");
@@ -97,7 +115,7 @@ async function build(args: string[]) {
   try {
     tutorial = await parse({
       text: _markdown,
-      config,
+      skeleton,
       commits,
     });
   } catch (e) {
@@ -106,9 +124,9 @@ async function build(args: string[]) {
     return;
   }
 
-  // validate tutorial based on json schema
+  // validate tutorial based on tutorial json schema
   try {
-    const valid = validateSchema(tutorial);
+    const valid = validateSchema(tutorialSchema, tutorial);
     if (!valid) {
       console.error("Tutorial validation failed. See above to see what to fix");
       return;

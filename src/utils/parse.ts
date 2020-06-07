@@ -90,7 +90,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
 
 type ParseParams = {
   text: string;
-  config: Partial<T.Tutorial | any>;
+  skeleton: Partial<T.Tutorial | any>;
   commits: CommitLogObject;
 };
 
@@ -98,15 +98,14 @@ export function parse(params: ParseParams): any {
   const mdContent: TutorialFrame = parseMdContent(params.text);
 
   const parsed: Partial<T.Tutorial> = {
-    version: params.config.version,
+    version: params.skeleton.version,
     summary: mdContent.summary,
-    config: params.config.config || {},
+    config: params.skeleton.config || {},
     levels: [],
   };
 
   // add init commits
   if (params.commits.INIT && params.commits.INIT.length) {
-    console.log(JSON.stringify(parsed.config?.testRunner));
     // @ts-ignore
     parsed.config.testRunner.setup = {
       ...(parsed.config?.testRunner?.setup || {}),
@@ -115,8 +114,8 @@ export function parse(params: ParseParams): any {
   }
 
   // merge content and tutorial
-  if (params.config.levels && params.config.levels.length) {
-    parsed.levels = params.config.levels
+  if (params.skeleton.levels && params.skeleton.levels.length) {
+    parsed.levels = params.skeleton.levels
       .map((level: T.Level, levelIndex: number) => {
         const levelContent = mdContent.levels[level.id];
 

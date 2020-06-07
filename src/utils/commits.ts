@@ -2,7 +2,7 @@ import * as fs from "fs";
 import util from "util";
 import * as path from "path";
 import gitP, { SimpleGit } from "simple-git/promise";
-import { addToCommitOrder, validateCommitOrder } from "./commitOrder";
+import { validateCommitOrder } from "./validateCommits";
 
 const mkdir = util.promisify(fs.mkdir);
 const exists = util.promisify(fs.exists);

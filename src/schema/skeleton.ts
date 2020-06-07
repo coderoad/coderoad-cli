@@ -1,6 +1,9 @@
 import meta from "./meta";
 
 export default {
+  title: "Skeleton Schema",
+  description:
+    "A CodeRoad tutorial config schema. This data is paired up with the markdown to create a tutorial",
   ...meta,
   type: "object",
   properties: {
@@ -8,25 +11,6 @@ export default {
       $ref: "#/definitions/semantic_version",
       description: "The tutorial version. Must be unique for the tutorial.",
       examples: ["0.1.0", "1.0.0"],
-    },
-
-    // summary
-    summary: {
-      type: "object",
-      properties: {
-        title: {
-          $ref: "#/definitions/title",
-          description: "The title of tutorial",
-        },
-        description: {
-          type: "string",
-          description: "A summary of the the tutorial",
-          minLength: 10,
-          maxLength: 400,
-        },
-      },
-      additionalProperties: false,
-      required: ["title", "description"],
     },
 
     // config
@@ -145,18 +129,10 @@ export default {
       items: {
         type: "object",
         properties: {
-          title: {
-            $ref: "#/definitions/title",
-            description: "A title for the level",
-          },
-          summary: {
+          id: {
             type: "string",
-            description: "A high-level summary of the level",
-            maxLength: 250,
-          },
-          content: {
-            type: "string",
-            description: "Content for a tutorial written as Markdown",
+            description: "A level id",
+            examples: ["L1", "L11"],
           },
           setup: {
             $ref: "#/definitions/setup_action",
@@ -168,10 +144,10 @@ export default {
             items: {
               type: "object",
               properties: {
-                content: {
+                id: {
                   type: "string",
-                  description:
-                    "The text displayed explaining information about the current task, written as markdown",
+                  description: "A level id",
+                  examples: ["L1S1", "L11S12"],
                 },
                 setup: {
                   allOf: [
@@ -179,9 +155,6 @@ export default {
                       $ref: "#/definitions/setup_action",
                       description:
                         "A point for loading commits. It can also run commands and/or open files",
-                    },
-                    {
-                      required: ["commits"],
                     },
                   ],
                 },
@@ -198,15 +171,15 @@ export default {
                   ],
                 },
               },
-              required: ["content", "setup", "solution"],
+              required: ["id", "setup"],
             },
           },
         },
-        required: ["title", "summary", "content"],
+        required: ["id"],
       },
       minItems: 1,
     },
   },
   additionalProperties: false,
-  required: ["version", "summary", "config", "levels"],
+  required: ["version", "config", "levels"],
 };
