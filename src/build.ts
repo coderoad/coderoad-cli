@@ -76,12 +76,13 @@ async function build(args: string[]) {
   let skeleton;
   try {
     skeleton = yamlParser.load(_yaml);
-    if (!skeleton || !skeleton.length) {
-      throw new Error("Invalid yaml file contents");
+    if (!skeleton || !Object.keys(skeleton).length) {
+      throw new Error(`Skeleton at "${options.yaml}" is invalid`);
     }
   } catch (e) {
     console.error("Error parsing yaml");
     console.error(e.message);
+    return;
   }
 
   // validate skeleton based on skeleton json schema
