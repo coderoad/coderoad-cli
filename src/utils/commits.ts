@@ -75,7 +75,7 @@ export async function getCommits({
           // add to the list
           commits[position].push(commit.hash);
         }
-        positions.push(position);
+        positions.unshift(position);
       } else {
         const initMatches = commit.message.match(/^INIT/);
         if (initMatches && initMatches.length) {
@@ -86,7 +86,7 @@ export async function getCommits({
             // add to the list
             commits.INIT.push(commit.hash);
           }
-          positions.push("INIT");
+          positions.unshift("INIT");
         }
       }
     }
