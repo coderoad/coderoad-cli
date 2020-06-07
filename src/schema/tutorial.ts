@@ -201,6 +201,16 @@ export default {
                   ],
                 },
               },
+              hints: {
+                type: "array",
+                description:
+                  "An optional array of hints to provide helpful feedback to users",
+                items: {
+                  type: "string",
+                  description: "A hint to provide to the user",
+                  examples: ["Have you tried doing X?"],
+                },
+              },
               required: ["content", "setup", "solution"],
             },
           },
