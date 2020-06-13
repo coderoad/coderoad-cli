@@ -6,10 +6,15 @@ import { promisify } from "util";
 const asyncExec = promisify(cpExec);
 
 export function createExec(cwd: string) {
-  return function exec(
+  return async function exec(
     command: string
-  ): Promise<{ stdout: string; stderr: string }> | never {
-    return asyncExec(command, { cwd });
+  ): Promise<{ stdout: string | null; stderr: string }> {
+    try {
+      const result = await asyncExec(command, { cwd });
+      return result;
+    } catch (e) {
+      return { stdout: null, stderr: e.message };
+    }
   };
 }
 
@@ -31,7 +36,11 @@ export function createCherryPick(cwd: string) {
 }
 
 export function createCommandRunner(cwd: string) {
-  return async function runCommands(commands: string[], dir?: string) {
+  return async function runCommands(
+    commands: string[],
+    dir?: string
+  ): Promise<boolean> {
+    let errors = [];
     for (const command of commands) {
       try {
         console.log(`> ${command}`);
@@ -39,38 +48,45 @@ export function createCommandRunner(cwd: string) {
         if (dir) {
           cwdDir = path.join(cwd, dir);
         }
-        await createExec(cwdDir)(command);
+        const { stdout, stderr } = await createExec(cwdDir)(command);
+
+        console.warn(stderr);
+        console.log(stdout);
       } catch (e) {
-        console.log(`Setup command failed: "${command}"`);
-        console.log(e.message);
+        console.error(`Command failed: "${command}"`);
+        console.warn(e.message);
+        errors.push(e.message);
       }
     }
+    return !!errors.length;
   };
 }
 
-function isAbsolute(p: string) {
-  return path.normalize(p + "/") === path.normalize(path.resolve(p) + "/");
-}
+// function isAbsolute(p: string) {
+//   return path.normalize(p + "/") === path.normalize(path.resolve(p) + "/");
+// }
 
 export function createTestRunner(cwd: string, config: T.TestRunnerConfig) {
   const { command, args, directory } = config;
 
-  const commandIsAbsolute = isAbsolute(command);
+  // const commandIsAbsolute = isAbsolute(command);
 
-  let runnerPath;
-  if (commandIsAbsolute) {
-    // absolute path
-    runnerPath = command;
-  } else {
-    // relative path
-    runnerPath = path.join(cwd, directory || "", command);
+  let wd = cwd;
+  if (directory) {
+    wd = path.join(cwd, directory);
   }
 
-  const commandWithArgs = `${runnerPath} ${args.tap}`;
+  const commandWithArgs = `${command} ${args.tap}`;
 
-  return async function runTest() {
-    const { stdout, stderr } = await createExec(cwd)(commandWithArgs);
-    console.log(stdout);
-    console.warn(stderr);
+  return async function runTest(): Promise<{
+    stdout: string | null;
+    stderr: string | null;
+  }> {
+    try {
+      // console.log(await createExec(wd)("ls -a node_modules/.bin"));
+      return await createExec(wd)(commandWithArgs);
+    } catch (e) {
+      return Promise.resolve({ stdout: null, stderr: e.message });
+    }
   };
 }

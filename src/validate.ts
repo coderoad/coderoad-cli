@@ -57,8 +57,6 @@ async function validate(args: string[]) {
     const runCommands = createCommandRunner(tmpDir);
     const runTest = createTestRunner(tmpDir, skeleton.config.testRunner);
 
-    // VALIDATE TUTORIAL TESTS
-
     // setup
     if (commits.INIT) {
       // load commits
@@ -131,7 +129,7 @@ async function validate(args: string[]) {
             // run test
             console.info("Running solution test");
             // expect pass
-            // await runTest();
+            await runTest();
           }
         }
       }
