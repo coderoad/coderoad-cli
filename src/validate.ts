@@ -78,14 +78,14 @@ async function validate(args: string[]) {
     }
 
     for (const level of skeleton.levels) {
-      if (level.setup) {
+      if (level?.setup) {
         // load commits
         if (commits[`${level.id}`]) {
           console.log(`Loading ${level.id} commits...`);
           await cherryPick(commits[level.id]);
         }
         // run commands
-        if (level.setup.commands) {
+        if (level.setup?.commands) {
           console.log(`Running ${level.id} commands...`);
           await runCommands(level.setup.commands);
         }
@@ -105,14 +105,17 @@ async function validate(args: string[]) {
             await runCommands(step.setup.commands);
           }
 
-          // ignore runnning tests on steps with no solution
-          if (step.solution) {
+          const stepSolutionCommits = commits[`${step.id}A`];
+          const hasSolution = step.solution || stepSolutionCommits;
+
+          // ignore running tests on steps with no solution
+          if (hasSolution) {
             // run test
-            console.info("Running test");
+            console.info("Running setup test");
+            // expect fail
             // await runTest();
           }
 
-          const stepSolutionCommits = commits[`${step.id}A`];
           if (stepSolutionCommits) {
             console.info(`Loading ${step.id} solution commits...`);
             await cherryPick(stepSolutionCommits);
@@ -123,30 +126,24 @@ async function validate(args: string[]) {
             console.info(`Running ${step.id} solution commands...`);
             await runCommands(step.solution.commands);
           }
+
+          if (hasSolution) {
+            // run test
+            console.info("Running solution test");
+            // expect pass
+            // await runTest();
+          }
         }
       }
     }
 
-    // run test runner setup command(s)
-    // loop over commits:
-    // - load level commit
-    // - run level setup command(s)
-    // - load step setup commit(s)
-    // - run step setup command(s)
-    // - if next solution:
-    //    - run test - expect fail
-    // - if solution
-    //    - run test - expect pass
-
     // log level/step
     // on error, show level/step & error message
-
-    // load INIT commit(s)
   } catch (e) {
     console.error(e.message);
   } finally {
     // cleanup
-    // await fs.emptyDir(tmpDir);
+    await fs.emptyDir(tmpDir);
   }
 }
 
