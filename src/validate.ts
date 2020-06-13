@@ -3,7 +3,11 @@ import * as fs from "fs-extra";
 import * as yamlParser from "js-yaml";
 import { getArg } from "./utils/args";
 import gitP, { SimpleGit } from "simple-git/promise";
-import { createCommandRunner, createCherryPick } from "./utils/exec";
+import {
+  createCommandRunner,
+  createCherryPick,
+  createTestRunner,
+} from "./utils/exec";
 import { getCommits, CommitLogObject } from "./utils/commits";
 
 async function validate(args: string[]) {
@@ -51,6 +55,7 @@ async function validate(args: string[]) {
     // no js cherry pick implementation
     const cherryPick = createCherryPick(tmpDir);
     const runCommands = createCommandRunner(tmpDir);
+    const runTest = createTestRunner(tmpDir, skeleton.config.testRunner);
 
     // VALIDATE TUTORIAL TESTS
 
@@ -63,11 +68,15 @@ async function validate(args: string[]) {
       // run commands
       if (skeleton.config?.testRunner?.setup?.commands) {
         console.info("Running setup commands...");
-        await runCommands(skeleton.config?.testRunner?.setup?.commands);
+
+        await runCommands(
+          skeleton.config?.testRunner?.setup?.commands,
+          // add optional setup directory
+          skeleton.config?.testRunner?.directory
+        );
       }
     }
 
-    console.log(skeleton.levels);
     for (const level of skeleton.levels) {
       if (level.setup) {
         // load commits
@@ -84,6 +93,7 @@ async function validate(args: string[]) {
       // steps
       if (level.steps) {
         for (const step of level.steps) {
+          console.log(step);
           // load commits
           if (step.setup.commits) {
             console.log(`Loading ${step.id} commits...`);
@@ -94,6 +104,10 @@ async function validate(args: string[]) {
             console.log(`Running ${step.id} commands...`);
             await runCommands(step.setup.commands);
           }
+
+          // run test
+          console.info("Running test");
+          await runTest();
         }
       }
     }
