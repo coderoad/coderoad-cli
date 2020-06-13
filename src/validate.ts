@@ -3,7 +3,7 @@ import * as fs from "fs-extra";
 import * as yamlParser from "js-yaml";
 import { getArg } from "./utils/args";
 import gitP, { SimpleGit } from "simple-git/promise";
-import { gitPCherryPick } from "./utils/cherryPick";
+import { createCommandRunner, createCherryPick } from "./utils/exec";
 import { getCommits, CommitLogObject } from "./utils/commits";
 
 async function validate(args: string[]) {
@@ -23,8 +23,6 @@ async function validate(args: string[]) {
   try {
     skeleton = yamlParser.load(_yaml);
 
-    console.log("config", skeleton);
-    // TODO: validate yaml
     if (!skeleton) {
       throw new Error("Invalid yaml file contents");
     }
@@ -37,7 +35,6 @@ async function validate(args: string[]) {
 
   // validate commits
   const commits: CommitLogObject = await getCommits({ localDir, codeBranch });
-  console.log("commits", commits);
 
   // setup tmp dir
   const tmpDir = path.join(localDir, ".tmp");
@@ -48,17 +45,23 @@ async function validate(args: string[]) {
     }
     const tempGit: SimpleGit = gitP(tmpDir);
 
-    console.log(Object.keys(gitP));
-
     await tempGit.init();
     await tempGit.addRemote("origin", skeleton.config.repo.uri);
     await tempGit.fetch("origin", skeleton.config.repo.branch);
     // no js cherry pick implementation
-    const cherryPick = gitPCherryPick(tmpDir);
+    const cherryPick = createCherryPick(tmpDir);
+    const runCommands = createCommandRunner(tmpDir);
 
     // VALIDATE TUTORIAL TESTS
     if (commits.INIT) {
+      // load commits
+      console.info("Loading setup commits...");
       cherryPick(commits.INIT);
+
+      // run commands
+      if (skeleton.config?.testRunner?.setup?.commands) {
+        runCommands(skeleton.config?.testRunner?.setup?.commands);
+      }
     }
 
     // run test runner setup command(s)
