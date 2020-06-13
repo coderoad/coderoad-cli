@@ -62,7 +62,7 @@ export interface TestRunnerArgs {
 
 export interface TestRunnerConfig {
   command: string;
-  args?: TestRunnerArgs;
+  args: TestRunnerArgs;
   directory?: string;
   setup?: StepActions;
 }

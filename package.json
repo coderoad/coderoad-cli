@@ -49,6 +49,7 @@
   "dependencies": {
     "ajv": "^6.12.2",
     "esm": "^3.2.25",
+    "fs-extra": "^9.0.1",
     "js-yaml": "^3.14.0",
     "kleur": "^3.0.3",
     "lodash": "^4.17.15",
@@ -58,6 +59,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.10.1",
     "@types/ajv": "^1.0.0",
+    "@types/fs-extra": "^9.0.1",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^25.2.3",
     "@types/js-yaml": "^3.12.4",
