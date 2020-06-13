@@ -111,7 +111,13 @@ async function validate(args: string[]) {
             // run test
             console.info("Running setup test");
             // expect fail
-            // await runTest();
+            const { stdout, stderr } = await runTest();
+            if (stdout) {
+              console.error(
+                `Expected ${step.id} setup tests to fail, but passed`
+              );
+              console.log(stdout);
+            }
           }
 
           if (stepSolutionCommits) {
@@ -129,7 +135,13 @@ async function validate(args: string[]) {
             // run test
             console.info("Running solution test");
             // expect pass
-            await runTest();
+            const { stdout, stderr } = await runTest();
+            if (stderr) {
+              console.error(
+                `Expected ${step.id} solution tests to pass, but failed`
+              );
+              console.log(stderr);
+            }
           }
         }
       }
