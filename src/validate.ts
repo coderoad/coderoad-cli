@@ -80,7 +80,7 @@ async function validate(args: string[]) {
     for (const level of skeleton.levels) {
       if (level.setup) {
         // load commits
-        if (level.setup.commits) {
+        if (commits[`${level.id}`]) {
           console.log(`Loading ${level.id} commits...`);
           await cherryPick(commits[level.id]);
         }
@@ -93,21 +93,36 @@ async function validate(args: string[]) {
       // steps
       if (level.steps) {
         for (const step of level.steps) {
-          console.log(step);
           // load commits
-          if (step.setup.commits) {
-            console.log(`Loading ${step.id} commits...`);
-            await cherryPick(commits[step.id]);
+          const stepSetupCommits = commits[`${step.id}Q`];
+          if (stepSetupCommits) {
+            console.info(`Loading ${step.id} setup commits...`);
+            await cherryPick(stepSetupCommits);
           }
           // run commands
           if (step.setup.commands) {
-            console.log(`Running ${step.id} commands...`);
+            console.info(`Running ${step.id} setup commands...`);
             await runCommands(step.setup.commands);
           }
 
-          // run test
-          console.info("Running test");
-          await runTest();
+          // ignore runnning tests on steps with no solution
+          if (step.solution) {
+            // run test
+            console.info("Running test");
+            // await runTest();
+          }
+
+          const stepSolutionCommits = commits[`${step.id}A`];
+          if (stepSolutionCommits) {
+            console.info(`Loading ${step.id} solution commits...`);
+            await cherryPick(stepSolutionCommits);
+          }
+
+          // run commands
+          if (step?.solution?.commands) {
+            console.info(`Running ${step.id} solution commands...`);
+            await runCommands(step.solution.commands);
+          }
         }
       }
     }
