@@ -58,14 +58,15 @@ async function validate(args: string[]) {
     const runTest = createTestRunner(tmpDir, skeleton.config.testRunner);
 
     // setup
+    console.info("* Setup");
     if (commits.INIT) {
       // load commits
-      console.info("Loading setup commits...");
+      console.info("-- Loading commits...");
       await cherryPick(commits.INIT);
 
       // run commands
       if (skeleton.config?.testRunner?.setup?.commands) {
-        console.info("Running setup commands...");
+        console.info("-- Running commands...");
 
         await runCommands(
           skeleton.config?.testRunner?.setup?.commands,
@@ -76,30 +77,32 @@ async function validate(args: string[]) {
     }
 
     for (const level of skeleton.levels) {
+      console.info(`* ${level.id}`);
       if (level?.setup) {
         // load commits
         if (commits[`${level.id}`]) {
-          console.log(`Loading ${level.id} commits...`);
+          console.log(`-- Loading commits...`);
           await cherryPick(commits[level.id]);
         }
         // run commands
         if (level.setup?.commands) {
-          console.log(`Running ${level.id} commands...`);
+          console.log(`-- Running commands...`);
           await runCommands(level.setup.commands);
         }
       }
       // steps
       if (level.steps) {
         for (const step of level.steps) {
+          console.info(`** ${step.id}`);
           // load commits
           const stepSetupCommits = commits[`${step.id}Q`];
           if (stepSetupCommits) {
-            console.info(`Loading ${step.id} setup commits...`);
+            console.info(`--- Loading setup commits...`);
             await cherryPick(stepSetupCommits);
           }
           // run commands
           if (step.setup.commands) {
-            console.info(`Running ${step.id} setup commands...`);
+            console.info(`--- Running setup commands...`);
             await runCommands(step.setup.commands);
           }
 
@@ -109,37 +112,39 @@ async function validate(args: string[]) {
           // ignore running tests on steps with no solution
           if (hasSolution) {
             // run test
-            console.info("Running setup test");
+            console.info("--- Running setup test...");
             // expect fail
             const { stdout, stderr } = await runTest();
             if (stdout) {
               console.error(
-                `Expected ${step.id} setup tests to fail, but passed`
+                `--- Expected ${step.id} setup tests to fail, but passed`
               );
+              // log tests
               console.log(stdout);
             }
           }
 
           if (stepSolutionCommits) {
-            console.info(`Loading ${step.id} solution commits...`);
+            console.info(`--- Loading solution commits...`);
             await cherryPick(stepSolutionCommits);
           }
 
           // run commands
           if (step?.solution?.commands) {
-            console.info(`Running ${step.id} solution commands...`);
+            console.info(`--- Running solution commands...`);
             await runCommands(step.solution.commands);
           }
 
           if (hasSolution) {
             // run test
-            console.info("Running solution test");
+            console.info("--- Running solution test...");
             // expect pass
             const { stdout, stderr } = await runTest();
             if (stderr) {
               console.error(
-                `Expected ${step.id} solution tests to pass, but failed`
+                `--- Expected ${step.id} solution tests to pass, but failed`
               );
+              // log tests
               console.log(stderr);
             }
           }
@@ -147,9 +152,9 @@ async function validate(args: string[]) {
       }
     }
 
-    // log level/step
-    // on error, show level/step & error message
+    console.info(`\n✔ Success!`);
   } catch (e) {
+    console.error("\n✘ Fail!");
     console.error(e.message);
   } finally {
     // cleanup

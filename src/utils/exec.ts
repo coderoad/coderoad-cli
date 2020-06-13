@@ -43,7 +43,7 @@ export function createCommandRunner(cwd: string) {
     let errors = [];
     for (const command of commands) {
       try {
-        console.log(`> ${command}`);
+        console.log(`--> ${command}`);
         let cwdDir = cwd;
         if (dir) {
           cwdDir = path.join(cwd, dir);
@@ -51,7 +51,6 @@ export function createCommandRunner(cwd: string) {
         const { stdout, stderr } = await createExec(cwdDir)(command);
 
         console.warn(stderr);
-        console.log(stdout);
       } catch (e) {
         console.error(`Command failed: "${command}"`);
         console.warn(e.message);
