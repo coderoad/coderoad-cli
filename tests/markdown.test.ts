@@ -37,6 +37,7 @@ Some text that describes the level
 
 # Another title
 `;
+
     expect(validateMarkdown(md1)).toBe(false);
     expect(validateMarkdown(md2)).toBe(false);
   });
@@ -94,6 +95,36 @@ Description.
 > Level's summary: a short description of the level's content in one line.
 
 Some text that describes the level
+
+### L1S1
+
+First Step`;
+    expect(validateMarkdown(md)).toBe(true);
+  });
+
+  it("should ignore markdown content in codeblocks", () => {
+    const md = `# Title
+
+Description.
+
+\`\`\`md
+# A codeblock
+
+Should not be a problem
+\`\`\`
+
+
+## L1 Put Level's title here
+
+> Level's summary: a short description of the level's content in one line.
+
+Some text that describes the level
+
+\`\`\`
+## Another Level in markdown
+
+Should not be an issue
+\`\`\`
 
 ### L1S1
 
