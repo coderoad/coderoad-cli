@@ -53,14 +53,48 @@ async function validate(args: string[]) {
     const runCommands = createCommandRunner(tmpDir);
 
     // VALIDATE TUTORIAL TESTS
+
+    // setup
     if (commits.INIT) {
       // load commits
       console.info("Loading setup commits...");
-      cherryPick(commits.INIT);
+      await cherryPick(commits.INIT);
 
       // run commands
       if (skeleton.config?.testRunner?.setup?.commands) {
-        runCommands(skeleton.config?.testRunner?.setup?.commands);
+        console.info("Running setup commands...");
+        await runCommands(skeleton.config?.testRunner?.setup?.commands);
+      }
+    }
+
+    console.log(skeleton.levels);
+    for (const level of skeleton.levels) {
+      if (level.setup) {
+        // load commits
+        if (level.setup.commits) {
+          console.log(`Loading ${level.id} commits...`);
+          await cherryPick(commits[level.id]);
+        }
+        // run commands
+        if (level.setup.commands) {
+          console.log(`Running ${level.id} commands...`);
+          await runCommands(level.setup.commands);
+        }
+      }
+      // steps
+      if (level.steps) {
+        for (const step of level.steps) {
+          // load commits
+          if (step.setup.commits) {
+            console.log(`Loading ${step.id} commits...`);
+            await cherryPick(commits[step.id]);
+          }
+          // run commands
+          if (step.setup.commands) {
+            console.log(`Running ${step.id} commands...`);
+            await runCommands(step.setup.commands);
+          }
+        }
       }
     }
 
