@@ -3,6 +3,7 @@ import * as fs from "fs-extra";
 import * as yamlParser from "js-yaml";
 import { getArg } from "./utils/args";
 import gitP, { SimpleGit } from "simple-git/promise";
+import { gitPCherryPick } from "./utils/cherryPick";
 import { getCommits, CommitLogObject } from "./utils/commits";
 
 async function validate(args: string[]) {
@@ -46,10 +47,18 @@ async function validate(args: string[]) {
       await fs.emptyDir(tmpDir);
     }
     const tempGit: SimpleGit = gitP(tmpDir);
+
+    console.log(Object.keys(gitP));
+
     await tempGit.init();
+    await tempGit.addRemote("origin", skeleton.config.repo.uri);
+    await tempGit.fetch("origin", skeleton.config.repo.branch);
+    // no js cherry pick implementation
+    const cherryPick = gitPCherryPick(tmpDir);
 
     // VALIDATE TUTORIAL TESTS
     if (commits.INIT) {
+      cherryPick(commits.INIT);
     }
 
     // run test runner setup command(s)
@@ -71,7 +80,7 @@ async function validate(args: string[]) {
     console.error(e.message);
   } finally {
     // cleanup
-    await fs.emptyDir(tmpDir);
+    // await fs.emptyDir(tmpDir);
   }
 }
 
