@@ -5,6 +5,7 @@ import * as yamlParser from "js-yaml";
 import { getArg } from "./utils/args";
 import gitP, { SimpleGit } from "simple-git/promise";
 import { getCommits, CommitLogObject } from "./utils/commits";
+import simplegit from "simple-git/promise";
 
 const mkdir = util.promisify(fs.mkdir);
 const exists = util.promisify(fs.exists);
@@ -24,11 +25,13 @@ async function validate(args: string[]) {
   const _yaml = await read(path.join(localDir, options.yaml), "utf8");
 
   // parse yaml config
-  let config;
+  let skeleton;
   try {
-    config = yamlParser.load(_yaml);
+    skeleton = yamlParser.load(_yaml);
+
+    console.log("config", skeleton);
     // TODO: validate yaml
-    if (!config || !config.length) {
+    if (!skeleton) {
       throw new Error("Invalid yaml file contents");
     }
   } catch (e) {
@@ -36,40 +39,44 @@ async function validate(args: string[]) {
     console.error(e.message);
   }
 
-  const codeBranch: string = config.config.repo.branch;
+  const codeBranch: string = skeleton.config.repo.branch;
 
-  // VALIDATE SKELETON WITH COMMITS
-  const commits = getCommits({ localDir, codeBranch });
+  // validate commits
+  const commits = await getCommits({ localDir, codeBranch });
 
-  // parse tutorial skeleton for order and commands
+  // setup tmp dir
+  const tmpDir = path.join(localDir, ".tmp");
 
-  // on error, warn missing level/step
+  try {
+    if (!(await exists(tmpDir))) {
+      await mkdir(tmpDir);
+    }
+    const tempGit: SimpleGit = gitP(tmpDir);
+    await tempGit.init();
 
-  // VALIDATE COMMIT ORDER
-  // list all commits in order
-  // validate that a level number doesn't come before another level
-  // validate that a step falls within a level
-  // validate that steps are in order
+    // VALIDATE TUTORIAL TESTS
 
-  // on error, show level/step out of order
+    // run test runner setup command(s)
+    // loop over commits:
+    // - load level commit
+    // - run level setup command(s)
+    // - load step setup commit(s)
+    // - run step setup command(s)
+    // - if next solution:
+    //    - run test - expect fail
+    // - if solution
+    //    - run test - expect pass
 
-  // VALIDATE TUTORIAL TESTS
-  // load INIT commit(s)
-  // run test runner setup command(s)
-  // loop over commits:
-  // - load level commit
-  // - run level setup command(s)
-  // - load step setup commit(s)
-  // - run step setup command(s)
-  // - if next solution:
-  //    - run test - expect fail
-  // - if solution
-  //    - run test - expect pass
+    // log level/step
+    // on error, show level/step & error message
 
-  // log level/step
-  // on error, show level/step & error message
-
-  // CLEANUP
+    // load INIT commit(s)
+  } catch (e) {
+    console.error(e.message);
+  } finally {
+    // cleanup
+    await rmdir(tmpDir);
+  }
 }
 
 export default validate;
