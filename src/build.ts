@@ -8,6 +8,7 @@ import { getCommits, CommitLogObject } from "./utils/commits";
 import skeletonSchema from "./schema/skeleton";
 import tutorialSchema from "./schema/tutorial";
 import { validateSchema } from "./utils/validateSchema";
+import { validateMarkdown } from "./utils/validateMarkdown";
 import * as T from "../typings/tutorial";
 
 const write = util.promisify(fs.writeFile);
@@ -68,6 +69,18 @@ async function build(args: string[]) {
     ]);
   } catch (e) {
     console.error("Error reading file:");
+    console.error(e.message);
+    return;
+  }
+
+  // validate markdown loosely
+  try {
+    const isValid = validateMarkdown(_markdown);
+    if (!isValid) {
+      console.warn("Invalid markdown");
+    }
+  } catch (e) {
+    console.error("Error validating markdown:");
     console.error(e.message);
     return;
   }
