@@ -53,7 +53,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
   // Identify each part of the content
   parts.forEach((section: string) => {
     // match level
-    const levelRegex = /^(#{2}\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s*(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
+    const levelRegex = /^(#{2}\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
     const levelMatch: RegExpMatchArray | null = section.match(levelRegex);
     if (levelMatch && levelMatch.groups) {
       const {
@@ -67,12 +67,13 @@ export function parseMdContent(md: string): TutorialFrame | never {
       mdContent.levels[levelId] = {
         id: levelId,
         title: levelTitle.trim(),
-        summary: levelSummary
-          ? levelSummary.trim()
-          : truncate(levelContent.split(/[\n\r]+/)[0].trim(), {
-              length: 80,
-              omission: "...",
-            }),
+        summary:
+          levelSummary && levelSummary.trim().length
+            ? levelSummary.trim()
+            : truncate(levelContent.split(/[\n\r]+/)[0].trim(), {
+                length: 80,
+                omission: "...",
+              }),
         content: levelContent.trim(),
       };
       current = { level: levelId, step: "0" };
