@@ -191,10 +191,45 @@ But not including this line.
             title: "Put Level's title here",
             summary: "Some text.",
             content: "Some text.\n\nBut not including this line.",
+            steps: [],
           },
         ],
       };
-      expect(result.levels[0].summary).toEqual("Some text.");
+      expect(result.levels[0]).toEqual(expected.levels[0]);
+    });
+
+    it("should truncate a level with an empty summary", () => {
+      const md = `# Title
+
+Description.
+
+## L1 Put Level's title here
+
+>
+
+Some text.
+
+But not including this line.
+`;
+
+      const skeleton = { levels: [{ id: "L1" }] };
+      const result = parse({
+        text: md,
+        skeleton,
+        commits: {},
+      });
+      const expected = {
+        levels: [
+          {
+            id: "L1",
+            title: "Put Level's title here",
+            summary: "Some text.",
+            content: "Some text.\n\nBut not including this line.",
+            steps: [],
+          },
+        ],
+      };
+      expect(result.levels[0]).toEqual(expected.levels[0]);
     });
 
     it("should match line breaks with double line breaks for proper spacing", () => {
