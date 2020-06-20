@@ -171,7 +171,7 @@ export default {
                   ],
                 },
               },
-              required: ["id", "setup"],
+              required: ["id"],
             },
           },
         },

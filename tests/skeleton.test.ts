@@ -217,7 +217,7 @@ describe("validate skeleton", () => {
     const valid = validateSkeleton(json);
     expect(valid).toBe(false);
   });
-  it("should fail if step setup is missing", () => {
+  it("should not fail if step setup is missing", () => {
     const step1 = { ...validJson.levels[0].steps[0], setup: undefined };
     const level1 = { ...validJson.levels[0], steps: [step1] };
     const json = {
@@ -226,7 +226,7 @@ describe("validate skeleton", () => {
     };
 
     const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
+    expect(valid).toBe(true);
   });
   it("should fail if step setup is invalid", () => {
     const step1 = {
