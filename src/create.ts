@@ -17,9 +17,9 @@ async function create(args: string[]): Promise<void> {
   // dir - default .
   const dir = !args.length || args[0].match(/^-/) ? "." : args[0];
   // lang - default js
-  const lang = getArg(args, { name: "lang", alias: "l" }) || "js";
+  const lang: string = getArg(args, { name: "lang", alias: "l" }) || "js";
   // testRunner - default mocha
-  const testRunner =
+  const testRunner: string =
     getArg(args, { name: "testRunner", alias: "t" }) || "mocha";
 
   // validate lang

@@ -22,12 +22,8 @@ async function validate(args: string[]) {
 
   // -y --yaml - default coderoad-config.yml
   const options: Options = {
-    // @ts-ignore
-    yaml:
-      getArg(args, { name: "yaml", alias: "y", type: "string" }) ||
-      "coderoad.yaml",
-    // @ts-ignore
-    clean: getArg(args, { name: "clean", alias: "c", type: "bool" }),
+    yaml: getArg(args, { name: "yaml", alias: "y" }) || "coderoad.yaml",
+    clean: getArg(args, { name: "clean", alias: "c" }) !== "false",
   };
 
   const _yaml: string = await fs.readFile(
