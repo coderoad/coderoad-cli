@@ -21,6 +21,24 @@ describe("args", () => {
     const result = getArg(args, { name: "name", alias: "n" });
     expect(result).toBe("value");
   });
+  it("should convert bool string to true", () => {
+    const args = ["--someBool", "true"];
+    const result = getArg(args, {
+      name: "someBool",
+      alias: "sb",
+      type: "bool",
+    });
+    expect(result).toBe(true);
+  });
+  it("should convert bool string to false", () => {
+    const args = ["--someBool", "false"];
+    const result = getArg(args, {
+      name: "someBool",
+      alias: "sb",
+      type: "bool",
+    });
+    expect(result).toBe(false);
+  });
   it("should default value to true if no next value", () => {
     const args = ["--someBool"];
     const result = getArg(args, {
@@ -30,8 +48,17 @@ describe("args", () => {
     });
     expect(result).toBe(true);
   });
-  it("should default value to true if next value is param", () => {
+  it("should default value to true if next value is --name", () => {
     const args = ["--someBool", "--someOtherBool"];
+    const result = getArg(args, {
+      name: "someBool",
+      alias: "sb",
+      type: "bool",
+    });
+    expect(result).toBe(true);
+  });
+  it("should default value to true if next value is -alias", () => {
+    const args = ["--someBool", "-a"];
     const result = getArg(args, {
       name: "someBool",
       alias: "sb",
