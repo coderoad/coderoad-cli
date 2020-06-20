@@ -1,32 +1,64 @@
-type ArgValueParams = { name: string; alias?: string; param?: boolean };
+type ArgValueParams = {
+  name: string;
+  alias?: string;
+  type?: "string" | "bool" | "number";
+};
 
-const checkValue = (
+function checkValue<T>(
   args: string[],
   string: string,
-  options: ArgValueParams
-) => {
+  isBool: boolean
+): string | null {
   const nameIndex = args.indexOf(string);
-  if (nameIndex > -1) {
-    if (options.param) {
-      const value = args[nameIndex + 1];
-      if (!value) {
-        throw new Error(`Argument ${string} is missing a parameter value`);
+  if (nameIndex >= 0) {
+    const nextArg = args[nameIndex + 1];
+
+    if (nextArg !== undefined) {
+      const nextIsCommand = !!nextArg.match(/^\-/);
+      if (nextIsCommand) {
+        return isBool ? "true" : null;
       }
-      return value;
+      return nextArg;
+    } else {
+      // no secondary set value
+      return isBool ? "true" : null;
     }
   }
   return null;
-};
+}
 
-export function getArg(args: string[], options: ArgValueParams): string | null {
-  let value: null | string = null;
+export function getArg<T>(
+  args: string[],
+  options: ArgValueParams
+): string | boolean | number | null {
+  let stringValue: null | string = null;
+  const isBool = options.type === "bool";
 
-  const aliasString = `-${options.alias}`;
-  value = checkValue(args, aliasString, options);
-  if (!value) {
+  if (options.alias) {
+    const aliasString = `-${options.alias}`;
+    stringValue = checkValue(args, aliasString, isBool);
+  }
+  if (!stringValue) {
     const nameString = `--${options.name}`;
-    value = checkValue(args, nameString, options);
+    stringValue = checkValue(args, nameString, isBool);
   }
 
-  return value;
+  if (stringValue === null) {
+    return null;
+  }
+
+  if (!options.type) {
+    options.type = "string";
+  }
+
+  // coerce type
+  switch (options.type) {
+    case "bool":
+      return (stringValue || "").toLowerCase() !== "false";
+    case "number":
+      return Number(stringValue);
+    case "string":
+    default:
+      return stringValue;
+  }
 }

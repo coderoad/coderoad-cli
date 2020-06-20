@@ -10,17 +10,30 @@ import {
 } from "./utils/exec";
 import { getCommits, CommitLogObject } from "./utils/commits";
 
+interface Options {
+  yaml: string;
+  clean: boolean;
+}
+
 async function validate(args: string[]) {
   // dir - default .
   const dir = !args.length || args[0].match(/^-/) ? "." : args[0];
   const localDir = path.join(process.cwd(), dir);
 
   // -y --yaml - default coderoad-config.yml
-  const options = {
-    yaml: getArg(args, { name: "yaml", alias: "y" }) || "coderoad.yaml",
+  const options: Options = {
+    // @ts-ignore
+    yaml:
+      getArg(args, { name: "yaml", alias: "y", type: "string" }) ||
+      "coderoad.yaml",
+    // @ts-ignore
+    clean: getArg(args, { name: "clean", alias: "c", type: "bool" }),
   };
 
-  const _yaml = await fs.readFile(path.join(localDir, options.yaml), "utf8");
+  const _yaml: string = await fs.readFile(
+    path.join(localDir, options.yaml),
+    "utf8"
+  );
 
   // parse yaml config
   let skeleton;
@@ -158,7 +171,10 @@ async function validate(args: string[]) {
     console.error(e.message);
   } finally {
     // cleanup
-    await fs.emptyDir(tmpDir);
+    console.log("options.clean", options.clean);
+    if (options.clean) {
+      await fs.emptyDir(tmpDir);
+    }
   }
 }
 
