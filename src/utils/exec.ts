@@ -22,14 +22,18 @@ export function createCherryPick(cwd: string) {
   return async function cherryPick(commits: string[]): Promise<void> {
     for (const commit of commits) {
       try {
-        const { stdout } = await createExec(cwd)(
+        const { stdout, stderr } = await createExec(cwd)(
           `git cherry-pick -X theirs ${commit}`
         );
+        if (stderr) {
+          console.warn(stderr);
+        }
         if (!stdout) {
           console.warn(`No cherry-pick output for ${commit}`);
         }
       } catch (e) {
         console.warn(`Cherry-pick failed for ${commit}`);
+        console.error(e.message);
       }
     }
   };
@@ -50,6 +54,7 @@ export function createCommandRunner(cwd: string) {
         }
         const { stdout, stderr } = await createExec(cwdDir)(command);
 
+        console.log(stdout);
         console.warn(stderr);
       } catch (e) {
         console.error(`Command failed: "${command}"`);
