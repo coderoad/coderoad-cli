@@ -47,6 +47,7 @@ Usage: coderoad validate [path] [options]
 
 Options:
 --help (-h)       display these help docs
+--clean (-c)      set to false to preserve .tmp folder. Helpful for debugging
 
 More docs at https://github.com/coderoad/coderoad-cli`);
 }
