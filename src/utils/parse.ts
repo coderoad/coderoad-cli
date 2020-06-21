@@ -45,7 +45,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
     mdContent.summary.description = summaryMatch.groups.tutorialDescription.trim();
   }
 
-  let current = { level: -1, step: 0 };
+  let current = { level: -1, step: -1 };
   // Identify each part of the content
   parts.forEach((section: string) => {
     // match level
@@ -53,7 +53,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
     const levelMatch: RegExpMatchArray | null = section.match(levelRegex);
 
     if (levelMatch && levelMatch.groups) {
-      current = { level: current.level + 1, step: 0 };
+      current = { level: current.level + 1, step: -1 };
       const { levelTitle, levelSummary, levelContent } = levelMatch.groups;
 
       // @ts-ignore
@@ -75,15 +75,15 @@ export function parseMdContent(md: string): TutorialFrame | never {
       const stepRegex = /^(#{3}\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
       const stepMatch: RegExpMatchArray | null = section.match(stepRegex);
       if (stepMatch && stepMatch.groups) {
+        current = { level: current.level, step: current.step + 1 };
         const { stepId, stepContent } = stepMatch.groups;
         mdContent.levels[current.level].steps[current.step] = {
           id: `${current.level + 1}.${current.step + 1}`,
           content: stepContent.trim(),
         };
-        current = { ...current, step: current.step + 1 };
       } else {
         // parse hints from stepContent
-        const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+(\*\s(?<hintContent>[^]*))[\n\r]+)+/;
+        const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+([\*|\-]\s(?<hintContent>[^]*))[\n\r]+)+/;
         const hintMatch = section.match(hintDetectRegex);
         if (!!hintMatch) {
           const hintItemRegex = /[\n\r]+\*\s/;
@@ -142,83 +142,43 @@ export function parse(params: ParseParams): any {
         level = { ...configLevelProps, ...level };
         if (steps) {
           steps.forEach((step: T.Step, index: number) => {
-            console.log("step", step);
-            const mdStep = level.steps[index];
-            console.log("mdStep", mdStep);
-            step = {
-              ...step,
-              ...mdStep,
-            };
+            try {
+              const mdStep = level.steps[index];
 
-            const stepKey = step.id;
-            console.log("stepKey", stepKey);
-            const stepSetupKey = `${stepKey}Q`;
-            if (params.commits[stepSetupKey]) {
-              if (!step.setup) {
-                step.setup = {
-                  commits: [],
-                };
-              }
-              step.setup.commits = params.commits[stepSetupKey];
-            }
+              step = {
+                ...step,
+                ...mdStep,
+              };
 
-            const stepSolutionKey = `${stepKey}A`;
-            if (params.commits[stepSolutionKey]) {
-              if (!step.solution) {
-                step.solution = {
-                  commits: [],
-                };
+              const stepSetupKey = `${step.id}Q`;
+              if (params.commits[stepSetupKey]) {
+                if (!step.setup) {
+                  step.setup = {
+                    commits: [],
+                  };
+                }
+                step.setup.commits = params.commits[stepSetupKey];
               }
-              step.solution.commits = params.commits[stepSolutionKey];
+
+              const stepSolutionKey = `${step.id}A`;
+              if (params.commits[stepSolutionKey]) {
+                if (!step.solution) {
+                  step.solution = {
+                    commits: [],
+                  };
+                }
+                step.solution.commits = params.commits[stepSolutionKey];
+              }
+            } catch (error) {
+              console.error("Error parsing level steps");
+              console.warn(JSON.stringify(level.steps));
+              console.error(error.message);
             }
             // update level step
             level.steps[index] = step;
           });
         }
       }
-
-      // try {
-      //   level.steps = (level.steps || []).map(
-      //     (step: T.Step, stepIndex: number) => {
-      //       const stepKey = `${levelId}S${stepIndex + 1}`;
-      //       const stepSetupKey = `${stepKey}Q`;
-      //       if (params.commits[stepSetupKey]) {
-      //         if (!step.setup) {
-      //           step.setup = {
-      //             commits: [],
-      //           };
-      //         }
-      //         step.setup.commits = params.commits[stepSetupKey];
-      //       }
-
-      //       const stepSolutionKey = `${stepKey}A`;
-      //       if (params.commits[stepSolutionKey]) {
-      //         if (!step.solution) {
-      //           step.solution = {
-      //             commits: [],
-      //           };
-      //         }
-      //         step.solution.commits = params.commits[stepSolutionKey];
-      //       }
-
-      //       // add markdown
-      //       const stepMarkdown: Partial<T.Step> =
-      //         mdContent.levels[level.id].steps[step.id];
-      //       if (stepMarkdown) {
-      //         step = { ...step, ...stepMarkdown };
-      //       }
-
-      //       step.id = `${stepKey}`;
-      //       return step;
-      //     }
-      //   );
-      // } catch (error) {
-      //   console.log(JSON.stringify(level.steps));
-      //   console.error("Error parsing level steps");
-      //   console.error(error.message);
-      // }
-
-      console.log(params.commits);
 
       if (params.commits[level.id]) {
         if (!level.setup) {
