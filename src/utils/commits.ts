@@ -62,7 +62,7 @@ export async function getCommits({
 
     for (const commit of logs.all) {
       const matches = commit.message.match(
-        /^(?<stepId>(?<levelId>L\d+)(S\d+))(?<stepType>[QA])?/
+        /^(?<stepId>(?<levelId>L?\d+)([S|\.]\d+))(?<stepType>[QA])?/
       );
 
       if (matches && matches.length) {
