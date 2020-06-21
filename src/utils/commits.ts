@@ -73,7 +73,7 @@ export async function getCommits({
           commits[position] = [commit.hash];
         } else {
           // add to the list
-          commits[position].push(commit.hash);
+          commits[position].unshift(commit.hash);
         }
         positions.unshift(position);
       } else {
@@ -84,7 +84,7 @@ export async function getCommits({
             commits.INIT = [commit.hash];
           } else {
             // add to the list
-            commits.INIT.push(commit.hash);
+            commits.INIT.unshift(commit.hash);
           }
           positions.unshift("INIT");
         }
@@ -100,6 +100,8 @@ export async function getCommits({
     // cleanup the tmp directory
     await rmdir(tmpDir, { recursive: true });
   }
+
+  console.log(commits);
 
   return commits;
 }
