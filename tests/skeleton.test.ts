@@ -30,7 +30,7 @@ const validJson = {
     {
       steps: [
         {
-          id: "L1S1",
+          id: "1.1",
           setup: {
             files: ["package.json"],
           },
@@ -39,7 +39,7 @@ const validJson = {
           },
         },
         {
-          id: "L1S2",
+          id: "1.2",
           setup: {
             commands: ["npm install"],
           },
@@ -48,7 +48,7 @@ const validJson = {
           },
         },
         {
-          id: "L1S3",
+          id: "1.3",
           setup: {
             files: ["package.json"],
             watchers: ["package.json", "node_modules/some-package"],
@@ -58,7 +58,7 @@ const validJson = {
           },
         },
         {
-          id: "L1S4",
+          id: "1.4",
           setup: {
             commands: [],
             filter: "^Example 2",
@@ -66,7 +66,7 @@ const validJson = {
           },
         },
       ],
-      id: "L1",
+      id: "1",
     },
   ],
 };

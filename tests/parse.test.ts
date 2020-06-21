@@ -32,7 +32,7 @@ Short description to be shown as a tutorial's subtitle.
     
 Description.
 
-## L1 Put Level's title here
+## Put Level's title here
 
 > Level's summary: a short description of the level's content in one line.
 
@@ -51,7 +51,7 @@ Some text
       const expected = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Put Level's title here",
             summary:
               "Level's summary: a short description of the level's content in one line.",
@@ -68,7 +68,7 @@ Some text
     
 Description.
 
-## L1 Put Level's title here
+## Put Level's title here
 
 > Level's summary: a short description of the level's content in one line.
 
@@ -78,7 +78,7 @@ Some text
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             setup: { files: [], commits: [] },
             solution: { files: [], commits: [] },
             steps: [],
@@ -93,7 +93,7 @@ Some text
       const expected = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Put Level's title here",
             summary:
               "Level's summary: a short description of the level's content in one line.",
@@ -112,12 +112,12 @@ Some text
     
 Description.
 
-## L1 Put Level's title here
+## Put Level's title here
 
 Some text that becomes the summary
 `;
 
-      const skeleton = { levels: [{ id: "L1" }] };
+      const skeleton = { levels: [{ id: "1" }] };
       const result = parse({
         text: md,
         skeleton,
@@ -126,7 +126,7 @@ Some text that becomes the summary
       const expected = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Put Level's title here",
             summary: "Some text that becomes the summary",
             content: "Some text that becomes the summary",
@@ -142,12 +142,12 @@ Some text that becomes the summary
     
 Description.
 
-## L1 Put Level's title here
+## Put Level's title here
 
 Some text that becomes the summary and goes beyond the maximum length of 80 so that it gets truncated at the end
 `;
 
-      const skeleton = { levels: [{ id: "L1" }] };
+      const skeleton = { levels: [{ id: "1" }] };
       const result = parse({
         text: md,
         skeleton,
@@ -156,7 +156,7 @@ Some text that becomes the summary and goes beyond the maximum length of 80 so t
       const expected = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Put Level's title here",
             summary: "Some text that becomes the summary",
             content: "Some text that becomes the summary",
@@ -171,14 +171,14 @@ Some text that becomes the summary and goes beyond the maximum length of 80 so t
     
 Description.
 
-## L1 Put Level's title here
+## 1 Put Level's title here
 
 Some text.
 
 But not including this line.
 `;
 
-      const skeleton = { levels: [{ id: "L1" }] };
+      const skeleton = { levels: [{ id: "1" }] };
       const result = parse({
         text: md,
         skeleton,
@@ -187,7 +187,7 @@ But not including this line.
       const expected = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Put Level's title here",
             summary: "Some text.",
             content: "Some text.\n\nBut not including this line.",
@@ -203,7 +203,7 @@ But not including this line.
 
 Description.
 
-## L1 Put Level's title here
+## Put Level's title here
 
 >
 
@@ -212,7 +212,7 @@ Some text.
 But not including this line.
 `;
 
-      const skeleton = { levels: [{ id: "L1" }] };
+      const skeleton = { levels: [{ id: "1" }] };
       const result = parse({
         text: md,
         skeleton,
@@ -221,7 +221,7 @@ But not including this line.
       const expected = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Put Level's title here",
             summary: "Some text.",
             content: "Some text.\n\nBut not including this line.",
@@ -239,7 +239,7 @@ Description.
 
 Second description line
 
-## L1 Titles
+## Titles
 
 First line
 
@@ -248,7 +248,7 @@ Second line
 Third line
 `;
 
-      const skeleton = { levels: [{ id: "L1" }] };
+      const skeleton = { levels: [{ id: "1" }] };
       const result = parse({
         text: md,
         skeleton,
@@ -260,7 +260,7 @@ Third line
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             summary: "Some text that becomes the summary",
             content: "First line\n\nSecond line\n\nThird line",
           },
@@ -275,21 +275,21 @@ Third line
     
 Description.
 
-## L1 Title
+## Title
 
 First line
 
-### L1S1 Step
+### 1.1
 
 The first step
 `;
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
               },
             ],
           },
@@ -308,12 +308,12 @@ The first step
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             summary: "First line",
             content: "First line",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdefg1"],
@@ -331,21 +331,21 @@ The first step
     
 Description.
 
-## L1 Title
+## Title
 
 First line
 
-### L1S1 Step
+### 1.1 Step
 
 The first step
 `;
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
               },
             ],
           },
@@ -364,12 +364,12 @@ The first step
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             summary: "First line",
             content: "First line",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdefg1", "123456789"],
@@ -387,18 +387,18 @@ The first step
     
 Description.
 
-## L1 Title
+## Title
 
 First line
 
-### L1S1
+### 1.1
 
 The first step
 `;
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
           },
         ],
       };
@@ -415,7 +415,7 @@ The first step
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             summary: "First line",
             content: "First line",
             setup: {
@@ -432,11 +432,11 @@ The first step
     
 Description.
 
-## L1 Title
+## 1. Title
 
 First line
 
-### L1S1
+### 1.1
 
 The first step
 
@@ -451,10 +451,10 @@ Another line
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
               },
             ],
           },
@@ -469,7 +469,7 @@ Another line
         },
       });
       const expected = {
-        id: "L1S1",
+        id: "1.1",
         setup: {
           commits: ["12345678"],
         },
@@ -484,21 +484,21 @@ Another line
     
 Description.
 
-## L1 Title
+## 1. Title
 
 First line
 
-### L1S1 Step
+### 1.1 Step
 
 The first step
 `;
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 setup: {
                   commands: ["npm install"],
                   files: ["someFile.js"],
@@ -529,12 +529,12 @@ The first step
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             summary: "First line",
             content: "First line",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdefg1", "123456789"],
@@ -562,33 +562,33 @@ The first step
     
 Description.
 
-## L1 Title 1
+## 1. Title 1
 
 First level content.
 
-### L1S1
+### 1.1
 
 The first step
 
-### L1S2
+### 1.2
 
 The second step
 
-## L2 Title 2
+## 2. Title 2
 
 Second level content.
 
-### L2S1
+### 2.1
 
 The third step
 `;
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 setup: {
                   commands: ["npm install"],
                   files: ["someFile.js"],
@@ -602,7 +602,7 @@ The third step
                 },
               },
               {
-                id: "L1S2",
+                id: "1.2",
                 setup: {
                   commands: ["npm install"],
                   files: ["someFile.js"],
@@ -618,12 +618,12 @@ The third step
             ],
           },
           {
-            id: "L2",
+            id: "2",
             summary: "Second level content.",
             content: "First level content.",
             steps: [
               {
-                id: "L2S1",
+                id: "2.1",
                 setup: {
                   commands: ["npm install"],
                   files: ["someFile.js"],
@@ -658,13 +658,13 @@ The third step
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Title 1",
             summary: "First level content.",
             content: "First level content.",
             steps: [
               {
-                id: "L1S1",
+                id: "L11.1S1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdef1", "123456789"],
@@ -681,7 +681,7 @@ The third step
                 },
               },
               {
-                id: "L1S2",
+                id: "1.2",
                 content: "The second step",
                 setup: {
                   commits: ["2abcdef"],
@@ -700,13 +700,13 @@ The third step
             ],
           },
           {
-            id: "L2",
+            id: "2",
             title: "Title 2",
             summary: "Second level content.",
             content: "Second level content.",
             steps: [
               {
-                id: "L2S1",
+                id: "2.1",
                 content: "The third step",
                 setup: {
                   commits: ["4abcdef"],
@@ -734,11 +734,11 @@ The third step
     
 Description.
 
-## L1 Title 1
+## 1. Title 1
 
 First level content.
 
-### L1S1
+### 1.1
 
 The first step
 
@@ -746,10 +746,10 @@ The first step
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
               },
             ],
           },
@@ -768,13 +768,13 @@ The first step
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Title 1",
             summary: "First level content.",
             content: "First level content.",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdef1", "123456789"],
@@ -941,11 +941,11 @@ Description.
     
 Description.
 
-## L1 Title 1
+## 1. Title 1
 
 First level content.
 
-### L1S1
+### 1.1
 
 The first step
 
@@ -958,10 +958,10 @@ The first step
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
               },
             ],
           },
@@ -980,13 +980,13 @@ The first step
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Title 1",
             summary: "First level content.",
             content: "First level content.",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdef1", "123456789"],
@@ -1005,11 +1005,11 @@ The first step
     
 Description.
 
-## L1 Title 1
+## 1. Title 1
 
 First level content.
 
-### L1S1
+### 1.1
 
 The first step
 
@@ -1027,10 +1027,10 @@ And spans multiple lines.
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
               },
             ],
           },
@@ -1049,13 +1049,13 @@ And spans multiple lines.
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Title 1",
             summary: "First level content.",
             content: "First level content.",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdef1", "123456789"],
@@ -1077,11 +1077,11 @@ And spans multiple lines.
     
 Description.
 
-## L1 Title 1
+## 1. Title 1
 
 First level content.
 
-### L1S1
+### 1.1
 
 The first step
 
@@ -1096,20 +1096,20 @@ var a = 1;
 
 And spans multiple lines.
 
-### L1S2
+### 1.2
 
 The second uninterrupted step
 `;
       const skeleton = {
         levels: [
           {
-            id: "L1",
+            id: "1",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
               },
               {
-                id: "L1S2",
+                id: "1.2",
               },
             ],
           },
@@ -1130,13 +1130,13 @@ The second uninterrupted step
         },
         levels: [
           {
-            id: "L1",
+            id: "1",
             title: "Title 1",
             summary: "First level content.",
             content: "First level content.",
             steps: [
               {
-                id: "L1S1",
+                id: "1.1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdef1"],
@@ -1150,7 +1150,7 @@ The second uninterrupted step
                 ],
               },
               {
-                id: "L1S2",
+                id: "1.2",
                 content: "The second uninterrupted step",
                 setup: {
                   commits: ["fedcba1"],
