@@ -95,5 +95,40 @@ export default {
       },
       additionalProperties: false,
     },
+    setup_action_without_commits: {
+      type: "object",
+      description:
+        "A collection of files/commands that run when a level/step or solution is loaded",
+      properties: {
+        files: {
+          $ref: "#/definitions/file_array",
+        },
+        commands: {
+          $ref: "#/definitions/command_array",
+        },
+        watchers: {
+          type: "array",
+          items: {
+            $ref: "#/definitions/file_path",
+            // uniqueItems: true,
+          },
+          description:
+            "An array file paths that, when updated, will trigger the test runner to run",
+        },
+        filter: {
+          type: "string",
+          description:
+            "A regex pattern that will be passed to the test runner to limit the number of tests running",
+          examples: ["^TestSuiteName"],
+        },
+        subtasks: {
+          type: "boolean",
+          description:
+            'A feature that shows subtasks: all active test names and the status of the tests (pass/fail). Use together with "filter"',
+          examples: [true],
+        },
+      },
+      additionalProperties: false,
+    },
   },
 };
