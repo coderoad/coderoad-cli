@@ -24,11 +24,11 @@ const validations: Validation[] = [
     },
   },
   {
-    message: "should have a level `##` with a format of `L[0-9]+`",
+    message: "should have a level `##` with a format of `[0-9]+.`",
     validate: (t) => {
       const headers = t.match(/^#{2}\s(.+)$/gm) || [];
       for (const header of headers) {
-        if (!header.match(/^#{2}\s(L\d+)\s(.+)$/)) {
+        if (!header.match(/^#{2}\s(\d+\.)\s(.+)$/)) {
           return false;
         }
       }
@@ -36,11 +36,11 @@ const validations: Validation[] = [
     },
   },
   {
-    message: "should have a step `###` with a format of `L[0-9]+S[0-9]+`",
+    message: "should have a step `###` with a format of `[0-9].[0-9]+`",
     validate: (t) => {
       const headers = t.match(/^#{3}\s(.+)$/gm) || [];
       for (const header of headers) {
-        if (!header.match(/^#{3}\s(L\d+)S\d+/)) {
+        if (!header.match(/^#{3}\s(\d+\.\d+)/)) {
           return false;
         }
       }
@@ -60,9 +60,9 @@ export function validateMarkdown(md: string): boolean {
   for (const v of validations) {
     if (!v.validate(text)) {
       valid = false;
-      if (process.env.NODE_ENV !== "test") {
-        console.warn(v.message);
-      }
+      // if (process.env.NODE_ENV !== "test") {
+      console.warn(v.message);
+      // }
     }
   }
 
