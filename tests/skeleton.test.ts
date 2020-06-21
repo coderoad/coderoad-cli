@@ -186,7 +186,7 @@ describe("validate skeleton", () => {
     const valid = validateSkeleton(json);
     expect(valid).toBe(false);
   });
-  it("should fial if level is missing id", () => {
+  it("should fail if level is missing id", () => {
     const level1 = { ...validJson.levels[0], id: undefined };
     const json = {
       ...validJson,

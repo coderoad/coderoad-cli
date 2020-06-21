@@ -40,7 +40,7 @@ Some text
 `;
 
       const skeleton = {
-        levels: [{ id: "L1" }],
+        levels: [{ id: "1" }],
       };
 
       const result = parse({
@@ -299,7 +299,7 @@ The first step
         text: md,
         skeleton,
         commits: {
-          L1S1Q: ["abcdefg1"],
+          "1.1Q": ["abcdefg1"],
         },
       });
       const expected = {
@@ -355,7 +355,7 @@ The first step
         text: md,
         skeleton,
         commits: {
-          L1S1Q: ["abcdefg1", "123456789"],
+          "1.1Q": ["abcdefg1", "123456789"],
         },
       });
       const expected = {
@@ -406,7 +406,7 @@ The first step
         text: md,
         skeleton,
         commits: {
-          L1: ["abcdefg1"],
+          "1": ["abcdefg1"],
         },
       });
       const expected = {
@@ -464,8 +464,8 @@ Another line
         text: md,
         skeleton,
         commits: {
-          L1: ["abcdefg1"],
-          L1S1Q: ["12345678"],
+          "1": ["abcdefg1"],
+          "1.1Q": ["12345678"],
         },
       });
       const expected = {
@@ -519,8 +519,8 @@ The first step
         text: md,
         skeleton,
         commits: {
-          L1S1Q: ["abcdefg1", "123456789"],
-          L1S1A: ["1gfedcba", "987654321"],
+          "1.1Q": ["abcdefg1", "123456789"],
+          "1.1A": ["1gfedcba", "987654321"],
         },
       });
       const expected = {
@@ -644,12 +644,12 @@ The third step
         text: md,
         skeleton,
         commits: {
-          L1S1Q: ["abcdef1", "123456789"],
-          L1S1A: ["1fedcba", "987654321"],
-          L1S2Q: ["2abcdef"],
-          L1S2A: ["3abcdef"],
-          L2S1Q: ["4abcdef"],
-          L2S1A: ["5abcdef"],
+          "1.1Q": ["abcdef1", "123456789"],
+          "1.1A": ["1fedcba", "987654321"],
+          "1.2Q": ["2abcdef"],
+          "1.2A": ["3abcdef"],
+          "2.1Q": ["4abcdef"],
+          "2.1A": ["5abcdef"],
         },
       });
       const expected = {
@@ -664,7 +664,7 @@ The third step
             content: "First level content.",
             steps: [
               {
-                id: "L11.1S1",
+                id: "1.1",
                 content: "The first step",
                 setup: {
                   commits: ["abcdef1", "123456789"],
@@ -759,7 +759,7 @@ The first step
         text: md,
         skeleton,
         commits: {
-          L1S1Q: ["abcdef1", "123456789"],
+          "1.1Q": ["abcdef1", "123456789"],
         },
       });
       const expected = {
@@ -935,7 +935,7 @@ Description.
     });
   });
 
-  xdescribe("hints", () => {
+  describe("hints", () => {
     it("should parse hints for a step", () => {
       const md = `# Title
     
@@ -971,7 +971,7 @@ The first step
         text: md,
         skeleton,
         commits: {
-          L1S1Q: ["abcdef1", "123456789"],
+          "1.1Q": ["abcdef1", "123456789"],
         },
       });
       const expected = {
@@ -1040,7 +1040,7 @@ And spans multiple lines.
         text: md,
         skeleton,
         commits: {
-          L1S1Q: ["abcdef1", "123456789"],
+          "1.1Q": ["abcdef1", "123456789"],
         },
       });
       const expected = {
@@ -1119,9 +1119,9 @@ The second uninterrupted step
         text: md,
         skeleton,
         commits: {
-          L1S1Q: ["abcdef1"],
-          L1S1A: ["123456789"],
-          L1S2Q: ["fedcba1"],
+          "1.1Q": ["abcdef1"],
+          "1.1A": ["123456789"],
+          "1.2Q": ["fedcba1"],
         },
       });
       const expected = {
