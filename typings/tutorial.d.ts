@@ -48,7 +48,7 @@ export type TutorialSummary = {
 
 export type StepActions = {
   commands?: string[];
-  commits: string[];
+  commits?: string[];
   files?: string[];
   watchers?: string[];
   filter?: string;
