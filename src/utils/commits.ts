@@ -16,42 +16,52 @@ type GetCommitOptions = {
 
 export type CommitLogObject = { [position: string]: string[] };
 
-export function parseCommits(logs: ListLogSummary<any>) {
+
+
+export function parseCommits(logs: ListLogSummary<any>): { [hash: string]: string[]} {
   // Filter relevant logs
   const commits: CommitLogObject = {};
   const positions: string[] = [];
 
   for (const commit of logs.all) {
     const matches = commit.message.match(
-      /^(?<stepId>(?<levelId>L?\d+)([S|\.]\d+))(?<stepType>[Q|A|T|S])?/
+      /^(?<init>INIT)|(L?(?<levelId>\d+)[S|\.]?(?<stepId>\d+)?(?<stepType>[Q|A|T|S])?)/
     );
 
     if (matches && matches.length) {
       // Use an object of commit arrays to collect all commits
-      const position = matches[0];
-      if (!commits[position]) {
-        // does not exist, create the list
-        commits[position] = [commit.hash];
+      const { groups } = matches
+      let position
+      if (groups.init) {
+        position = 'INIT'
+      } else if (groups.levelId && groups.stepId) {
+        let stepType
+        // @deprecated Q
+        if (!groups.stepType || ['Q', 'T'].includes(groups.stepType)) {
+          stepType = 'T' // test
+          // @deprecated A
+        } else if (!groups.stepType || ['A', 'S'].includes(groups.stepType)) {
+          stepType = 'S' // solution
+        }
+        position = `${groups.levelId}.${groups.stepId}:${stepType}`
+      } else if (groups.levelId) {
+        position = groups.levelId
       } else {
-        // add to the list
-        commits[position].unshift(commit.hash);
+        console.warn(`No matcher for commit "${commit.message}"`)
       }
+      commits[position] = [...(commits[position] || []), commit.hash]
       positions.unshift(position);
     } else {
       const initMatches = commit.message.match(/^INIT/);
       if (initMatches && initMatches.length) {
-        if (!commits.INIT) {
-          // does not exist, create the list
-          commits.INIT = [commit.hash];
-        } else {
-          // add to the list
-          commits.INIT.unshift(commit.hash);
-        }
+        commits.INIT = [...(commits.INIT || []), commit.hash]
         positions.unshift("INIT");
       }
     }
   }
-  return { commits, positions };
+  // validate order
+  validateCommitOrder(positions);
+  return commits;
 }
 
 export async function getCommits({
@@ -95,10 +105,7 @@ export async function getCommits({
     // Load all logs
     const logs = await git.log();
 
-    const { commits, positions } = parseCommits(logs);
-
-    // validate order
-    validateCommitOrder(positions);
+    const commits = parseCommits(logs);
 
     return commits;
   } catch (e) {
