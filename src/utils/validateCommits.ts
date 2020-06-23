@@ -13,8 +13,10 @@ export function validateCommitOrder(positions: string[]): boolean {
       current = { level: 0, step: 0 };
       return;
     } else {
-      const levelMatch = position.match(/^L?([0-9]+)Q?$/);
-      const stepMatch = position.match(/^L?([0-9]+)[S|\.]([0-9]+)[Q|A]?$/);
+      // @deprecate - remove L|Q
+      const levelMatch = position.match(/^L?([0-9]+)[Q|T]?$/);
+      // @deprecate - remove S|Q|A
+      const stepMatch = position.match(/^L?([0-9]+)[S|\.]([0-9]+)[Q|A|T|S]?$/);
       if (levelMatch) {
         // allows next level or step
         const [_, levelString] = levelMatch;

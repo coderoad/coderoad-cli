@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import util from "util";
 import * as path from "path";
+import { ListLogSummary } from "simple-git/typings/response";
 import gitP, { SimpleGit } from "simple-git/promise";
 import { validateCommitOrder } from "./validateCommits";
 
@@ -14,6 +15,44 @@ type GetCommitOptions = {
 };
 
 export type CommitLogObject = { [position: string]: string[] };
+
+export function parseCommits(logs: ListLogSummary<any>) {
+  // Filter relevant logs
+  const commits: CommitLogObject = {};
+  const positions: string[] = [];
+
+  for (const commit of logs.all) {
+    const matches = commit.message.match(
+      /^(?<stepId>(?<levelId>L?\d+)([S|\.]\d+))(?<stepType>[Q|A|T|S])?/
+    );
+
+    if (matches && matches.length) {
+      // Use an object of commit arrays to collect all commits
+      const position = matches[0];
+      if (!commits[position]) {
+        // does not exist, create the list
+        commits[position] = [commit.hash];
+      } else {
+        // add to the list
+        commits[position].unshift(commit.hash);
+      }
+      positions.unshift(position);
+    } else {
+      const initMatches = commit.message.match(/^INIT/);
+      if (initMatches && initMatches.length) {
+        if (!commits.INIT) {
+          // does not exist, create the list
+          commits.INIT = [commit.hash];
+        } else {
+          // add to the list
+          commits.INIT.unshift(commit.hash);
+        }
+        positions.unshift("INIT");
+      }
+    }
+  }
+  return { commits, positions };
+}
 
 export async function getCommits({
   localDir,
@@ -49,48 +88,19 @@ export async function getCommits({
   // track the original branch in case of failure
   const originalBranch = branches.current;
 
-  // Filter relevant logs
-  const commits: CommitLogObject = {};
-
   try {
     // Checkout the code branches
     await git.checkout(codeBranch);
 
     // Load all logs
     const logs = await git.log();
-    const positions: string[] = [];
 
-    for (const commit of logs.all) {
-      const matches = commit.message.match(
-        /^(?<stepId>(?<levelId>L?\d+)([S|\.]\d+))(?<stepType>[QA])?/
-      );
+    const { commits, positions } = parseCommits(logs);
 
-      if (matches && matches.length) {
-        // Use an object of commit arrays to collect all commits
-        const position = matches[0];
-        if (!commits[position]) {
-          // does not exist, create the list
-          commits[position] = [commit.hash];
-        } else {
-          // add to the list
-          commits[position].unshift(commit.hash);
-        }
-        positions.unshift(position);
-      } else {
-        const initMatches = commit.message.match(/^INIT/);
-        if (initMatches && initMatches.length) {
-          if (!commits.INIT) {
-            // does not exist, create the list
-            commits.INIT = [commit.hash];
-          } else {
-            // add to the list
-            commits.INIT.unshift(commit.hash);
-          }
-          positions.unshift("INIT");
-        }
-      }
-    }
+    // validate order
     validateCommitOrder(positions);
+
+    return commits;
   } catch (e) {
     console.error("Error with checkout or commit matching");
     throw new Error(e.message);
@@ -100,8 +110,4 @@ export async function getCommits({
     // cleanup the tmp directory
     await rmdir(tmpDir, { recursive: true });
   }
-
-  console.log(commits);
-
-  return commits;
 }

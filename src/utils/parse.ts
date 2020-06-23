@@ -187,6 +187,14 @@ export function parse(params: ParseParams): any {
         level.setup.commits = params.commits[level.id];
       }
 
+      // @deprecated L1 system
+      if (params.commits[`L${level.id}`]) {
+        if (!level.setup) {
+          level.setup = {};
+        }
+        level.setup.commits = params.commits[`L${level.id}`];
+      }
+
       return level;
     }
   );
