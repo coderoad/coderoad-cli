@@ -5,7 +5,7 @@ describe("validate markdown", () => {
     const md = `
 Description.
 
-## L1 Put Level's title here
+## 1. Put Level's title here
 
 > Level's summary: a short description of the level's content in one line.
 
@@ -19,7 +19,7 @@ Description.
 
 # Another Title
 
-## L1 Put Level's title here
+## 1. Put Level's title here
 
 > Level's summary: a short description of the level's content in one line.
 
@@ -29,7 +29,7 @@ Some text that describes the level`;
 Description.
 
 
-## L1 Put Level's title here
+## 1. Put Level's title here
 
 > Level's summary: a short description of the level's content in one line.
 
@@ -45,7 +45,7 @@ Some text that describes the level
   it("should return false if missing a summary description", () => {
     const md = `# A Title
 
-## L1 Put Level's title here
+## 1. Put Level's title here
 
 > Level's summary: a short description of the level's content in one line.
 
@@ -79,10 +79,11 @@ A description
 
 Some text that describes the level
 
-### A Step
+### Missing step id
 
 First step
 `;
+    expect(validateMarkdown(md)).toBe(false);
   });
 
   it("should return true for valid markdown", () => {
@@ -90,13 +91,13 @@ First step
 
 Description.
 
-## L1 Put Level's title here
+## 1. Put Level's title here
 
 > Level's summary: a short description of the level's content in one line.
 
 Some text that describes the level
 
-### L1S1
+### 1.1
 
 First Step`;
     expect(validateMarkdown(md)).toBe(true);
@@ -114,19 +115,19 @@ Should not be a problem
 \`\`\`
 
 
-## L1 Put Level's title here
+## 1. Put Level's title here
 
 > Level's summary: a short description of the level's content in one line.
 
 Some text that describes the level
 
 \`\`\`
-## Another Level in markdown
+## 2. Another Level in markdown
 
 Should not be an issue
 \`\`\`
 
-### L1S1
+### 1.1
 
 First Step`;
     expect(validateMarkdown(md)).toBe(true);

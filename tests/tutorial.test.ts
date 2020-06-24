@@ -39,7 +39,7 @@ describe("validate tutorial", () => {
       },
       levels: [
         {
-          id: "L1",
+          id: "1",
           title: "Level 1",
           summary: "The first level",
           content: "The first level",

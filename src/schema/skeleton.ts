@@ -53,9 +53,9 @@ export default {
               examples: ["coderoad"],
             },
             setup: {
-              $ref: "#/definitions/setup_action",
+              $ref: "#/definitions/setup_action_without_commits",
               description:
-                "Setup commits or commands used for setting up the test runner on tutorial launch",
+                "Setup actions or commands used for setting up the test runner on tutorial launch",
             },
           },
           required: ["command", "args"],
@@ -135,9 +135,9 @@ export default {
             examples: ["L1", "L11"],
           },
           setup: {
-            $ref: "#/definitions/setup_action",
+            $ref: "#/definitions/setup_action_without_commits",
             description:
-              "An optional point for loading commits, running commands or opening files",
+              "An optional point for running actions, commands or opening files",
           },
           steps: {
             type: "array",
@@ -152,18 +152,18 @@ export default {
                 setup: {
                   allOf: [
                     {
-                      $ref: "#/definitions/setup_action",
+                      $ref: "#/definitions/setup_action_without_commits",
                       description:
-                        "A point for loading commits. It can also run commands and/or open files",
+                        "A point for running actions, commands and/or opening files",
                     },
                   ],
                 },
                 solution: {
                   allOf: [
                     {
-                      $ref: "#/definitions/setup_action",
+                      $ref: "#/definitions/setup_action_without_commits",
                       description:
-                        "The solution commits that can be loaded if the user gets stuck. It can also run commands and/or open files",
+                        "The solution can be loaded if the user gets stuck. It can run actions, commands and/or open files",
                     },
                     {
                       required: [],

@@ -211,7 +211,7 @@ export default {
                   examples: ["Have you tried doing X?"],
                 },
               },
-              required: ["content", "setup", "solution"],
+              required: ["content", "setup"],
             },
           },
         },

@@ -4,10 +4,7 @@ import * as T from "../../typings/tutorial";
 
 type TutorialFrame = {
   summary: T.TutorialSummary;
-  levels: {
-    [levelKey: string]: T.Level;
-  };
-  steps: { [stepKey: string]: Partial<T.Step> };
+  levels: T.Level[];
 };
 
 export function parseMdContent(md: string): TutorialFrame | never {
@@ -33,8 +30,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
       title: "",
       description: "",
     },
-    levels: {},
-    steps: {},
+    levels: [],
   };
 
   // Capture summary
@@ -49,23 +45,20 @@ export function parseMdContent(md: string): TutorialFrame | never {
     mdContent.summary.description = summaryMatch.groups.tutorialDescription.trim();
   }
 
-  let current = { level: "0", step: "0" };
+  let current = { level: -1, step: -1 };
   // Identify each part of the content
   parts.forEach((section: string) => {
     // match level
-    const levelRegex = /^(#{2}\s(?<levelId>L\d+)\s(?<levelTitle>.*)[\n\r]*(>\s(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
+    const levelRegex = /^(#{2}\s(?<levelId>L?\d+\.?)\s(?<levelTitle>.*)[\n\r]*(>\s(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
     const levelMatch: RegExpMatchArray | null = section.match(levelRegex);
+
     if (levelMatch && levelMatch.groups) {
-      const {
-        levelId,
-        levelTitle,
-        levelSummary,
-        levelContent,
-      } = levelMatch.groups;
+      current = { level: current.level + 1, step: -1 };
+      const { levelTitle, levelSummary, levelContent } = levelMatch.groups;
 
       // @ts-ignore
-      mdContent.levels[levelId] = {
-        id: levelId,
+      mdContent.levels[current.level] = {
+        id: (current.level + 1).toString(),
         title: levelTitle.trim(),
         summary:
           levelSummary && levelSummary.trim().length
@@ -75,23 +68,22 @@ export function parseMdContent(md: string): TutorialFrame | never {
                 omission: "...",
               }),
         content: levelContent.trim(),
+        steps: [],
       };
-      current = { level: levelId, step: "0" };
     } else {
       // match step
-      const stepRegex = /^(#{3}\s(?<stepId>(?<levelId>L\d+)S\d+)\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
+      const stepRegex = /^(#{3}\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
       const stepMatch: RegExpMatchArray | null = section.match(stepRegex);
       if (stepMatch && stepMatch.groups) {
+        current = { level: current.level, step: current.step + 1 };
         const { stepId, stepContent } = stepMatch.groups;
-
-        mdContent.steps[stepId] = {
-          id: stepId,
+        mdContent.levels[current.level].steps[current.step] = {
+          id: `${current.level + 1}.${current.step + 1}`,
           content: stepContent.trim(),
         };
-        current = { ...current, step: stepId };
       } else {
         // parse hints from stepContent
-        const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+(\*\s(?<hintContent>[^]*))[\n\r]+)+/;
+        const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+([\*|\-]\s(?<hintContent>[^]*))[\n\r]+)+/;
         const hintMatch = section.match(hintDetectRegex);
         if (!!hintMatch) {
           const hintItemRegex = /[\n\r]+\*\s/;
@@ -100,7 +92,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
             .slice(1) // remove #### HINTS
             .map((h) => h.trim());
           if (hints.length) {
-            mdContent.steps[current.step].hints = hints;
+            mdContent.levels[current.level].steps[current.step].hints = hints;
           }
         }
       }
@@ -135,33 +127,30 @@ export function parse(params: ParseParams): any {
     };
   }
 
-  // merge content and tutorial
-  if (params.skeleton.levels && params.skeleton.levels.length) {
-    parsed.levels = params.skeleton.levels
-      .map((level: T.Level, levelIndex: number) => {
-        const levelContent = mdContent.levels[level.id];
+  // merge content levels and tutorial
 
-        if (!levelContent) {
-          return null;
-        }
+  parsed.levels = mdContent.levels.map(
+    (mdLevel: T.Level, mdLevelIndex: number) => {
+      // add level setup commits
+      let level: T.Level = { ...mdLevel };
 
-        level = { ...level, ...levelContent };
+      const configLevel = params.skeleton.levels[mdLevelIndex];
 
-        // add level setup commits
-        const levelSetupKey = level.id;
-        if (params.commits[levelSetupKey]) {
-          level.setup = {
-            ...(level.setup || {}),
-            commits: params.commits[levelSetupKey],
-          };
-        }
-
+      if (configLevel) {
         // add level step commits
-        try {
-          level.steps = (level.steps || []).map(
-            (step: T.Step, stepIndex: number) => {
-              const stepKey = `${levelSetupKey}S${stepIndex + 1}`;
-              const stepSetupKey = `${stepKey}Q`;
+        const { steps, ...configLevelProps } = configLevel;
+        level = { ...configLevelProps, ...level };
+        if (steps) {
+          steps.forEach((step: T.Step, index: number) => {
+            try {
+              const mdStep = level.steps[index];
+
+              step = {
+                ...step,
+                ...mdStep,
+              };
+
+              const stepSetupKey = `${step.id}:T`;
               if (params.commits[stepSetupKey]) {
                 if (!step.setup) {
                   step.setup = {
@@ -171,7 +160,7 @@ export function parse(params: ParseParams): any {
                 step.setup.commits = params.commits[stepSetupKey];
               }
 
-              const stepSolutionKey = `${stepKey}A`;
+              const stepSolutionKey = `${step.id}:S`;
               if (params.commits[stepSolutionKey]) {
                 if (!step.solution) {
                   step.solution = {
@@ -180,27 +169,35 @@ export function parse(params: ParseParams): any {
                 }
                 step.solution.commits = params.commits[stepSolutionKey];
               }
-
-              // add markdown
-              const stepMarkdown: Partial<T.Step> = mdContent.steps[step.id];
-              if (stepMarkdown) {
-                step = { ...step, ...stepMarkdown };
-              }
-
-              step.id = `${stepKey}`;
-              return step;
+            } catch (error) {
+              console.error("Error parsing level steps");
+              console.warn(JSON.stringify(level.steps));
+              console.error(error.message);
             }
-          );
-        } catch (error) {
-          console.log(JSON.stringify(level.steps));
-          console.error("Error parsing level steps");
-          console.error(error.message);
+            // update level step
+            level.steps[index] = step;
+          });
         }
+      }
 
-        return level;
-      })
-      .filter((l: T.Level | null) => !!l);
-  }
+      if (params.commits[level.id]) {
+        if (!level.setup) {
+          level.setup = {};
+        }
+        level.setup.commits = params.commits[level.id];
+      }
+
+      // @deprecated L1 system
+      if (params.commits[`L${level.id}`]) {
+        if (!level.setup) {
+          level.setup = {};
+        }
+        level.setup.commits = params.commits[`L${level.id}`];
+      }
+
+      return level;
+    }
+  );
 
   return parsed;
 }

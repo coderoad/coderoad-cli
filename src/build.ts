@@ -102,7 +102,7 @@ async function build(args: string[]) {
   try {
     const valid = validateSchema(skeletonSchema, skeleton);
     if (!valid) {
-      console.error("Tutorial validation failed. See above to see what to fix");
+      console.error("Skeleton validation failed. See above to see what to fix");
       return;
     }
   } catch (e) {

@@ -25,8 +25,8 @@ export type Level = {
 export type Step = {
   id: string;
   content: string;
-  setup: StepActions;
-  solution: Maybe<StepActions>;
+  setup?: StepActions;
+  solution?: Maybe<StepActions>;
   subtasks?: { [testName: string]: boolean };
   hints?: string[];
 };
@@ -48,7 +48,7 @@ export type TutorialSummary = {
 
 export type StepActions = {
   commands?: string[];
-  commits: string[];
+  commits?: string[];
   files?: string[];
   watchers?: string[];
   filter?: string;
