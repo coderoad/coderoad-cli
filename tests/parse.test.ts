@@ -1000,7 +1000,7 @@ The first step
       expect(result.levels).toEqual(expected.levels);
     });
 
-    xit("should parse hints for a step with '-'", () => {
+    it("should parse hints for a step with '-'", () => {
       const md = `# Title
     
 Description.

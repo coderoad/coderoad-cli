@@ -86,7 +86,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
         const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+([\*|\-]\s(?<hintContent>[^]*))[\n\r]+)+/;
         const hintMatch = section.match(hintDetectRegex);
         if (!!hintMatch) {
-          const hintItemRegex = /[\n\r]+\*\s/;
+          const hintItemRegex = /[\n\r]+[\*|\-]\s/;
           const hints = section
             .split(hintItemRegex)
             .slice(1) // remove #### HINTS
