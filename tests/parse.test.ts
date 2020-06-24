@@ -299,7 +299,7 @@ The first step
         text: md,
         skeleton,
         commits: {
-          "1.1Q": ["abcdefg1"],
+          "1.1:T": ["abcdefg1"],
         },
       });
       const expected = {
@@ -355,7 +355,7 @@ The first step
         text: md,
         skeleton,
         commits: {
-          "1.1Q": ["abcdefg1", "123456789"],
+          "1.1:T": ["abcdefg1", "123456789"],
         },
       });
       const expected = {
@@ -465,7 +465,7 @@ Another line
         skeleton,
         commits: {
           "1": ["abcdefg1"],
-          "1.1Q": ["12345678"],
+          "1.1:T": ["12345678"],
         },
       });
       const expected = {
@@ -519,8 +519,8 @@ The first step
         text: md,
         skeleton,
         commits: {
-          "1.1Q": ["abcdefg1", "123456789"],
-          "1.1A": ["1gfedcba", "987654321"],
+          "1.1:T": ["abcdefg1", "123456789"],
+          "1.1:S": ["1gfedcba", "987654321"],
         },
       });
       const expected = {
@@ -644,12 +644,12 @@ The third step
         text: md,
         skeleton,
         commits: {
-          "1.1Q": ["abcdef1", "123456789"],
-          "1.1A": ["1fedcba", "987654321"],
-          "1.2Q": ["2abcdef"],
-          "1.2A": ["3abcdef"],
-          "2.1Q": ["4abcdef"],
-          "2.1A": ["5abcdef"],
+          "1.1:T": ["abcdef1", "123456789"],
+          "1.1:S": ["1fedcba", "987654321"],
+          "1.2:T": ["2abcdef"],
+          "1.2:S": ["3abcdef"],
+          "2.1:T": ["4abcdef"],
+          "2.1:S": ["5abcdef"],
         },
       });
       const expected = {
@@ -759,7 +759,7 @@ The first step
         text: md,
         skeleton,
         commits: {
-          "1.1Q": ["abcdef1", "123456789"],
+          "1.1:T": ["abcdef1", "123456789"],
         },
       });
       const expected = {
@@ -936,7 +936,7 @@ Description.
   });
 
   describe("hints", () => {
-    it("should parse hints for a step", () => {
+    it("should parse hints for a step with '*", () => {
       const md = `# Title
     
 Description.
@@ -971,7 +971,71 @@ The first step
         text: md,
         skeleton,
         commits: {
-          "1.1Q": ["abcdef1", "123456789"],
+          "1.1:T": ["abcdef1", "123456789"],
+        },
+      });
+      const expected = {
+        summary: {
+          description: "Description.",
+        },
+        levels: [
+          {
+            id: "1",
+            title: "Title 1",
+            summary: "First level content.",
+            content: "First level content.",
+            steps: [
+              {
+                id: "1.1",
+                content: "The first step",
+                setup: {
+                  commits: ["abcdef1", "123456789"],
+                },
+                hints: ["First Hint", "Second Hint"],
+              },
+            ],
+          },
+        ],
+      };
+      expect(result.levels).toEqual(expected.levels);
+    });
+
+    it("should parse hints for a step with '-'", () => {
+      const md = `# Title
+    
+Description.
+
+## 1. Title 1
+
+First level content.
+
+### 1.1
+
+The first step
+
+#### HINTS
+
+- First Hint
+- Second Hint
+
+`;
+      const skeleton = {
+        levels: [
+          {
+            id: "1",
+            steps: [
+              {
+                id: "1.1",
+              },
+            ],
+          },
+        ],
+      };
+      const result = parse({
+        text: md,
+        skeleton,
+        commits: {
+          "1.1:T": ["abcdef1", "123456789"],
         },
       });
       const expected = {
@@ -1040,7 +1104,7 @@ And spans multiple lines.
         text: md,
         skeleton,
         commits: {
-          "1.1Q": ["abcdef1", "123456789"],
+          "1.1:T": ["abcdef1", "123456789"],
         },
       });
       const expected = {
@@ -1119,9 +1183,9 @@ The second uninterrupted step
         text: md,
         skeleton,
         commits: {
-          "1.1Q": ["abcdef1"],
-          "1.1A": ["123456789"],
-          "1.2Q": ["fedcba1"],
+          "1.1:T": ["abcdef1"],
+          "1.1:S": ["123456789"],
+          "1.2:T": ["fedcba1"],
         },
       });
       const expected = {
