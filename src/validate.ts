@@ -104,7 +104,7 @@ async function validate(args: string[]) {
         for (const step of level.steps) {
           console.info(`** ${step.id}`);
           // load commits
-          const stepSetupCommits = commits[`${step.id}Q`];
+          const stepSetupCommits = commits[`${step.id}:T`];
           if (stepSetupCommits) {
             console.info(`--- Loading setup commits...`);
             await cherryPick(stepSetupCommits);
@@ -115,7 +115,7 @@ async function validate(args: string[]) {
             await runCommands(step.setup.commands);
           }
 
-          const stepSolutionCommits = commits[`${step.id}A`];
+          const stepSolutionCommits = commits[`${step.id}:S`];
           const hasSolution = step.solution || stepSolutionCommits;
 
           // ignore running tests on steps with no solution
@@ -167,7 +167,6 @@ async function validate(args: string[]) {
     console.error(e.message);
   } finally {
     // cleanup
-    console.log("options.clean", options.clean);
     if (options.clean) {
       await fs.emptyDir(tmpDir);
     }
