@@ -14,6 +14,8 @@ describe("commitOrder", () => {
         "1",
         "1",
         "1.1:T",
+        "1.1:T",
+        "1.1:S",
         "1.1:S",
         "1.2:T",
         "1.2:S",
@@ -42,6 +44,16 @@ describe("commitOrder", () => {
     });
     it("should return false if step is out of order", () => {
       const positions = ["INIT", "1", "1.1:T", "1.3:T", "1.2:T"];
+      const result = validateCommitOrder(positions);
+      expect(result).toBe(false);
+    });
+    it("should return false if solution is before step", () => {
+      const positions = ["INIT", "1", "1.1:S", "1.1:T", "1.2:T"];
+      const result = validateCommitOrder(positions);
+      expect(result).toBe(false);
+    });
+    it("should return false if solution but no test step", () => {
+      const positions = ["INIT", "1", "1.1:S", "1.2:T"];
       const result = validateCommitOrder(positions);
       expect(result).toBe(false);
     });
