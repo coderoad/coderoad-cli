@@ -14,17 +14,28 @@ export function validateCommitOrder(positions: string[]): boolean {
       return;
     } else {
       // @deprecate - remove L|Q
-      const levelMatch = position.match(/^L?([0-9]+)[Q|T]?$/);
+      const levelMatch = position.match(/^(?<level>[0-9]+)$/);
       // @deprecate - remove S|Q|A
-      const stepMatch = position.match(/^L?([0-9]+)[S|\.]([0-9]+)[Q|A|T|S]?$/);
+      const stepMatch = position.match(
+        /^(?<level>[0-9]+)\.(?<step>[0-9]+):[T|S]$/
+      );
       if (levelMatch) {
         // allows next level or step
-        const [_, levelString] = levelMatch;
+        const levelString = levelMatch?.groups?.level;
+        if (!levelString) {
+          console.warn(`No commit level match for ${position}`);
+          return;
+        }
         const level = Number(levelString);
         current = { level, step: 0 };
       } else if (stepMatch) {
         // allows next level or step
-        const [_, levelString, stepString] = stepMatch;
+        if (!stepMatch?.groups?.level || !stepMatch?.groups.step) {
+          console.warn(`No commit step match for ${position}`);
+          return;
+        }
+        const { level: levelString, step: stepString } = stepMatch.groups;
+
         const level = Number(levelString);
         const step = Number(stepString);
         current = { level, step };
