@@ -48,11 +48,11 @@ The configuration file is created by matching the `level` and `step` ids between
 
 Tutorial description.
 
-## L1 This is a level with id = 1
+## 1. This is a level with id = 1
 
 This level has two steps...
 
-### L1S1 First step
+### 1.1 First step
 
 The first step with id L1S1. The Step id should start with the level id.
 
@@ -62,7 +62,7 @@ The first step with id L1S1. The Step id should start with the level id.
 - The second hint that will show
 - The third and final hint, as it is last in order
 
-### L1S2 The second step
+### 1.2 The second step
 
 The second step...
 ```
@@ -72,10 +72,10 @@ The second step...
 ```yaml
 ---
 levels:
-  - id: L1
+  - id: "1"
     config: {}
     steps:
-      - id: L1S1
+      - id: "1.1"
         setup:
           files:
             - package.json
@@ -86,7 +86,7 @@ levels:
             - package.json
           commands:
             - npm install
-      - id: L1S2
+      - id: "1.2"
         setup:
           files:
             - src/server.js
@@ -104,23 +104,19 @@ commit 8e0e3a42ae565050181fdb68298114df21467a74 (HEAD -> v2, origin/v2)
 Author: creator <author@email.com>
 Date:   Sun May 3 16:16:01 2020 -0700
 
-    L1S1Q setup step 1 for level 1
+    1.1 setup for level 1, step 1
 
 commit 9499611fc9b311040dcabaf2d98439fc0c356cc9
 Author: creator <author@email.com>
 Date:   Sun May 3 16:13:37 2020 -0700
 
-    L1S2A checkout solution for level 1, step 2
+    1.1S solution for level 1, step 1
 
 commit c5c62041282579b495d3589b2eb1fdda2bcd7155
 Author: creator <author@email.com>
 Date:   Sun May 3 16:11:42 2020 -0700
 
-    L1S2Q setup level 1, step 2
+    1.2 setup for level 1, step 2
 ```
 
-Note that the step `L1S2` has two commits, one with the suffix `Q` and another one with `A`. The suffixes mean `Question` and `Answer`, respectively, and refer to the unit tests and the commit that makes them pass.
-
-Steps defined as questions are **required** as they are meant to set the task to be executed by the student. The answer is optional and should be used when a commit must be loaded to verify the student's solution.
-
-If there are multiple commits for a level or step, they are captured in order.
+Note that the step `1.1` has two commits, one with the suffix `S`. The first commit refers to the required tests and setup, while the second optional commit contains the solution. If there are multiple commits for a level or step, they are captured in order.
