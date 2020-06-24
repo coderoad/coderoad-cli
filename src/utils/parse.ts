@@ -150,7 +150,7 @@ export function parse(params: ParseParams): any {
                 ...mdStep,
               };
 
-              const stepSetupKey = `${step.id}Q`;
+              const stepSetupKey = `${step.id}:T`;
               if (params.commits[stepSetupKey]) {
                 if (!step.setup) {
                   step.setup = {
@@ -160,7 +160,7 @@ export function parse(params: ParseParams): any {
                 step.setup.commits = params.commits[stepSetupKey];
               }
 
-              const stepSolutionKey = `${step.id}A`;
+              const stepSolutionKey = `${step.id}:S`;
               if (params.commits[stepSolutionKey]) {
                 if (!step.solution) {
                   step.solution = {
