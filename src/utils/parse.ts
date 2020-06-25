@@ -45,7 +45,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
     mdContent.summary.description = summaryMatch.groups.tutorialDescription.trim();
   }
 
-  let current = { level: -1, step: -1 };
+  let current = { levelId: "", levelIndex: -1, stepIndex: -1 };
   // Identify each part of the content
   parts.forEach((section: string) => {
     // match level
@@ -53,12 +53,17 @@ export function parseMdContent(md: string): TutorialFrame | never {
     const levelMatch: RegExpMatchArray | null = section.match(levelRegex);
 
     if (levelMatch && levelMatch.groups) {
-      current = { level: current.level + 1, step: -1 };
+      const levelId = levelMatch.groups.levelId.replace(".", "");
+      current = {
+        levelId: levelId,
+        levelIndex: current.levelIndex + 1,
+        stepIndex: -1,
+      };
       const { levelTitle, levelSummary, levelContent } = levelMatch.groups;
 
       // @ts-ignore
-      mdContent.levels[current.level] = {
-        id: (current.level + 1).toString(),
+      mdContent.levels[current.levelIndex] = {
+        id: levelId,
         title: levelTitle.trim(),
         summary:
           levelSummary && levelSummary.trim().length
@@ -75,10 +80,14 @@ export function parseMdContent(md: string): TutorialFrame | never {
       const stepRegex = /^(#{3}\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
       const stepMatch: RegExpMatchArray | null = section.match(stepRegex);
       if (stepMatch && stepMatch.groups) {
-        current = { level: current.level, step: current.step + 1 };
+        current = {
+          levelId: current.levelId,
+          levelIndex: current.levelIndex,
+          stepIndex: current.stepIndex + 1,
+        };
         const { stepId, stepContent } = stepMatch.groups;
-        mdContent.levels[current.level].steps[current.step] = {
-          id: `${current.level + 1}.${current.step + 1}`,
+        mdContent.levels[current.levelIndex].steps[current.stepIndex] = {
+          id: `${current.levelId}.${current.stepIndex + 1}`,
           content: stepContent.trim(),
         };
       } else {
@@ -92,7 +101,9 @@ export function parseMdContent(md: string): TutorialFrame | never {
             .slice(1) // remove #### HINTS
             .map((h) => h.trim());
           if (hints.length) {
-            mdContent.levels[current.level].steps[current.step].hints = hints;
+            mdContent.levels[current.levelIndex].steps[
+              current.stepIndex
+            ].hints = hints;
           }
         }
       }

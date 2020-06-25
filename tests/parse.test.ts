@@ -837,6 +837,111 @@ The first step
     });
   });
 
+  it("should load when commits are not in direct order (100, 200, 201)", () => {
+    const md = `# Title
+  
+Description.
+
+## 100. First Title
+
+First line
+
+### 100.1
+
+The first step
+
+## 200. Second Title
+
+Second line
+
+### 200.1
+
+The second step
+
+## 201. Third Title
+
+Third line
+
+### 201.1
+
+The third step
+`;
+    const skeleton = {
+      levels: [
+        {
+          id: "100",
+          steps: [{ id: "100.1" }],
+        },
+        {
+          id: "200",
+          steps: [{ id: "200.1" }],
+        },
+        {
+          id: "201",
+          steps: [{ id: "201.1" }],
+        },
+      ],
+    };
+    const result = parse({
+      text: md,
+      skeleton,
+      commits: {},
+    });
+    const expected = {
+      summary: {
+        description: "Description.",
+      },
+      levels: [
+        {
+          id: "100",
+          title: "First Title",
+          summary: "First line",
+          content: "First line",
+          steps: [
+            {
+              id: "100.1",
+              content: "The first step",
+              setup: {
+                commits: [],
+              },
+            },
+          ],
+        },
+        {
+          id: "200",
+          title: "Second Title",
+          summary: "Second line",
+          content: "Second line",
+          steps: [
+            {
+              id: "200.1",
+              content: "The second step",
+              setup: {
+                commits: [],
+              },
+            },
+          ],
+        },
+        {
+          id: "201",
+          title: "Third Title",
+          summary: "Third line",
+          content: "Third line",
+          steps: [
+            {
+              id: "201.1",
+              content: "The third step",
+              setup: {
+                commits: [],
+              },
+            },
+          ],
+        },
+      ],
+    };
+    expect(result.levels).toEqual(expected.levels);
+  });
+
   describe("config", () => {
     it("should parse the tutorial config", () => {
       const md = `# Title
