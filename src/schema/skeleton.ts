@@ -132,7 +132,7 @@ export default {
           id: {
             type: "string",
             description: "A level id",
-            examples: ["L1", "L11"],
+            examples: ["1", "11"],
           },
           setup: {
             $ref: "#/definitions/setup_action_without_commits",
@@ -147,7 +147,7 @@ export default {
                 id: {
                   type: "string",
                   description: "A level id",
-                  examples: ["L1S1", "L11S12"],
+                  examples: ["1.1", "11.12"],
                 },
                 setup: {
                   allOf: [

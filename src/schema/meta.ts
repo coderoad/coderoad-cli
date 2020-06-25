@@ -55,7 +55,6 @@ export default {
         $ref: "#/definitions/sha1_hash",
         // uniqueItems: true,
       },
-      minItems: 1,
     },
     setup_action: {
       type: "object",

@@ -217,7 +217,6 @@ export default {
         },
         required: ["title", "summary", "content"],
       },
-      minItems: 1,
     },
   },
   additionalProperties: false,
