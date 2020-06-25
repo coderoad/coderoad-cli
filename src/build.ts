@@ -25,6 +25,7 @@ type BuildArgs = {
   markdown: string;
   yaml: string;
   output: string;
+  noValidate: boolean;
 };
 
 async function build(args: string[]) {
@@ -41,6 +42,8 @@ async function build(args: string[]) {
     // -o --output - default coderoad.json
     const output =
       getArg(args, { name: "output", alias: "o" }) || "tutorial.json";
+    const noValidate =
+      getArg(args, { name: "no-validate", alias: "nv" }) !== "false";
 
     console.log(`Building CodeRoad ${output}...`);
 
@@ -49,6 +52,7 @@ async function build(args: string[]) {
       output,
       markdown,
       yaml,
+      noValidate,
     };
   } catch (e) {
     console.error("Error parsing build logs");
@@ -139,10 +143,14 @@ async function build(args: string[]) {
 
   // validate tutorial based on tutorial json schema
   try {
-    const valid = validateSchema(tutorialSchema, tutorial);
-    if (!valid) {
-      console.error("Tutorial validation failed. See above to see what to fix");
-      return;
+    if (!options.noValidate) {
+      const valid = validateSchema(tutorialSchema, tutorial);
+      if (!valid) {
+        console.error(
+          "Tutorial validation failed. See above to see what to fix"
+        );
+        return;
+      }
     }
   } catch (e) {
     console.error("Error validating tutorial schema:");
