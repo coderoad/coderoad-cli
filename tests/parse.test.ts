@@ -842,7 +842,7 @@ The first step
   
 Description.
 
-## 100. Title
+## 100. First Title
 
 First line
 
@@ -850,21 +850,21 @@ First line
 
 The first step
 
-## 200. Title
+## 200. Second Title
 
-First line
+Second line
 
 ### 200.1
 
-The first step
+The second step
 
-## 201. Title
+## 201. Third Title
 
-First line
+Third line
 
 ### 201.1
 
-The first step
+The third step
 `;
     const skeleton = {
       levels: [
@@ -894,6 +894,7 @@ The first step
       levels: [
         {
           id: "100",
+          title: "First Title",
           summary: "First line",
           content: "First line",
           steps: [
@@ -908,6 +909,7 @@ The first step
         },
         {
           id: "200",
+          title: "Second Title",
           summary: "Second line",
           content: "Second line",
           steps: [
@@ -922,6 +924,7 @@ The first step
         },
         {
           id: "201",
+          title: "Third Title",
           summary: "Third line",
           content: "Third line",
           steps: [
