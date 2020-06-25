@@ -53,16 +53,17 @@ const codeBlockRegex = /```[a-z]*\n[\s\S]*?\n```/gm;
 
 export function validateMarkdown(md: string): boolean {
   // remove codeblocks which might contain any valid combinations
-  const text = md.replace(codeBlockRegex, "");
+  // trim white space
+  const text = md.replace(codeBlockRegex, "").trim();
 
   let valid = true;
 
   for (const v of validations) {
     if (!v.validate(text)) {
       valid = false;
-      // if (process.env.NODE_ENV !== "test") {
-      console.warn(v.message);
-      // }
+      if (process.env.NODE_ENV !== "test") {
+        console.warn(v.message);
+      }
     }
   }
 

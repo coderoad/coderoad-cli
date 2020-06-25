@@ -786,6 +786,55 @@ The first step
       };
       expect(result.levels).toEqual(expected.levels);
     });
+    it("should load no commits if none found for a step", () => {
+      const md = `# Title
+    
+Description.
+
+## 1. Title
+
+First line
+
+### 1.1
+
+The first step
+`;
+      const skeleton = {
+        levels: [
+          {
+            id: "1",
+            steps: [{ id: "1" }],
+          },
+        ],
+      };
+      const result = parse({
+        text: md,
+        skeleton,
+        commits: {},
+      });
+      const expected = {
+        summary: {
+          description: "Description.",
+        },
+        levels: [
+          {
+            id: "1",
+            summary: "First line",
+            content: "First line",
+            steps: [
+              {
+                id: "1.1",
+                content: "The first step",
+                setup: {
+                  commits: [],
+                },
+              },
+            ],
+          },
+        ],
+      };
+      expect(result.levels[0].steps[0]).toEqual(expected.levels[0].steps[0]);
+    });
   });
 
   describe("config", () => {
