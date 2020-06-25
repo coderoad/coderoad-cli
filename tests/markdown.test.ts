@@ -132,4 +132,26 @@ Should not be an issue
 First Step`;
     expect(validateMarkdown(md)).toBe(true);
   });
+  it("should ignore empty space at the top", () => {
+    const md = `
+
+# Title
+
+Description.`;
+    expect(validateMarkdown(md)).toBe(true);
+  });
+  it("should ignore empty space at the bottom", () => {
+    const md = `
+
+# Title
+
+Description.
+
+
+
+
+
+`;
+    expect(validateMarkdown(md)).toBe(true);
+  });
 });
