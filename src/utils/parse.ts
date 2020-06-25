@@ -140,6 +140,7 @@ export function parse(params: ParseParams): any {
         // add level step commits
         const { steps, ...configLevelProps } = configLevel;
         level = { ...configLevelProps, ...level };
+
         if (steps) {
           steps.forEach((step: T.Step, index: number) => {
             try {
@@ -151,12 +152,14 @@ export function parse(params: ParseParams): any {
               };
 
               const stepSetupKey = `${step.id}:T`;
+
+              if (!step?.setup) {
+                step.setup = {};
+              }
+              if (!step.setup.commits) {
+                step.setup.commits = [];
+              }
               if (params.commits[stepSetupKey]) {
-                if (!step.setup) {
-                  step.setup = {
-                    commits: [],
-                  };
-                }
                 step.setup.commits = params.commits[stepSetupKey];
               }
 
