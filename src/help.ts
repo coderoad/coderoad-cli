@@ -32,10 +32,10 @@ export function build() {
 Usage: coderoad build [path] [options]
 
 Options:
---help (-h)       display these help docs
---markdown (-m)   custom path to the tutorial markdown file (TUTORIAL.md)
---yaml (-y)       custom path to the tutorial yaml file (coderoad.yaml)
---output (-o)     custom path to tutorial json config file (coderoad.json)
+--help (-h)                         display these help docs
+--markdown (-m)   (TUTORIAL.md)     custom path to the tutorial markdown file 
+--yaml (-y)       (coderoad.yaml)   custom path to the tutorial yaml file 
+--output (-o)     (coderoad.json)   custom path to tutorial json config file 
 
 More docs at https://github.com/coderoad/coderoad-cli`);
 }
@@ -46,9 +46,9 @@ export function validate() {
 Usage: coderoad validate [path] [options]
 
 Options:
---help (-h)       display these help docs
---validate (-v)   run tutorial schema validation. Default is true, set to false to block validation.
---clean (-c)      set to false to preserve .tmp folder. Helpful for debugging
+--help (-h)               display these help docs
+--validate (-v)   (true)  run tutorial schema validation. Set to false to block validation.
+--clean (-c)      (false) set to false to preserve .tmp folder. Helpful for debugging
 
 More docs at https://github.com/coderoad/coderoad-cli`);
 }
