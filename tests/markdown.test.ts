@@ -103,6 +103,19 @@ First Step`;
     expect(validateMarkdown(md)).toBe(true);
   });
 
+  it("should allow for empty level content", () => {
+    const md = `# Title
+
+Description.
+
+## 1. Put Level's title here
+
+### 1.1
+
+First Step`;
+    expect(validateMarkdown(md)).toBe(true);
+  });
+
   it("should ignore markdown content in codeblocks", () => {
     const md = `# Title
 

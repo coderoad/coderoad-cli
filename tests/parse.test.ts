@@ -232,6 +232,43 @@ But not including this line.
       expect(result.levels[0]).toEqual(expected.levels[0]);
     });
 
+    it("should allow for empty level content", () => {
+      const md = `# Title
+
+Description.
+
+## 1. Put Level's title here
+
+### 1.1
+
+A step
+`;
+
+      const skeleton = { levels: [{ id: "1" }] };
+      const result = parse({
+        text: md,
+        skeleton,
+        commits: {},
+      });
+      const expected = {
+        levels: [
+          {
+            id: "1",
+            title: "Put Level's title here",
+            summary: "",
+            content: "",
+            steps: [
+              {
+                id: "1.1",
+                content: "A step",
+              },
+            ],
+          },
+        ],
+      };
+      expect(result.levels[0]).toEqual(expected.levels[0]);
+    });
+
     it("should match line breaks with double line breaks for proper spacing", () => {
       const md = `# Title
     
