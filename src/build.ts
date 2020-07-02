@@ -44,8 +44,6 @@ async function build(args: string[]) {
       getArg(args, { name: "output", alias: "o" }) || "tutorial.json";
     const validate = getArg(args, { name: "validate", alias: "v" }) !== "false";
 
-    console.log("validate", validate);
-
     console.log(`Building CodeRoad ${output}...`);
 
     options = {
