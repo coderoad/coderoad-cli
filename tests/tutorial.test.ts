@@ -37,7 +37,8 @@ const validJson: Partial<T.Tutorial> = {
         {
           id: "1.1",
           content: "The first step",
-          setup: { commits: [] },
+          setup: { commits: ["abcdefa"] },
+          solution: { commits: ["abcdefb"] },
         },
       ],
     },
@@ -73,5 +74,61 @@ describe("validate tutorial", () => {
 
     const valid = validateTutorial(json);
     expect(valid).toBe(true);
+  });
+  it("should allow a step with no solution", () => {
+    const json = {
+      ...validJson,
+      levels: [
+        {
+          id: "1",
+          title: "Level 1",
+          summary: "summary",
+          content: "content",
+          steps: [
+            {
+              id: "1.1",
+              content: "The first step",
+              setup: { commits: ["abcdefa"] },
+            },
+            {
+              id: "1.2",
+              content: "The second step",
+              setup: { commits: ["abcdefb"] },
+            },
+          ],
+        },
+      ],
+    };
+
+    const valid = validateTutorial(json);
+    expect(valid).toBe(true);
+  });
+  it("shouldn't allow a step with no setup but a solution", () => {
+    const json = {
+      ...validJson,
+      levels: [
+        {
+          id: "1",
+          title: "Level 1",
+          summary: "summary",
+          content: "content",
+          steps: [
+            {
+              id: "1.1",
+              content: "The first step",
+              solution: { commits: ["abcdefa"] },
+            },
+            {
+              id: "1.2",
+              content: "The second step",
+              solution: { commits: ["abcdefb"] },
+            },
+          ],
+        },
+      ],
+    };
+
+    const valid = validateTutorial(json);
+    expect(valid).toBe(false);
   });
 });
