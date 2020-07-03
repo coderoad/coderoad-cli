@@ -21,7 +21,7 @@ export default {
     title: {
       type: "string",
       minLength: 1,
-      maxLength: 40,
+      maxLength: 100,
     },
     file_path: {
       type: "string",
