@@ -1,10 +1,15 @@
 export type Maybe<T> = T | null;
 
+export type ConfigReset = {
+  command?: string;
+};
+
 export type TutorialConfig = {
-  appVersions: TutorialAppVersions;
+  appVersions?: TutorialAppVersions;
   testRunner: TestRunnerConfig;
   repo: TutorialRepo;
   dependencies?: TutorialDependency[];
+  reset?: ConfigReset;
 };
 
 /** Logical groupings of tasks */

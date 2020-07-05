@@ -998,6 +998,9 @@ Description.
             uri: "https://path.to/repo",
             branch: "aBranch",
           },
+          reset: {
+            command: "some command",
+          },
           dependencies: [
             {
               name: "node",
@@ -1030,6 +1033,9 @@ Description.
           repo: {
             uri: "https://path.to/repo",
             branch: "aBranch",
+          },
+          reset: {
+            command: "some command",
           },
           dependencies: [
             {

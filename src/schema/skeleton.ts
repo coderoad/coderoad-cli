@@ -80,7 +80,18 @@ export default {
           additionalProperties: false,
           required: ["uri", "branch"],
         },
-
+        reset: {
+          type: "object",
+          description: "Configuration options for resetting a tutorial",
+          properties: {
+            command: {
+              type: "string",
+              description: "An optional command to run on reset",
+              examples: ["npm install"],
+            },
+          },
+          additionalProperties: false,
+        },
         dependencies: {
           type: "array",
           description: "A list of tutorial dependencies",
