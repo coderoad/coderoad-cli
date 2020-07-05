@@ -541,7 +541,6 @@ The first step
                   files: ["someFile.js"],
                   watchers: ["someFile.js"],
                   filter: "someFilter",
-                  subtasks: true,
                 },
                 solution: {
                   commands: ["npm install"],
@@ -579,7 +578,6 @@ The first step
                   files: ["someFile.js"],
                   watchers: ["someFile.js"],
                   filter: "someFilter",
-                  subtasks: true,
                 },
                 solution: {
                   commits: ["1gfedcba", "987654321"],
@@ -631,7 +629,6 @@ The third step
                   files: ["someFile.js"],
                   watchers: ["someFile.js"],
                   filter: "someFilter",
-                  subtasks: true,
                 },
                 solution: {
                   commands: ["npm install"],
@@ -645,7 +642,6 @@ The third step
                   files: ["someFile.js"],
                   watchers: ["someFile.js"],
                   filter: "someFilter",
-                  subtasks: true,
                 },
                 solution: {
                   commands: ["npm install"],
@@ -666,7 +662,6 @@ The third step
                   files: ["someFile.js"],
                   watchers: ["someFile.js"],
                   filter: "someFilter",
-                  subtasks: true,
                 },
                 solution: {
                   commands: ["npm install"],
@@ -709,7 +704,6 @@ The third step
                   files: ["someFile.js"],
                   watchers: ["someFile.js"],
                   filter: "someFilter",
-                  subtasks: true,
                 },
                 solution: {
                   commits: ["1fedcba", "987654321"],
@@ -726,7 +720,6 @@ The third step
                   files: ["someFile.js"],
                   watchers: ["someFile.js"],
                   filter: "someFilter",
-                  subtasks: true,
                 },
                 solution: {
                   commits: ["3abcdef"],
@@ -751,7 +744,6 @@ The third step
                   files: ["someFile.js"],
                   watchers: ["someFile.js"],
                   filter: "someFilter",
-                  subtasks: true,
                 },
                 solution: {
                   commits: ["5abcdef"],
@@ -1417,6 +1409,76 @@ The second uninterrupted step
         ],
       };
       expect(result.levels[0]).toEqual(expected.levels[0]);
+    });
+  });
+  describe("subtasks", () => {
+    it("should parse subtasks", () => {
+      const md = `# Subtask Demo
+
+A demo demonstrating how to use subtasks
+
+## 1. Subtask Example
+
+A subtask example
+
+### 1.1
+
+Create a function \`add\` that can take a variety of params.
+
+#### SUBTASKS
+
+- Add one number
+- Add two numbers
+- Add three numbers`;
+      const skeleton = {
+        levels: [
+          {
+            id: "1",
+            steps: [
+              {
+                id: "1.1",
+              },
+            ],
+          },
+        ],
+      };
+      const expected = {
+        levels: [
+          {
+            id: "1",
+            title: "Subtask Example",
+            summary: "A subtask example",
+            content: "A subtask example",
+            steps: [
+              {
+                id: "1.1",
+                setup: {
+                  subtasks: [
+                    "Add one number",
+                    "Add two numbers",
+                    "Add three numbers",
+                  ],
+                  commits: ["abcdef1"],
+                },
+                content:
+                  "Create a function `add` that can take a variety of params.",
+                solution: {
+                  commits: ["abcdef2"],
+                },
+              },
+            ],
+          },
+        ],
+      };
+      const result = parse({
+        text: md,
+        skeleton,
+        commits: {
+          "1.1:T": ["abcdef1"],
+          "1.1:S": ["abcdef2"],
+        },
+      });
+      expect(result.levels).toEqual(expected.levels);
     });
   });
 });
