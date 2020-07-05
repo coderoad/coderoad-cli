@@ -91,20 +91,39 @@ export function parseMdContent(md: string): TutorialFrame | never {
           content: stepContent.trim(),
         };
       } else {
-        // parse hints from stepContent
         const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+([\*|\-]\s(?<hintContent>[^]*))[\n\r]+)+/;
         const hintMatch = section.match(hintDetectRegex);
-        if (!!hintMatch) {
-          const hintItemRegex = /[\n\r]+[\*|\-]\s/;
-          const hints = section
-            .split(hintItemRegex)
-            .slice(1) // remove #### HINTS
-            .map((h) => h.trim());
-          if (hints.length) {
-            mdContent.levels[current.levelIndex].steps[
-              current.stepIndex
-            ].hints = hints;
-          }
+        const subtaskDetectRegex = /^(#{4}\sSUBTASKS[\n\r]+([\*|\-]\s(?<subtaskContent>[^]*))[\n\r]+)+/;
+        const subtaskMatch = section.match(subtaskDetectRegex);
+        const listItemregex = /[\n\r]+[\*|\-]\s/;
+
+        switch (true) {
+          // parse hints from stepContent
+          case !!hintMatch:
+            const hints = section
+              .split(listItemregex)
+              .slice(1) // remove #### HINTS
+              .map((h) => h.trim());
+            if (hints.length) {
+              mdContent.levels[current.levelIndex].steps[
+                current.stepIndex
+              ].hints = hints;
+            }
+            return;
+          // parse subtasks from stepContent
+          case !!subtaskMatch:
+            const subtasks = section
+              .split(listItemregex)
+              .slice(1) // remove #### SUBTASKS
+              .map((h) => h.trim());
+            if (subtasks.length) {
+              mdContent.levels[current.levelIndex].steps[
+                current.stepIndex
+              ].subtasks = subtasks;
+            }
+            return;
+          default:
+            console.warn(`No build parser match found for:\n${section}\n`);
         }
       }
     }

@@ -1429,7 +1429,8 @@ Create a function \`add\` that can take a variety of params.
 
 - Add one number
 - Add two numbers
-- Add three numbers`;
+- Add three numbers
+`;
       const skeleton = {
         levels: [
           {
@@ -1453,11 +1454,6 @@ Create a function \`add\` that can take a variety of params.
               {
                 id: "1.1",
                 setup: {
-                  subtasks: [
-                    "Add one number",
-                    "Add two numbers",
-                    "Add three numbers",
-                  ],
                   commits: ["abcdef1"],
                 },
                 content:
@@ -1465,6 +1461,11 @@ Create a function \`add\` that can take a variety of params.
                 solution: {
                   commits: ["abcdef2"],
                 },
+                subtasks: [
+                  "Add one number",
+                  "Add two numbers",
+                  "Add three numbers",
+                ],
               },
             ],
           },
@@ -1478,7 +1479,7 @@ Create a function \`add\` that can take a variety of params.
           "1.1:S": ["abcdef2"],
         },
       });
-      expect(result.levels).toEqual(expected.levels);
+      expect(result.levels[0]).toEqual(expected.levels[0]);
     });
   });
 });
