@@ -7,6 +7,15 @@ type TutorialFrame = {
   levels: T.Level[];
 };
 
+const R = {
+  summary: /^#\s(?<tutorialTitle>.*)[\n\r]+(?<tutorialDescription>[^]*)/,
+  level: /^(#{2}\s(?<levelId>L?\d+\.?)\s(?<levelTitle>.*)[\n\r]*(>\s(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/,
+  step: /^(#{3}\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/,
+  hints: /^(#{4}\sHINTS[\n\r]+([\*|\-]\s(?<hintContent>[^]*))[\n\r]+)+/,
+  subtasks: /^(#{4}\sSUBTASKS[\n\r]+([\*|\-]\s(?<subtaskContent>[^]*))[\n\r]+)+/,
+  listItem: /[\n\r]+[\*|\-]\s/,
+};
+
 export function parseMdContent(md: string): TutorialFrame | never {
   let start: number = -1;
   const parts: any[] = [];
@@ -34,9 +43,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
   };
 
   // Capture summary
-  const summaryMatch = parts
-    .shift()
-    .match(/^#\s(?<tutorialTitle>.*)[\n\r]+(?<tutorialDescription>[^]*)/);
+  const summaryMatch = parts.shift().match(R.summary);
   if (summaryMatch.groups.tutorialTitle) {
     mdContent.summary.title = summaryMatch.groups.tutorialTitle.trim();
   }
@@ -49,8 +56,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
   // Identify each part of the content
   parts.forEach((section: string) => {
     // match level
-    const levelRegex = /^(#{2}\s(?<levelId>L?\d+\.?)\s(?<levelTitle>.*)[\n\r]*(>\s(?<levelSummary>.*))?[\n\r]+(?<levelContent>[^]*))/;
-    const levelMatch: RegExpMatchArray | null = section.match(levelRegex);
+    const levelMatch: RegExpMatchArray | null = section.match(R.level);
 
     if (levelMatch && levelMatch.groups) {
       const levelId = levelMatch.groups.levelId.replace(".", "");
@@ -77,8 +83,7 @@ export function parseMdContent(md: string): TutorialFrame | never {
       };
     } else {
       // match step
-      const stepRegex = /^(#{3}\s(?<stepTitle>.*)[\n\r]+(?<stepContent>[^]*))/;
-      const stepMatch: RegExpMatchArray | null = section.match(stepRegex);
+      const stepMatch: RegExpMatchArray | null = section.match(R.step);
       if (stepMatch && stepMatch.groups) {
         current = {
           levelId: current.levelId,
@@ -91,20 +96,36 @@ export function parseMdContent(md: string): TutorialFrame | never {
           content: stepContent.trim(),
         };
       } else {
-        // parse hints from stepContent
-        const hintDetectRegex = /^(#{4}\sHINTS[\n\r]+([\*|\-]\s(?<hintContent>[^]*))[\n\r]+)+/;
-        const hintMatch = section.match(hintDetectRegex);
-        if (!!hintMatch) {
-          const hintItemRegex = /[\n\r]+[\*|\-]\s/;
-          const hints = section
-            .split(hintItemRegex)
-            .slice(1) // remove #### HINTS
-            .map((h) => h.trim());
-          if (hints.length) {
-            mdContent.levels[current.levelIndex].steps[
-              current.stepIndex
-            ].hints = hints;
-          }
+        const hintMatch = section.match(R.hints);
+        const subtaskMatch = section.match(R.subtasks);
+
+        switch (true) {
+          // parse hints from stepContent
+          case !!hintMatch:
+            const hints = section
+              .split(R.listItem)
+              .slice(1) // remove #### HINTS
+              .map((h) => h.trim());
+            if (hints.length) {
+              mdContent.levels[current.levelIndex].steps[
+                current.stepIndex
+              ].hints = hints;
+            }
+            return;
+          // parse subtasks from stepContent
+          case !!subtaskMatch:
+            const subtasks = section
+              .split(R.listItem)
+              .slice(1) // remove #### SUBTASKS
+              .map((h) => h.trim());
+            if (subtasks.length) {
+              mdContent.levels[current.levelIndex].steps[
+                current.stepIndex
+              ].subtasks = subtasks;
+            }
+            return;
+          default:
+            console.warn(`No build parser match found for:\n${section}\n`);
         }
       }
     }
