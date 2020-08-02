@@ -104,19 +104,19 @@ commit 8e0e3a42ae565050181fdb68298114df21467a74 (HEAD -> v2, origin/v2)
 Author: creator <author@email.com>
 Date:   Sun May 3 16:16:01 2020 -0700
 
-    1.1 setup for level 1, step 1
+    1.1 some message
 
 commit 9499611fc9b311040dcabaf2d98439fc0c356cc9
 Author: creator <author@email.com>
 Date:   Sun May 3 16:13:37 2020 -0700
 
-    1.1S solution for level 1, step 1
+    1.1S some message
 
 commit c5c62041282579b495d3589b2eb1fdda2bcd7155
 Author: creator <author@email.com>
 Date:   Sun May 3 16:11:42 2020 -0700
 
-    1.2 setup for level 1, step 2
+    1.2 some message
 ```
 
 Note that the step `1.1` has two commits, one with the suffix `S`. The first commit refers to the required tests and setup, while the second optional commit contains the solution. If there are multiple commits for a level or step, they are captured in order.
