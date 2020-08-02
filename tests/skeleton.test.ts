@@ -8,14 +8,15 @@ const validJson = {
   config: {
     testRunner: {
       directory: "coderoad",
-      setup: {
-        commands: [],
-      },
+
       args: {
         filter: "--grep",
         tap: "--reporter=mocha-tap-reporter",
       },
       command: "./node_modules/.bin/mocha",
+    },
+    setup: {
+      commands: [],
     },
     repo: {
       uri: "http://github.com/somePath/toRepo.git",

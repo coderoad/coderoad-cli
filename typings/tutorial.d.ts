@@ -10,6 +10,7 @@ export type TutorialConfig = {
   repo: TutorialRepo;
   dependencies?: TutorialDependency[];
   reset?: ConfigReset;
+  setup?: StepActions;
 };
 
 /** Logical groupings of tasks */
@@ -69,7 +70,6 @@ export interface TestRunnerConfig {
   command: string;
   args: TestRunnerArgs;
   directory?: string;
-  setup?: StepActions;
 }
 
 export interface TutorialRepo {

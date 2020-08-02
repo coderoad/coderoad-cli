@@ -71,13 +71,13 @@ export default {
               description: "An optional folder for the test runner",
               examples: ["coderoad"],
             },
-            setup: {
-              $ref: "#/definitions/setup_action",
-              description:
-                "Setup commits or commands used for setting up the test runner on tutorial launch",
-            },
           },
           required: ["command", "args"],
+        },
+        setup: {
+          $ref: "#/definitions/setup_action",
+          description:
+            "Setup commits or commands used for setting up the test runner on tutorial launch",
         },
         repo: {
           type: "object",

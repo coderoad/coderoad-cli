@@ -74,14 +74,10 @@ async function validate(args: string[]) {
       await cherryPick(commits.INIT);
 
       // run commands
-      if (skeleton.config?.testRunner?.setup?.commands) {
+      if (skeleton.config?.setup?.commands) {
         console.info("-- Running commands...");
 
-        await runCommands(
-          skeleton.config?.testRunner?.setup?.commands,
-          // add optional setup directory
-          skeleton.config?.testRunner?.directory
-        );
+        await runCommands(skeleton.config?.setup?.commands);
       }
     }
 

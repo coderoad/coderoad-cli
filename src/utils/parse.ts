@@ -153,8 +153,8 @@ export function parse(params: ParseParams): any {
   // add init commits
   if (params.commits.INIT && params.commits.INIT.length) {
     // @ts-ignore
-    parsed.config.testRunner.setup = {
-      ...(parsed.config?.testRunner?.setup || {}),
+    parsed.config.setup = {
+      ...(parsed.config?.setup || {}),
       commits: params.commits.INIT,
     };
   }
