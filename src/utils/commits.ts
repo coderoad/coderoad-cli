@@ -16,9 +16,9 @@ type GetCommitOptions = {
 
 export type CommitLogObject = { [position: string]: string[] };
 
-
-
-export function parseCommits(logs: ListLogSummary<any>): { [hash: string]: string[]} {
+export function parseCommits(
+  logs: ListLogSummary<any>
+): { [hash: string]: string[] } {
   // Filter relevant logs
   const commits: CommitLogObject = {};
   const positions: string[] = [];
@@ -30,31 +30,31 @@ export function parseCommits(logs: ListLogSummary<any>): { [hash: string]: strin
 
     if (matches && matches.length) {
       // Use an object of commit arrays to collect all commits
-      const { groups } = matches
-      let position
+      const { groups } = matches;
+      let position;
       if (groups.init) {
-        position = 'INIT'
+        position = "INIT";
       } else if (groups.levelId && groups.stepId) {
-        let stepType
+        let stepType;
         // @deprecated Q
-        if (!groups.stepType || ['Q', 'T'].includes(groups.stepType)) {
-          stepType = 'T' // test
+        if (!groups.stepType || ["Q", "T"].includes(groups.stepType)) {
+          stepType = "T"; // test
           // @deprecated A
-        } else if (!groups.stepType || ['A', 'S'].includes(groups.stepType)) {
-          stepType = 'S' // solution
+        } else if (!groups.stepType || ["A", "S"].includes(groups.stepType)) {
+          stepType = "S"; // solution
         }
-        position = `${groups.levelId}.${groups.stepId}:${stepType}`
+        position = `${groups.levelId}.${groups.stepId}:${stepType}`;
       } else if (groups.levelId) {
-        position = groups.levelId
+        position = groups.levelId;
       } else {
-        console.warn(`No matcher for commit "${commit.message}"`)
+        console.warn(`No matcher for commit "${commit.message}"`);
       }
-      commits[position] = [...(commits[position] || []), commit.hash]
+      commits[position] = [...(commits[position] || []), commit.hash];
       positions.unshift(position);
     } else {
       const initMatches = commit.message.match(/^INIT/);
       if (initMatches && initMatches.length) {
-        commits.INIT = [...(commits.INIT || []), commit.hash]
+        commits.INIT = [commit.hash, ...(commits.INIT || [])];
         positions.unshift("INIT");
       }
     }
