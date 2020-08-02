@@ -1,3 +1,7 @@
+![Build](https://github.com/coderoad/coderoad-cli/workflows/Build/badge.svg)
+![Publish](https://github.com/coderoad/coderoad-cli/workflows/Publish/badge.svg)
+![NPM](https://img.shields.io/npm/v/@coderoad/cli?color=green&label=npm%3A%40coderoad%2Fcli)
+
 # CodeRoad Buidler - CLI
 
 Command line interface for [CodeRoad](https://marketplace.visualstudio.com/items?itemName=CodeRoad.coderoad).
