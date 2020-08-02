@@ -51,24 +51,24 @@
     "esm": "^3.2.25",
     "fs-extra": "^9.0.1",
     "js-yaml": "^3.14.0",
-    "kleur": "^4.0.2",
-    "lodash": "^4.17.15",
+    "kleur": "^4.0.3",
+    "lodash": "^4.17.19",
     "ncp": "^2.0.0",
-    "simple-git": "^2.11.0"
+    "simple-git": "^2.15.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.10.4",
     "@types/ajv": "^1.0.0",
     "@types/fs-extra": "^9.0.1",
-    "@types/inquirer": "^6.5.0",
-    "@types/jest": "^26.0.3",
+    "@types/inquirer": "^7.3.0",
+    "@types/jest": "^26.0.8",
     "@types/js-yaml": "^3.12.5",
-    "@types/lodash": "^4.14.157",
+    "@types/lodash": "^4.14.158",
     "@types/ncp": "^2.0.4",
     "del-cli": "^3.0.1",
-    "jest": "^26.1.0",
-    "ts-jest": "^26.1.1",
-    "typescript": "^3.9.6"
+    "jest": "^26.2.2",
+    "ts-jest": "^26.1.4",
+    "typescript": "^3.9.7"
   },
   "publishConfig": {
     "access": "public"
