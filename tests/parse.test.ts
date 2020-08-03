@@ -999,7 +999,7 @@ Description.
             branch: "aBranch",
           },
           reset: {
-            command: "some command",
+            commands: ["some command"],
           },
           dependencies: [
             {
@@ -1035,7 +1035,7 @@ Description.
             branch: "aBranch",
           },
           reset: {
-            command: "some command",
+            commands: ["some command"],
           },
           dependencies: [
             {

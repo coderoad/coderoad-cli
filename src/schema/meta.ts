@@ -47,6 +47,25 @@ export default {
         type: "string",
       },
     },
+    vscode_command_array: {
+      type: "array",
+      description:
+        "An array of VSCode commands that can be called using the vscode commands API.",
+      items: {
+        anyOf: [
+          {
+            type: "string",
+            description: "A VSCode command without params",
+          },
+          {
+            type: "array",
+            description: "A VSCode command with params",
+            minLength: 2,
+            maxLength: 2,
+          },
+        ],
+      },
+    },
     commit_array: {
       type: "array",
       description:
@@ -104,6 +123,9 @@ export default {
         },
         commands: {
           $ref: "#/definitions/command_array",
+        },
+        vscodeCommands: {
+          $ref: "#/definitions/vscode_command_array",
         },
         watchers: {
           type: "array",

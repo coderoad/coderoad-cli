@@ -75,9 +75,20 @@ export default {
           required: ["command", "args"],
         },
         setup: {
-          $ref: "#/definitions/setup_action",
+          type: "object",
           description:
             "Setup commits or commands used for setting up the test runner on tutorial launch",
+          properties: {
+            commits: {
+              $ref: "#/definitions/commit_array",
+            },
+            commands: {
+              $ref: "#/definitions/command_array",
+            },
+            vscodeCommands: {
+              $ref: "#/definitions/vscode_command_array",
+            },
+          },
         },
         repo: {
           type: "object",
@@ -103,10 +114,11 @@ export default {
           type: "object",
           description: "Configuration options for resetting a tutorial",
           properties: {
-            command: {
-              type: "string",
-              description: "An optional command to run on reset",
-              examples: ["npm install"],
+            commands: {
+              $ref: "#/definitions/command_array",
+            },
+            vscodeCommands: {
+              $ref: "#/definitions/vscode_command_array",
             },
           },
           additionalProperties: false,
