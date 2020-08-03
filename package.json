@@ -1,6 +1,6 @@
 {
   "name": "@coderoad/cli",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "A CLI to build the configuration file for Coderoad Tutorials",
   "keywords": [
     "coderoad",
@@ -15,8 +15,9 @@
     "url": "git+https://github.com/coderoad/coderoad-cli.git"
   },
   "license": "SEE LICENSE IN LICENSE.md",
-  "author": "Argemiro Neto",
+  "author": "Shawn McKay",
   "contributors": [
+    "Argemiro Neto",
     "Shawn McKay"
   ],
   "files": [
