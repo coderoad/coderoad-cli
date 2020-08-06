@@ -13,10 +13,10 @@ const validJson: Partial<T.Tutorial> = {
         tap: "tap",
       },
       directory: "coderoad",
-      setup: {
-        commits: ["abcdef1"],
-        commands: ["npm install"],
-      },
+    },
+    setup: {
+      commits: ["abcdef1"],
+      commands: ["npm install"],
     },
     repo: {
       uri: "https://github.com/some-repo.git",

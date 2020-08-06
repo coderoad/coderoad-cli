@@ -987,9 +987,9 @@ Description.
               tap: "--reporter=mocha-tap-reporter",
             },
             directory: "coderoad",
-            setup: {
-              commands: [],
-            },
+          },
+          setup: {
+            commands: [],
           },
           appVersions: {
             vscode: ">=0.7.0",
@@ -999,7 +999,7 @@ Description.
             branch: "aBranch",
           },
           reset: {
-            command: "some command",
+            commands: ["some command"],
           },
           dependencies: [
             {
@@ -1026,16 +1026,16 @@ Description.
               tap: "--reporter=mocha-tap-reporter",
             },
             directory: "coderoad",
-            setup: {
-              commands: [],
-            },
+          },
+          setup: {
+            commands: [],
           },
           repo: {
             uri: "https://path.to/repo",
             branch: "aBranch",
           },
           reset: {
-            command: "some command",
+            commands: ["some command"],
           },
           dependencies: [
             {
@@ -1101,9 +1101,9 @@ Description.
               tap: "--reporter=mocha-tap-reporter",
             },
             directory: "coderoad",
-            setup: {
-              commits: ["abcdef1", "123456789"],
-            },
+          },
+          setup: {
+            commits: ["abcdef1", "123456789"],
           },
           repo: {
             uri: "https://path.to/repo",
