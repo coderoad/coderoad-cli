@@ -1189,7 +1189,7 @@ The first step
       expect(result.levels).toEqual(expected.levels);
     });
 
-    it("should parse a single hint", () => {
+    it("should parse without spaces at the end", () => {
       const md = `# Title
     
 Description.
@@ -1204,9 +1204,7 @@ The first step
 
 #### HINTS
 
--  A test with a \`backtick\`
-
-`;
+-  A test with a \`backtick\``;
       const skeleton = {
         levels: [
           {
@@ -1222,9 +1220,7 @@ The first step
       const result = parse({
         text: md,
         skeleton,
-        commits: {
-          "1.1:T": ["abcdef1", "123456789"],
-        },
+        commits: {},
       });
       const expected = {
         summary: {
@@ -1241,7 +1237,7 @@ The first step
                 id: "1.1",
                 content: "The first step",
                 setup: {
-                  commits: ["abcdef1", "123456789"],
+                  commits: [],
                 },
                 hints: ["A test with a `backtick`"],
               },
