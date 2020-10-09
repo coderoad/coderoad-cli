@@ -141,7 +141,7 @@ type ParseParams = {
 };
 
 export function parse(params: ParseParams): any {
-  const mdContent: TutorialFrame = parseMdContent(params.text);
+  const mdContent: TutorialFrame = parseMdContent(params.text + "\n\n");
 
   const parsed: Partial<T.Tutorial> = {
     version: params.skeleton.version,

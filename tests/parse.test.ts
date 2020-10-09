@@ -1189,6 +1189,65 @@ The first step
       expect(result.levels).toEqual(expected.levels);
     });
 
+    it("should parse without spaces at the end", () => {
+      const md = `# Title
+    
+Description.
+
+## 1. Title 1
+
+First level content.
+
+### 1.1
+
+The first step
+
+#### HINTS
+
+-  A test with a \`backtick\``;
+      const skeleton = {
+        levels: [
+          {
+            id: "1",
+            steps: [
+              {
+                id: "1.1",
+              },
+            ],
+          },
+        ],
+      };
+      const result = parse({
+        text: md,
+        skeleton,
+        commits: {},
+      });
+      const expected = {
+        summary: {
+          description: "Description.",
+        },
+        levels: [
+          {
+            id: "1",
+            title: "Title 1",
+            summary: "First level content.",
+            content: "First level content.",
+            steps: [
+              {
+                id: "1.1",
+                content: "The first step",
+                setup: {
+                  commits: [],
+                },
+                hints: ["A test with a `backtick`"],
+              },
+            ],
+          },
+        ],
+      };
+      expect(result.levels).toEqual(expected.levels);
+    });
+
     it("should parse hints for a step with '-'", () => {
       const md = `# Title
     
