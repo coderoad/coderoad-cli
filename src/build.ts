@@ -91,7 +91,7 @@ async function build (args: string[]) {
   // parse yaml skeleton config
   let skeleton
   try {
-    skeleton = yamlParser.load(_yaml)
+    skeleton = yamlParser.load(_yaml) as T.TutorialSkeleton
     if (!skeleton || !Object.keys(skeleton).length) {
       throw new Error(`Skeleton at "${options.yaml}" is invalid`)
     }
