@@ -1,271 +1,271 @@
-import { validateSchema } from "../src/utils/validateSchema";
-import skeletonSchema from "../src/schema/skeleton";
+import { validateSchema } from '../src/utils/validateSchema'
+import skeletonSchema from '../src/schema/skeleton'
 
-const validateSkeleton = (json: any) => validateSchema(skeletonSchema, json);
+const validateSkeleton = (json: any) => validateSchema(skeletonSchema, json)
 
 const validJson = {
-  version: "0.1.0",
+  version: '0.1.0',
   config: {
     testRunner: {
-      directory: "coderoad",
+      directory: 'coderoad',
 
       args: {
-        filter: "--grep",
-        tap: "--reporter=mocha-tap-reporter",
+        filter: '--grep',
+        tap: '--reporter=mocha-tap-reporter'
       },
-      command: "./node_modules/.bin/mocha",
+      command: './node_modules/.bin/mocha'
     },
     setup: {
-      commands: [],
+      commands: []
     },
     repo: {
-      uri: "http://github.com/somePath/toRepo.git",
-      branch: "codeBranch",
+      uri: 'http://github.com/somePath/toRepo.git',
+      branch: 'codeBranch'
     },
     dependencies: [],
     appVersions: {
-      vscode: ">=0.7.0",
-    },
+      vscode: '>=0.7.0'
+    }
   },
   levels: [
     {
       steps: [
         {
-          id: "1.1",
+          id: '1.1',
           setup: {
-            files: ["package.json"],
+            files: ['package.json']
           },
           solution: {
-            files: ["package.json"],
-          },
+            files: ['package.json']
+          }
         },
         {
-          id: "1.2",
+          id: '1.2',
           setup: {
-            commands: ["npm install"],
+            commands: ['npm install']
           },
           solution: {
-            commands: ["npm install"],
-          },
+            commands: ['npm install']
+          }
         },
         {
-          id: "1.3",
+          id: '1.3',
           setup: {
-            files: ["package.json"],
-            watchers: ["package.json", "node_modules/some-package"],
+            files: ['package.json'],
+            watchers: ['package.json', 'node_modules/some-package']
           },
           solution: {
-            files: ["package.json"],
-          },
+            files: ['package.json']
+          }
         },
         {
-          id: "1.4",
+          id: '1.4',
           setup: {
             commands: [],
-            filter: "^Example 2",
-            subtasks: true,
-          },
-        },
+            filter: '^Example 2',
+            subtasks: true
+          }
+        }
       ],
-      id: "1",
-    },
-  ],
-};
+      id: '1'
+    }
+  ]
+}
 
-describe("validate skeleton", () => {
-  it("should fail an empty skeleton file", () => {
-    const json = {};
+describe('validate skeleton', () => {
+  it('should fail an empty skeleton file', () => {
+    const json = {}
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should parse a valid skeleton file", () => {
-    const json = { ...validJson };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should parse a valid skeleton file', () => {
+    const json = { ...validJson }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(true);
-  });
-  it("should fail if version is invalid", () => {
-    const json = { ...validJson, version: "NOT A VERSION" };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(true)
+  })
+  it('should fail if version is invalid', () => {
+    const json = { ...validJson, version: 'NOT A VERSION' }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if version is missing", () => {
-    const json = { ...validJson, version: undefined };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if version is missing', () => {
+    const json = { ...validJson, version: undefined }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if config is missing", () => {
-    const json = { ...validJson, config: undefined };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if config is missing', () => {
+    const json = { ...validJson, config: undefined }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if config testRunner is missing", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if config testRunner is missing', () => {
     const json = {
       ...validJson,
-      config: { ...validJson.config, testRunner: undefined },
-    };
+      config: { ...validJson.config, testRunner: undefined }
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if config testRunner command is missing", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if config testRunner command is missing', () => {
     const json = {
       ...validJson,
       config: {
         ...validJson.config,
-        testRunner: { ...validJson.config.testRunner, command: undefined },
-      },
-    };
+        testRunner: { ...validJson.config.testRunner, command: undefined }
+      }
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if config testRunner args tap is missing", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if config testRunner args tap is missing', () => {
     const json = {
       ...validJson,
       config: {
         ...validJson.config,
         testRunner: {
           ...validJson.config.testRunner,
-          args: { ...validJson.config.testRunner.args, tap: undefined },
-        },
-      },
-    };
+          args: { ...validJson.config.testRunner.args, tap: undefined }
+        }
+      }
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if repo is missing", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if repo is missing', () => {
     const json = {
       ...validJson,
       config: {
         ...validJson.config,
-        repo: undefined,
-      },
-    };
+        repo: undefined
+      }
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if repo uri is missing", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if repo uri is missing', () => {
     const json = {
       ...validJson,
       config: {
         ...validJson.config,
-        repo: { ...validJson.config.repo, uri: undefined },
-      },
-    };
+        repo: { ...validJson.config.repo, uri: undefined }
+      }
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if repo uri is invalid", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if repo uri is invalid', () => {
     const json = {
       ...validJson,
       config: {
         ...validJson.config,
-        repo: { ...validJson.config.repo, uri: "NOT A VALID URI" },
-      },
-    };
+        repo: { ...validJson.config.repo, uri: 'NOT A VALID URI' }
+      }
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if repo branch is missing", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if repo branch is missing', () => {
     const json = {
       ...validJson,
       config: {
         ...validJson.config,
-        repo: { ...validJson.config.repo, branch: undefined },
-      },
-    };
+        repo: { ...validJson.config.repo, branch: undefined }
+      }
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if level is missing id", () => {
-    const level1 = { ...validJson.levels[0], id: undefined };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if level is missing id', () => {
+    const level1 = { ...validJson.levels[0], id: undefined }
     const json = {
       ...validJson,
-      levels: [level1],
-    };
+      levels: [level1]
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if level setup is invalid", () => {
-    const level1 = { ...validJson.levels[0], setup: { invalidThing: [] } };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if level setup is invalid', () => {
+    const level1 = { ...validJson.levels[0], setup: { invalidThing: [] } }
     const json = {
       ...validJson,
-      levels: [level1],
-    };
+      levels: [level1]
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should fail if step is missing id", () => {
-    const step1 = { ...validJson.levels[0].steps[0], id: undefined };
-    const level1 = { ...validJson.levels[0], steps: [step1] };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if step is missing id', () => {
+    const step1 = { ...validJson.levels[0].steps[0], id: undefined }
+    const level1 = { ...validJson.levels[0], steps: [step1] }
     const json = {
       ...validJson,
-      levels: [level1],
-    };
+      levels: [level1]
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should not fail if step setup is missing", () => {
-    const step1 = { ...validJson.levels[0].steps[0], setup: undefined };
-    const level1 = { ...validJson.levels[0], steps: [step1] };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should not fail if step setup is missing', () => {
+    const step1 = { ...validJson.levels[0].steps[0], setup: undefined }
+    const level1 = { ...validJson.levels[0], steps: [step1] }
     const json = {
       ...validJson,
-      levels: [level1],
-    };
+      levels: [level1]
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(true);
-  });
-  it("should fail if step setup is invalid", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(true)
+  })
+  it('should fail if step setup is invalid', () => {
     const step1 = {
       ...validJson.levels[0].steps[0],
-      setup: { invalidThing: [] },
-    };
-    const level1 = { ...validJson.levels[0], steps: [step1] };
+      setup: { invalidThing: [] }
+    }
+    const level1 = { ...validJson.levels[0], steps: [step1] }
     const json = {
       ...validJson,
-      levels: [level1],
-    };
+      levels: [level1]
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-  it("should not fail if step solution is missing", () => {
-    const step1 = { ...validJson.levels[0].steps[0], solution: undefined };
-    const level1 = { ...validJson.levels[0], steps: [step1] };
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should not fail if step solution is missing', () => {
+    const step1 = { ...validJson.levels[0].steps[0], solution: undefined }
+    const level1 = { ...validJson.levels[0], steps: [step1] }
     const json = {
       ...validJson,
-      levels: [level1],
-    };
+      levels: [level1]
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(true);
-  });
-  it("should fail if step solution is invalid", () => {
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(true)
+  })
+  it('should fail if step solution is invalid', () => {
     const step1 = {
       ...validJson.levels[0].steps[0],
-      solution: { invalidThing: [] },
-    };
-    const level1 = { ...validJson.levels[0], steps: [step1] };
+      solution: { invalidThing: [] }
+    }
+    const level1 = { ...validJson.levels[0], steps: [step1] }
     const json = {
       ...validJson,
-      levels: [level1],
-    };
+      levels: [level1]
+    }
 
-    const valid = validateSkeleton(json);
-    expect(valid).toBe(false);
-  });
-});
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+})
