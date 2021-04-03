@@ -1475,6 +1475,90 @@ The second uninterrupted step
       };
       expect(result.levels[0]).toEqual(expected.levels[0]);
     });
+    it('should work with a single test on the final lesson', () => {
+      // issue: https://github.com/coderoad/coderoad-vscode/issues/480
+      const md = `# Title
+    
+Description.
+
+## 1. Title 1
+
+First level content.
+
+### 1.1
+
+The first step
+
+### 1.2
+
+The second uninterrupted step
+
+#### HINTS
+
+* First Hint with \`markdown\`. See **bold**`;
+      const skeleton = {
+        levels: [
+          {
+            id: "1",
+            steps: [
+              {
+                id: "1.1",
+              },
+              {
+                id: "1.2",
+              },
+            ],
+          },
+        ],
+      };
+      const result = parse({
+        text: md,
+        skeleton,
+        commits: {
+          "1.1:T": ["abcdef1"],
+          "1.1:S": ["123456789"],
+          "1.2:T": ["fedcba1"],
+        },
+      });
+      const expected = {
+        summary: {
+          description: "Description.",
+        },
+        levels: [
+          {
+            id: "1",
+            title: "Title 1",
+            summary: "First level content.",
+            content: "First level content.",
+            steps: [
+              {
+                id: "1.1",
+                content: "The first step",
+                setup: {
+                  commits: ["abcdef1"],
+                },
+                solution: {
+                  commits: ["123456789"],
+                },
+                
+              },
+              {
+                id: "1.2",
+                content: "The second uninterrupted step",
+                setup: {
+                  commits: ["fedcba1"],
+                },
+                hints: [
+                  "First Hint with `markdown`. See **bold**"
+                ],
+              },
+            ],
+          },
+          {},
+        ],
+      };
+      expect(result.levels[0]).toEqual(expected.levels[0]);
+    })
   });
   describe("subtasks", () => {
     it("should parse subtasks", () => {
