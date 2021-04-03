@@ -1,120 +1,120 @@
-import * as fs from "fs";
-import util from "util";
-import * as path from "path";
-import { ListLogSummary } from "simple-git/typings/response";
-import gitP, { SimpleGit } from "simple-git/promise";
-import { validateCommitOrder } from "./validateCommits";
+import * as fs from 'fs'
+import util from 'util'
+import * as path from 'path'
+import { ListLogSummary } from 'simple-git/typings/response'
+import gitP, { SimpleGit } from 'simple-git/promise'
+import { validateCommitOrder } from './validateCommits'
 
-const mkdir = util.promisify(fs.mkdir);
-const exists = util.promisify(fs.exists);
-const rmdir = util.promisify(fs.rmdir);
+const mkdir = util.promisify(fs.mkdir)
+const exists = util.promisify(fs.exists)
+const rmdir = util.promisify(fs.rmdir)
 
 type GetCommitOptions = {
-  localDir: string;
-  codeBranch: string;
-};
+  localDir: string
+  codeBranch: string
+}
 
-export type CommitLogObject = { [position: string]: string[] };
+export type CommitLogObject = { [position: string]: string[] }
 
-export function parseCommits(
+export function parseCommits (
   logs: ListLogSummary<any>
 ): { [hash: string]: string[] } {
   // Filter relevant logs
-  const commits: CommitLogObject = {};
-  const positions: string[] = [];
+  const commits: CommitLogObject = {}
+  const positions: string[] = []
 
   for (const commit of logs.all) {
     const matches = commit.message.match(
       /^(?<init>INIT)|(L?(?<levelId>\d+)[S|\.]?(?<stepId>\d+)?(?<stepType>[Q|A|T|S])?)/
-    );
+    )
 
     if (matches && matches.length) {
       // Use an object of commit arrays to collect all commits
-      const { groups } = matches;
-      let position;
+      const { groups } = matches
+      let position
       if (groups.init) {
-        position = "INIT";
+        position = 'INIT'
       } else if (groups.levelId && groups.stepId) {
-        let stepType;
+        let stepType
         // @deprecated Q
-        if (!groups.stepType || ["Q", "T"].includes(groups.stepType)) {
-          stepType = "T"; // test
+        if (!groups.stepType || ['Q', 'T'].includes(groups.stepType)) {
+          stepType = 'T' // test
           // @deprecated A
-        } else if (!groups.stepType || ["A", "S"].includes(groups.stepType)) {
-          stepType = "S"; // solution
+        } else if (!groups.stepType || ['A', 'S'].includes(groups.stepType)) {
+          stepType = 'S' // solution
         }
-        position = `${groups.levelId}.${groups.stepId}:${stepType}`;
+        position = `${groups.levelId}.${groups.stepId}:${stepType}`
       } else if (groups.levelId) {
-        position = groups.levelId;
+        position = groups.levelId
       } else {
-        console.warn(`No matcher for commit "${commit.message}"`);
+        console.warn(`No matcher for commit "${commit.message}"`)
       }
-      commits[position] = [...(commits[position] || []), commit.hash];
-      positions.unshift(position);
+      commits[position] = [...(commits[position] || []), commit.hash]
+      positions.unshift(position)
     } else {
-      const initMatches = commit.message.match(/^INIT/);
+      const initMatches = commit.message.match(/^INIT/)
       if (initMatches && initMatches.length) {
-        commits.INIT = [commit.hash, ...(commits.INIT || [])];
-        positions.unshift("INIT");
+        commits.INIT = [commit.hash, ...(commits.INIT || [])]
+        positions.unshift('INIT')
       }
     }
   }
   // validate order
-  validateCommitOrder(positions);
-  return commits;
+  validateCommitOrder(positions)
+  return commits
 }
 
-export async function getCommits({
+export async function getCommits ({
   localDir,
-  codeBranch,
+  codeBranch
 }: GetCommitOptions): Promise<CommitLogObject> {
-  const git: SimpleGit = gitP(localDir);
+  const git: SimpleGit = gitP(localDir)
 
   // check that a repo is created
-  const isRepo = await git.checkIsRepo();
+  const isRepo = await git.checkIsRepo()
   if (!isRepo) {
-    throw new Error("No git repo provided");
+    throw new Error('No git repo provided')
   }
 
   // setup .tmp directory
-  const tmpDir = path.join(localDir, ".tmp");
-  const tmpDirExists = await exists(tmpDir);
+  const tmpDir = path.join(localDir, '.tmp')
+  const tmpDirExists = await exists(tmpDir)
   if (tmpDirExists) {
-    await rmdir(tmpDir, { recursive: true });
+    await rmdir(tmpDir, { recursive: true })
   }
-  await mkdir(tmpDir);
+  await mkdir(tmpDir)
 
-  const tempGit = gitP(tmpDir);
-  await tempGit.clone(localDir, tmpDir);
+  const tempGit = gitP(tmpDir)
+  await tempGit.clone(localDir, tmpDir)
 
-  const branches = await git.branch();
+  const branches = await git.branch()
 
   if (!branches.all.length) {
-    throw new Error("No branches found");
+    throw new Error('No branches found')
   } else if (!branches.all.includes(codeBranch)) {
-    throw new Error(`Code branch "${codeBranch}" not found`);
+    throw new Error(`Code branch "${codeBranch}" not found`)
   }
 
   // track the original branch in case of failure
-  const originalBranch = branches.current;
+  const originalBranch = branches.current
 
   try {
     // Checkout the code branches
-    await git.checkout(codeBranch);
+    await git.checkout(codeBranch)
 
     // Load all logs
-    const logs = await git.log();
+    const logs = await git.log()
 
-    const commits = parseCommits(logs);
+    const commits = parseCommits(logs)
 
-    return commits;
+    return commits
   } catch (e) {
-    console.error("Error with checkout or commit matching");
-    throw new Error(e.message);
+    console.error('Error with checkout or commit matching')
+    throw new Error(e.message)
   } finally {
     // revert back to the original branch on failure
-    await git.checkout(originalBranch);
+    await git.checkout(originalBranch)
     // cleanup the tmp directory
-    await rmdir(tmpDir, { recursive: true });
+    await rmdir(tmpDir, { recursive: true })
   }
 }
