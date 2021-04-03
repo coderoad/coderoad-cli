@@ -1,6 +1,6 @@
 import * as T from '../../typings/tutorial'
 import { exec as cpExec } from 'child_process'
-import * as path from 'path'
+import { join } from 'path'
 import { promisify } from 'util'
 
 const asyncExec = promisify(cpExec)
@@ -50,7 +50,7 @@ export function createCommandRunner (cwd: string) {
         console.log(`--> ${command}`)
         let cwdDir = cwd
         if (dir) {
-          cwdDir = path.join(cwd, dir)
+          cwdDir = join(cwd, dir)
         }
         const { stdout, stderr } = await createExec(cwdDir)(command)
 
@@ -67,7 +67,7 @@ export function createCommandRunner (cwd: string) {
 }
 
 // function isAbsolute(p: string) {
-//   return path.normalize(p + "/") === path.normalize(path.resolve(p) + "/");
+//   return normalize(p + "/") === normalize(resolve(p) + "/");
 // }
 
 export function createTestRunner (cwd: string, config: T.TestRunnerConfig) {
@@ -77,7 +77,7 @@ export function createTestRunner (cwd: string, config: T.TestRunnerConfig) {
 
   let wd = cwd
   if (directory) {
-    wd = path.join(cwd, directory)
+    wd = join(cwd, directory)
   }
 
   const commandWithArgs = `${command} ${args.tap}`

@@ -1,6 +1,6 @@
-import * as path from 'path'
-import * as fs from 'fs-extra'
-import * as yamlParser from 'js-yaml'
+import { join } from 'path'
+import { readFile, pathExists, emptyDir } from 'fs-extra'
+import { load } from 'js-yaml'
 import { getArg } from './utils/args'
 import gitP, { SimpleGit } from 'simple-git/promise'
 import {
@@ -19,7 +19,7 @@ interface Options {
 async function validate (args: string[]) {
   // dir - default .
   const dir = !args.length || args[0].match(/^-/) ? '.' : args[0]
-  const localDir = path.join(process.cwd(), dir)
+  const localDir = join(process.cwd(), dir)
 
   // -y --yaml - default coderoad-config.yml
   const options: Options = {
@@ -27,15 +27,12 @@ async function validate (args: string[]) {
     clean: getArg(args, { name: 'clean', alias: 'c' }) !== 'false'
   }
 
-  const _yaml: string = await fs.readFile(
-    path.join(localDir, options.yaml),
-    'utf8'
-  )
+  const _yaml: string = await readFile(join(localDir, options.yaml), 'utf8')
 
   // parse yaml config
   let skeleton
   try {
-    skeleton = yamlParser.load(_yaml) as TutorialSkeleton
+    skeleton = load(_yaml) as TutorialSkeleton
 
     if (!skeleton) {
       throw new Error('Invalid yaml file contents')
@@ -52,11 +49,11 @@ async function validate (args: string[]) {
   const commits: CommitLogObject = await getCommits({ localDir, codeBranch })
 
   // setup tmp dir
-  const tmpDir = path.join(localDir, '.tmp')
+  const tmpDir = join(localDir, '.tmp')
 
   try {
-    if (!(await fs.pathExists(tmpDir))) {
-      await fs.emptyDir(tmpDir)
+    if (!(await pathExists(tmpDir))) {
+      await emptyDir(tmpDir)
     }
     const tempGit: SimpleGit = gitP(tmpDir)
 

@@ -1,13 +1,13 @@
-import * as fs from 'fs'
+import { mkdir, exists, rmdir } from 'fs'
 import util from 'util'
 import * as path from 'path'
-import { ListLogSummary } from 'simple-git/typings/response'
+import { LogResult } from 'simple-git/typings/response'
 import gitP, { SimpleGit } from 'simple-git/promise'
 import { validateCommitOrder } from './validateCommits'
 
-const mkdir = util.promisify(fs.mkdir)
-const exists = util.promisify(fs.exists)
-const rmdir = util.promisify(fs.rmdir)
+const mkdirPromise = util.promisify(mkdir)
+const existsPromise = util.promisify(exists)
+const rmdirPromise = util.promisify(rmdir)
 
 type GetCommitOptions = {
   localDir: string
@@ -17,7 +17,7 @@ type GetCommitOptions = {
 export type CommitLogObject = { [position: string]: string[] }
 
 export function parseCommits (
-  logs: ListLogSummary<any>
+  logs: LogResult<any>
 ): { [hash: string]: string[] } {
   // Filter relevant logs
   const commits: CommitLogObject = {}
@@ -78,11 +78,11 @@ export async function getCommits ({
 
   // setup .tmp directory
   const tmpDir = path.join(localDir, '.tmp')
-  const tmpDirExists = await exists(tmpDir)
+  const tmpDirExists = await existsPromise(tmpDir)
   if (tmpDirExists) {
-    await rmdir(tmpDir, { recursive: true })
+    await rmdirPromise(tmpDir, { recursive: true })
   }
-  await mkdir(tmpDir)
+  await mkdirPromise(tmpDir)
 
   const tempGit = gitP(tmpDir)
   await tempGit.clone(localDir, tmpDir)
@@ -115,6 +115,6 @@ export async function getCommits ({
     // revert back to the original branch on failure
     await git.checkout(originalBranch)
     // cleanup the tmp directory
-    await rmdir(tmpDir, { recursive: true })
+    await rmdirPromise(tmpDir, { recursive: true })
   }
 }

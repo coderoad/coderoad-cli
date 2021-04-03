@@ -1,7 +1,7 @@
-import * as yamlParser from 'js-yaml'
-import * as path from 'path'
-import * as fs from 'fs'
-import * as util from 'util'
+import { load } from 'js-yaml'
+import { join } from 'path'
+import { writeFile, readFile } from 'fs'
+import { promisify } from 'util'
 import { parse } from './utils/parse'
 import { getArg } from './utils/args'
 import { getCommits, CommitLogObject } from './utils/commits'
@@ -11,8 +11,8 @@ import { validateSchema } from './utils/validateSchema'
 import { validateMarkdown } from './utils/validateMarkdown'
 import * as T from '../typings/tutorial'
 
-const write = util.promisify(fs.writeFile)
-const read = util.promisify(fs.readFile)
+const write = promisify(writeFile)
+const read = promisify(readFile)
 
 export type BuildConfigOptions = {
   text: string // text document from markdown
@@ -60,15 +60,15 @@ async function build (args: string[]) {
   }
 
   // path to run build from
-  const localPath = path.join(process.cwd(), options.dir)
+  const localPath = join(process.cwd(), options.dir)
 
   // load markdown and files
   let _markdown: string
   let _yaml: string
   try {
     ;[_markdown, _yaml] = await Promise.all([
-      read(path.join(localPath, options.markdown), 'utf8'),
-      read(path.join(localPath, options.yaml), 'utf8')
+      read(join(localPath, options.markdown), 'utf8'),
+      read(join(localPath, options.yaml), 'utf8')
     ])
   } catch (e) {
     console.error('Error reading file:')
@@ -91,7 +91,7 @@ async function build (args: string[]) {
   // parse yaml skeleton config
   let skeleton
   try {
-    skeleton = yamlParser.load(_yaml) as T.TutorialSkeleton
+    skeleton = load(_yaml) as T.TutorialSkeleton
     if (!skeleton || !Object.keys(skeleton).length) {
       throw new Error(`Skeleton at "${options.yaml}" is invalid`)
     }
