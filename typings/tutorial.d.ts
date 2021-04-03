@@ -86,3 +86,8 @@ export interface TutorialDependency {
 export interface TutorialAppVersions {
   vscode: string
 }
+
+export interface TutorialSkeleton {
+  config: TutorialConfig
+  levels: Level[]
+}

@@ -9,6 +9,7 @@ import {
   createTestRunner
 } from './utils/exec'
 import { getCommits, CommitLogObject } from './utils/commits'
+import { TutorialSkeleton } from '../typings/tutorial'
 
 interface Options {
   yaml: string
@@ -34,7 +35,7 @@ async function validate (args: string[]) {
   // parse yaml config
   let skeleton
   try {
-    skeleton = yamlParser.load(_yaml)
+    skeleton = yamlParser.load(_yaml) as TutorialSkeleton
 
     if (!skeleton) {
       throw new Error('Invalid yaml file contents')
@@ -42,6 +43,7 @@ async function validate (args: string[]) {
   } catch (e) {
     console.error('Error parsing yaml')
     console.error(e.message)
+    return
   }
 
   const codeBranch: string = skeleton.config.repo.branch
@@ -106,7 +108,7 @@ async function validate (args: string[]) {
             await cherryPick(stepSetupCommits)
           }
           // run commands
-          if (step.setup.commands) {
+          if (step?.setup?.commands) {
             console.info(`--- Running setup commands...`)
             await runCommands(step.setup.commands)
           }
