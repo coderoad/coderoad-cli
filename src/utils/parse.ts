@@ -22,9 +22,9 @@ export function parseMdContent (md: string): TutorialFrame | never {
 
   const lines = md.split('\n')
 
-  // Split the multiple parts - This way enables the creator to use 4/5 level headers inside the content.
+  // Split the header based sections
   lines.forEach((line, index) => {
-    if (line.match(/#{1,3}\s/) || index === lines.length - 1) {
+    if (line.match(/^#{1,5}\s/) || index === lines.length - 1) {
       if (start !== -1) {
         parts.push(lines.slice(start, index).join('\n'))
         start = index
@@ -44,6 +44,7 @@ export function parseMdContent (md: string): TutorialFrame | never {
 
   // Capture summary
   const summaryMatch = parts.shift().match(R.summary)
+
   if (summaryMatch.groups.tutorialTitle) {
     mdContent.summary.title = summaryMatch.groups.tutorialTitle.trim()
   }
@@ -57,7 +58,6 @@ export function parseMdContent (md: string): TutorialFrame | never {
   parts.forEach((section: string) => {
     // match level
     const levelMatch: RegExpMatchArray | null = section.match(R.level)
-
     if (levelMatch && levelMatch.groups) {
       const levelId = levelMatch.groups.levelId.replace('.', '')
       current = {
