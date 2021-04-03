@@ -971,6 +971,53 @@ The third step
     expect(result.levels).toEqual(expected.levels)
   })
 
+  it('should load content with #', () => {
+    // https://github.com/coderoad/coderoad-vscode/issues/479
+
+    const md = `# Title
+    
+Description line with # content and #content and ## content
+
+## 1. Title
+
+First line with # content and #content and ## content
+
+### 1.1
+
+Content line with # content and #content and ## content`
+    const skeleton = {
+      levels: [
+        {
+          id: '1'
+        }
+      ]
+    }
+    const result = parse({
+      text: md,
+      skeleton,
+      commits: {
+        '1': ['abcdefg1']
+      }
+    })
+    const expected = {
+      summary: {
+        description:
+          'Description line with # content and #content and ## content'
+      },
+      levels: [
+        {
+          id: '1',
+          summary: 'First line with # content and #content and ## content',
+          content: 'Content line with # content and #content and ## content',
+          setup: {
+            commits: ['abcdefg1']
+          }
+        }
+      ]
+    }
+    expect(result.levels[0].setup).toEqual(expected.levels[0].setup)
+  })
+
   describe('config', () => {
     it('should parse the tutorial config', () => {
       const md = `# Title
