@@ -58,7 +58,9 @@ async function validate (args: string[]) {
     const tempGit: SimpleGit = gitP(tmpDir)
 
     await tempGit.init()
-    await tempGit.addRemote('origin', skeleton.config.repo.uri)
+    await tempGit
+      .addRemote('origin', skeleton.config.repo.uri)
+      .catch(console.warn)
     await tempGit.fetch('origin', skeleton.config.repo.branch)
     // no js cherry pick implementation
     const cherryPick = createCherryPick(tmpDir)
