@@ -53,6 +53,54 @@ export default {
               examples: ['coderoad']
             }
           },
+          webhooks: {
+            type: 'object',
+            description: 'Optional configuration for setting up webhook events',
+            properties: {
+              endpoint: {
+                type: 'string',
+                description:
+                  'Webhook endpoint to hit on events. Uses HTTP POST requests',
+                examples: ['https://api.com/v1/coderoad']
+              },
+              headers: {
+                type: 'object',
+                description: 'Headers for the webhook request in JSON format',
+                examples: ['{ x-token: "$CODEROAD_WEBHOOK_TOKEN" }'],
+                additionalProperties: true
+              },
+              events: {
+                type: 'object',
+                description:
+                  'A configuration of possible events toggled on or off',
+                properties: {
+                  init: {
+                    type: 'boolean',
+                    description: 'Trigger webhook when user starts a tutorial'
+                  },
+                  reset: {
+                    type: 'boolean',
+                    description:
+                      'Trigger webhook when user resets a CodeRoad tutorial'
+                  },
+                  step_complete: {
+                    type: 'boolean',
+                    description: 'Trigger webhook when user completes a step'
+                  },
+                  level_complete: {
+                    type: 'boolean',
+                    description: 'Trigger webhook when user completes a level'
+                  },
+                  tutorial_complete: {
+                    type: 'boolean',
+                    description:
+                      'Trigger webhook when user completes a tutorial'
+                  }
+                },
+                additionalProperties: false
+              }
+            }
+          },
           required: ['command', 'args']
         },
         setup: {
