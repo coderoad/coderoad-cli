@@ -165,7 +165,7 @@ async function validate (args: string[]) {
   } finally {
     // cleanup
     if (options.clean) {
-      await fs.emptyDir(tmpDir)
+      await emptyDir(tmpDir)
     }
   }
 }
