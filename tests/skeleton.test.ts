@@ -25,7 +25,17 @@ const validJson = {
     dependencies: [],
     appVersions: {
       vscode: '>=0.7.0'
-    }
+    },
+    webhook: {
+      url: 'https://example.com/webhook',
+      events: {
+        init: true,
+        reset: false,
+        step_complete: false,
+        level_complete: false,
+        tutorial_complete: true,
+      }
+    },
   },
   levels: [
     {
