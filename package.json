@@ -1,6 +1,6 @@
 {
   "name": "@coderoad/cli",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "A CLI to build the configuration file for Coderoad Tutorials",
   "keywords": [
     "coderoad",
@@ -33,7 +33,8 @@
     "build": "npm run clean && npm run compile",
     "clean": "del-cli --force ./build",
     "compile": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "postpublish" : "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag v$PACKAGE_VERSION && git push --tags"
   },
   "jest": {
     "collectCoverage": true,
