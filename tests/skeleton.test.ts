@@ -197,6 +197,38 @@ describe('validate skeleton', () => {
     const valid = validateSkeleton(json)
     expect(valid).toBe(false)
   })
+  it('should fail if webhook url is missing', () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        webhook: {
+          events: {}
+        }
+      }
+    }
+
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if webhook events include non-listed events', () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        webhook: {
+          ...validJson.config.webhook,
+          events: {
+            ...validJson.config.webhook.events,
+            not_an_event: true,
+          }
+        }
+      }
+    }
+
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
   it('should fail if level is missing id', () => {
     const level1 = { ...validJson.levels[0], id: undefined }
     const json = {
