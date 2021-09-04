@@ -25,7 +25,17 @@ const validJson = {
     dependencies: [],
     appVersions: {
       vscode: '>=0.7.0'
-    }
+    },
+    webhook: {
+      url: 'https://example.com/webhook',
+      events: {
+        init: true,
+        reset: false,
+        step_complete: false,
+        level_complete: false,
+        tutorial_complete: true,
+      }
+    },
   },
   levels: [
     {
@@ -181,6 +191,38 @@ describe('validate skeleton', () => {
       config: {
         ...validJson.config,
         repo: { ...validJson.config.repo, branch: undefined }
+      }
+    }
+
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if webhook url is missing', () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        webhook: {
+          events: {}
+        }
+      }
+    }
+
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+  it('should fail if webhook events include non-listed events', () => {
+    const json = {
+      ...validJson,
+      config: {
+        ...validJson.config,
+        webhook: {
+          ...validJson.config.webhook,
+          events: {
+            ...validJson.config.webhook.events,
+            not_an_event: true,
+          }
+        }
       }
     }
 
