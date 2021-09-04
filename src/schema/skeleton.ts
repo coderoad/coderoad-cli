@@ -140,6 +140,52 @@ export default {
           }
         }
       },
+      webhook: {
+        type: 'object',
+        description: 'An optional configuration for webhooks triggered by events such as init, step/level/tutorial complete',
+        properties: {
+          url: {
+            type: 'string',
+            description: 'URL for POST restful webhook request',
+            examples: ['https://example.com/webhook']
+          },
+          events: {
+            type: 'object',
+            description: 'An object of events to trigger on',
+            properties: {
+              init: {
+                type: 'boolean',
+                description:
+                  'An event triggered on tutorial startup. Sends tutorialId',
+              },
+              reset: {
+                type: 'boolean',
+                description:
+                  'An event triggered on reset of a tutorial. Sends tutorialId',                
+              },
+              step_complete: {
+                type: 'boolean',
+                description:
+                  'An event triggered on completion of a step. Sends tutorialId, levelId & stepId',
+              },
+              level_complete: {
+                step_complete: {
+                  type: 'boolean',
+                  description:
+                    'An event triggered on completion of a level. Sends tutorialId & levelId',
+                },
+              },
+              tutorial_complete: {
+                step_complete: {
+                  type: 'boolean',
+                  description:
+                    'An event triggered on completion of a tutorial. Sends tutorialId',
+                },
+              }
+            }
+          },
+        }
+      },
       additionalProperties: false,
       required: ['testRunner', 'repo']
     },
