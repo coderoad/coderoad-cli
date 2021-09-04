@@ -11,6 +11,7 @@ export type TutorialConfig = {
   dependencies?: TutorialDependency[]
   reset?: ConfigReset
   setup?: StepActions
+  webhook?: WebhookConfig
 }
 
 /** Logical groupings of tasks */
@@ -90,4 +91,16 @@ export interface TutorialAppVersions {
 export interface TutorialSkeleton {
   config: TutorialConfig
   levels: Level[]
+}
+
+export interface WebhookConfigEvents {
+  init?: boolean
+  reset?: boolean
+  step_complete?: boolean
+  level_complete?: boolean
+  tutorial_complete?: boolean
+}
+export interface WebhookConfig {
+  url: string
+  events?: WebhookConfigEvents
 }
