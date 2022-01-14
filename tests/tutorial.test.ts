@@ -3,6 +3,7 @@ import tutorialSchema from '../src/schema/tutorial'
 import { validateSchema } from '../src/utils/validateSchema'
 
 const validJson: Partial<T.Tutorial> = {
+  id: 'coderoad-test',
   version: '0.1.0',
   summary: { title: 'Title', description: 'Description' },
   config: {
