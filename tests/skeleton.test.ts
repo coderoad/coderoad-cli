@@ -4,6 +4,7 @@ import skeletonSchema from '../src/schema/skeleton'
 const validateSkeleton = (json: any) => validateSchema(skeletonSchema, json)
 
 const validJson = {
+  id: 'coderoad-test',
   version: '0.1.0',
   config: {
     testRunner: {
@@ -95,6 +96,13 @@ describe('validate skeleton', () => {
     const valid = validateSkeleton(json)
     expect(valid).toBe(true)
   })
+  it('should fail if id is missing', () => {
+    const json = { ...validJson, id: undefined }
+
+    const valid = validateSkeleton(json)
+    expect(valid).toBe(false)
+  })
+
   it('should fail if version is invalid', () => {
     const json = { ...validJson, version: 'NOT A VERSION' }
 

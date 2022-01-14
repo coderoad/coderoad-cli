@@ -7,6 +7,12 @@ export default {
   ...meta,
   type: "object",
   properties: {
+    id: {
+      type: "string",
+      description: "A unique identifier for your tutorial. Currently no system to create this, so create your own for now",
+      examples: ["fcc-learn-npm"]
+    },
+    
     version: {
       $ref: "#/definitions/semantic_version",
       description: "The tutorial version. Must be unique for the tutorial.",
@@ -253,5 +259,5 @@ export default {
     },
   },
   additionalProperties: false,
-  required: ["version", "config", "levels"],
+  required: ["id", "version", "config", "levels"],
 };
