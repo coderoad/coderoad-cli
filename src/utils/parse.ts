@@ -144,6 +144,7 @@ export function parse (params: ParseParams): any {
   const mdContent: TutorialFrame = parseMdContent(params.text + '\n\n')
 
   const parsed: Partial<T.Tutorial> = {
+    id: params.skeleton.id,
     version: params.skeleton.version,
     summary: mdContent.summary,
     config: params.skeleton.config || {},

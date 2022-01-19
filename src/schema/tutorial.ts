@@ -116,6 +116,19 @@ export default {
           additionalProperties: false,
           required: ["uri", "branch"],
         },
+        continue: {
+          type: "object",
+          description: "Configuration options for continuing a tutorial",
+          properties: {
+            commands: {
+              $ref: "#/definitions/command_array",
+            },
+            vscodeCommands: {
+              $ref: "#/definitions/vscode_command_array",
+            },
+          },
+          additionalProperties: false,
+        },
         reset: {
           type: "object",
           description: "Configuration options for resetting a tutorial",
@@ -182,6 +195,11 @@ export default {
                   type: "boolean",
                   description:
                     "An event triggered on tutorial startup. Sends tutorialId",
+                },
+                continue: {
+                  type: "boolean",
+                  description:
+                    "An event triggered when continuing a tutorial. Sends tutorialId",
                 },
                 reset: {
                   type: "boolean",
@@ -298,5 +316,5 @@ export default {
     },
   },
   additionalProperties: false,
-  required: ["version", "summary", "config", "levels"],
+  required: ["id", "version", "summary", "config", "levels"],
 };
