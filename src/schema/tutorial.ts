@@ -316,5 +316,5 @@ export default {
     },
   },
   additionalProperties: false,
-  required: ["version", "summary", "config", "levels"],
+  required: ["id", "version", "summary", "config", "levels"],
 };
